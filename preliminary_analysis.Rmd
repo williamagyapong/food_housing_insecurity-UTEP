@@ -1,0 +1,213 @@
+---
+title: "Modeling Food and Housing Insecurity at UTEP - Phase 1"
+subtitle: "Data Preprocessing and Exploration"
+author: 
+ - "George E. Quaye"
+ - "John Koomson"
+ - "Willliam O. Agyapong"
+  
+affiliation: "Department of Mathematical Sciences, University of Texas at El Paso"
+date: \center University of Texas, El Paso (UTEP)\center
+       \center Department of Mathematical Sciences \center
+output:
+  html_document:
+    fig_caption: yes
+    keep_tex: no
+    number_sections: yes
+    toc: yes
+    toc_depth: 4
+  bookdown::pdf_document2:
+    fig_caption: yes
+    keep_tex: yes
+    latex_engine: pdflatex
+    number_sections: yes
+    toc: yes
+    toc_depth: 4
+header-includes:
+  - \usepackage{float}
+  - \usepackage{setspace}
+  - \doublespacing
+  - \usepackage{bm}
+  - \usepackage{amsmath}
+  - \usepackage{amssymb}
+  - \usepackage{amsfonts}
+  - \usepackage{amsthm}
+  - \usepackage{fancyhdr}
+  - \pagestyle{fancy}
+  - \fancyhf{}
+  - \rhead{George Quaye, Johnson Koomson, William Agyapong}
+  - \lhead{Analysis Plan - DS 6335}
+  - \cfoot{\thepage}
+  - \usepackage{algorithm}
+  - \usepackage[noend]{algpseudocode}
+geometry: margin = 0.8in
+fontsize: 10pt
+bibliography: references.bib
+link-citations: yes
+linkcolor: blue
+csl: apa-6th-edition-no-ampersand.csl
+nocite: |
+---
+\end{center}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = F)
+
+# Load required packages
+library(dplyr)
+library(stringr)
+library(ggplot2)
+library(knitr)
+```
+
+
+```{r data-reading}
+file_path <- dirname(rstudioapi::getSourceEditorContext()$path)
+FIHI <- read.csv(paste0(file_path, '/datcsv.csv'))
+
+
+#=========================================================
+# Helper functions
+#========================================================
+
+to_zero <- function(x) 
+{
+  return(ifelse(is.na(x), 0, x ))
+}
+
+# This function helps restore back any prior missingness. Care must be taken in 
+# order not to apply it to a variable where 0 has a different meaning.
+to_na <- function(x) 
+{
+  return(ifelse(x == 0, NA, x ))
+}
+
+```
+
+
+
+```{r data-preprocessing}
+
+FIHI_new <- FIHI %>% 
+  # change column names to lowercase
+  rename_with(tolower) %>%
+  # Removing unwanted variables
+  select(-externalid, -satellite, -email, -datetime, -carddata,
+                        -starts_with(c("q5", "q8", "q18", "q21", "q29", "q24", "q36", "q37", "q38", "q39"))
+         ) %>%
+  # Cleaning column names by removing anything after the first occurrence of a dot in the column name
+  rename_with(~gsub('\\..*', '', .x))  
+
+# col_names <- names(FIHI)
+# str_view_all(col_names, "\\..*")
+
+## Consolidating common variables split across levels:
+## We first create dummy columns for the number of non-na values within each range for the targeted variable.
+## Next, we filter out all rows where the count for each of the targeted variables is more than 1.
+FIHI_new <- FIHI_new %>% 
+  # Creating dummy columns for the number of non-na values within each range for the targeted variable
+  mutate(q6_n = rowSums(!is.na(select(., starts_with("q6")))),
+         q7_n = rowSums(!is.na(select(., starts_with("q7")))),
+         q11_n = rowSums(!is.na(select(., starts_with("q11")))),
+         q25_n = rowSums(!is.na(select(., starts_with("q25"))))) 
+
+
+# Identifyig multiracial instances
+FIHI_new_sub <- FIHI_new %>% 
+  filter(if_all(q6_n:q25_n, ~ !(.x>1))) %>% # filter out where there are multiple responses for the same question
+  select(-(q6_n:q25_n)) %>%
+  mutate(across(starts_with(c("q6", "q7", "q11", "q25")), to_zero)) %>%
+  mutate(q6 = rowSums(across(starts_with("q6"))),
+         q7 = rowSums(across(starts_with("q7"))),
+         q11 = rowSums(across(starts_with("q11"))),
+         q25 = rowSums(across(starts_with("q25"))),
+         .after = starts_with("q4"),
+         .keep = "unused") %>%
+  relocate(q11, .after = starts_with("q10")) %>%
+  relocate(q25, .after = starts_with("q23")) %>%
+  mutate(across(starts_with(c("q6", "q7", "q11", "q25")), to_na), 
+         across(!respondentid, as.factor) # convert all variables except the respondent id to a factor
+         )
+  
+
+# Rename the remaining variables
+var_names <- c("respondent_id", "enrollment", "employment", "employment_type", "weekly_work_hrs", "ethnicity", "gender", "total_income", "academic_level", "college/school", "mode_transport", "transport_reliability", "living_alone", "have_dependents", "dependents", "household_head", "residence", "permanent_address", "HI", "know_homelessness_studt", "federal_aid", "FI_q26", "FI_q27", "FI_q28", "FI_q30", "FI_q31", "change_expenditures", "change_income", "change_fin_aid", "change_debt")
+
+names(FIHI_new_sub) <- var_names
+
+```
+
+### A glimpse into the issue of multiple responses per individual where a single response was expected.
+```{r}
+## Issue of multiple race
+multi_racial <- FIHI_new %>% 
+  filter(q6_n>1) %>%
+  select(respondentid, starts_with("q6"))
+# names(multi_racial) <- c("respondentid", paste0("q6_", 1:7),"q6_n")
+head(multi_racial, 30) %>%
+kable(caption = "Individuals identifying with more than one ethnic group")
+
+# Those of more than 1 gender designations.
+multi_gender <- FIHI_new %>%
+  filter((q7_n>1)) %>%
+  select(respondentid, starts_with("q7"))
+# names(multi_gender) <- c("RespondentId", paste0("q6_", 1:6),"q7_n")
+  kable(multi_gender,caption = "Individuals identifying with more than one gender")
+  
+# Those who belong to more than 1 college/schools.
+multi_colleges <- FIHI_new %>%
+  filter((q11_n>1)) %>%
+  select(respondentid, starts_with("q11"))
+# names(multi_colleges) <- c("RespondentId", paste0("Q11_", 1:9),"q11_n")
+ head(multi_colleges, 30) %>%
+  kable(caption = "Individuals belonging to more than one college/school")
+  
+# Those who received more than one source of Federal Aid.
+multi_aid <- FIHI_new %>%
+  filter((q25_n>1)) %>%
+  select(respondentid, starts_with("q25"))
+# names(multi_aid) <- c("RespondentId", paste0("q25_", 1:7),"q25_n")
+head(multi_aid, 30) %>%
+  kable(caption = "Those who received more than one source of Federal Aid")
+```
+
+
+## Missing Data Exploration
+
+### Structure of the preprocessed data
+```{r}
+glimpse(FIHI_new_sub)
+```
+
+### Summary 
+```{r}
+## Get summary of the data
+summary(FIHI_new_sub)
+```
+
+
+### Visualizing missingness 
+```{r}
+# install.packages("naniar")
+# install.packages("UpSetR")
+library(naniar)
+library(UpSetR)
+
+# explore the patterns
+gg_miss_upset(FIHI_new_sub)
+
+# explore missingness in variables with gg_miss_var
+miss_var_summary(FIHI_new_sub) %>% kable()
+
+gg_miss_var(FIHI_new_sub) + ylab("Number of missing values")
+
+gg_miss_var(FIHI_new_sub, show_pct = T) 
+```
+
+
+# References{-}
+
+<div id="refs"></div>
+
+
