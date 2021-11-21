@@ -1,0 +1,325 @@
+---
+title: "SVM New_Duke Data"
+author: "George"
+date: "11/17/2021"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, echo=F, message=FALSE, warning=FALSE}
+source("Packages.R")
+#### Utility function   ##############
+view.f <- function(data, rn=5, cn=10){
+  data[1:rn, 1:cn]
+}
+```
+
+## Data Preparation and cleaning 
+```{r, echo=F}
+# PREPARATION AND CLEANING
+
+test_duke<- read.csv(file="Duke_Pivot_Table.csv", header=TRUE, check.names =FALSE, #bringing in the test data
+                na.strings = c("NA", "", " "))
+test<- test_duke[, -c(2:9)]
+train<- read.csv(file="train.csv", header=TRUE, check.names =FALSE, #Bringing in the training data
+                 na.strings = c("NA", "", " "))
+dim(train) 
+#view.f(train)
+
+##### Looking observations which occurs in both datasets ##############
+common_train <- data.frame(prostate=train$prostate.cancer,train[is.element(names(train), names(test))])
+common_test <- data.frame(test[is.element(names(test), names(train))])
+
+##### changing numerics variable labels into character ######################
+table(common_train$prostate)
+vnames <- names(common_train)
+vn<- vnames[-1]
+va <- vnames[1]
+vnames<-c(va, as.character(vn))
+names(common_train)<- vnames
+
+####### Recoding the response variable into 0 and 1 ######################
+common_train <- common_train %>%
+  mutate(prostate = as.factor(ifelse(prostate=="negative", 0, 1)))
+
+#### treating missing values################# 
+p <- NCOL(common_train)
+train.VOC <- common_train[, 2:p]
+train.VOC[is.na(train.VOC)] <- 0
+common_train <- data.frame(prostate=common_train[, 1], train.VOC)
+#view.f(common_train)
+
+# PARTITION DATA
+set.seed(123)
+intrain <- createDataPartition(y=1:NROW(common_train), p= 0.67, list = FALSE)
+training <- common_train[intrain,];  testing <- common_train[-intrain,]
+dim(training); dim(testing);
+```
+
+The training data has 76 observations with 1887 now (old =1057 when compared) variables.
+The testing data has 32 observation with 1887 now (old= 1057 when compared) variables.
+
+## SVM with caret package with tuned parameters
+
+### Linear SVM through caret
+```{r, message=FALSE, warning=FALSE, echo= F}
+# SVM I: LINEAR  (1)
+# ----------------
+set.seed(125)
+trctrl<- trainControl(method = "repeatedcv", number=7, repeats = 3)
+model_linear<- train(
+  prostate~., data = training, method= "svmLinear",
+  trControl= trctrl, tuneGrid = expand.grid(C = seq(0,2, length= 20)),
+  prob.model=T, tuneLength = 10, #preProcess=c("center", "scale")
+)
+```
+
+```{r,message=F,echo=F, warning=F}
+# PREDICTIONS
+# Obtaining Misclassification 
+pred.test<- model_linear %>% predict(testing)
+conf_mat<-confusionMatrix(pred.test, testing$prostate)
+tab<- conf_mat$table
+misscal_L<- round((1-sum(diag(tab)/sum(tab)))*100,digits = 2)
+```
+
+```{r, echo=F, message=F}
+## Ploting the AUC 
+test_pred_1 <- predict(model_linear, newdata = testing, type= "prob")
+ROC_SR <- roc(response=testing$prostate, predictor = test_pred_1[, 2])
+plot(ROC_SR, col="brown")
+AUC_L<-round(ROC_SR$auc, digits=4)  # AUC
+text(x=0.4, y=0.25, paste("Area Under Curve = ", AUC_L, sep=""), col="blue", cex=1.2)
+```
+
+## Computing SVM using radial basis kernel (caret)
+```{r, warning=FALSE, message=FALSE, echo=F}
+set.seed(125)
+model_Radial <- train(
+  prostate~., data = training, method = "svmRadial",
+  trControl = trctrl, prob.model=T, #preProcess = c("center","scale"),
+  tuneLength = 10)
+```
+
+```{r, echo=F, message=FALSE}
+# Obtaining Misclassification 
+pred.test_rad <- model_Radial %>% predict(testing)
+conf_mat_R<-confusionMatrix(pred.test_rad, testing$prostate)
+tab_R<- conf_mat_R$table
+misscal_R<- round((1-sum(diag(tab_R)/sum(tab_R)))*100,digits = 2)
+```
+
+```{r, echo=F, message=FALSE}
+test_pred_R <- predict(model_Radial, newdata = testing, type= "prob")
+ROC_SR <- roc(response=testing$prostate, predictor = test_pred_R[, 2])
+plot(ROC_SR, col="brown")
+AUC_R<-round(ROC_SR$auc, digits=4)  # AUC
+text(x=0.4, y=0.25, paste("Area Under Curve = ", AUC_R, sep=""), col="blue", cex=1.2) 
+```
+
+## Computing SVM using polynomial basis kernel
+```{r, warning=FALSE,message=FALSE, echo=F}
+set.seed(125)
+model_Poly <- train(
+  prostate~., data = training, method = "svmPoly",
+  trControl = trctrl, prob.model= T, #preProcess = c("center","scale"),
+  tuneLength = 4
+)
+```
+
+```{r, echo=F, message=FALSE}
+# Obtaining Misclassification 
+pred.test_pol <- model_Poly %>% predict(testing)
+conf_mat_P<-confusionMatrix(pred.test_pol, testing$prostate)
+tab_P<- conf_mat_P$table
+misscal_P<- round((1-sum(diag(tab_P)/sum(tab_P)))*100,digits = 2)
+```
+
+```{r, echo=F, message=FALSE}
+## Ploting the AUC 
+test_pred_P <- predict(model_Poly, newdata = testing, type= "prob")
+ROC_SR <- roc(response=testing$prostate, predictor = test_pred_P[, 2])
+plot(ROC_SR, col="brown")
+AUC_P<-round(ROC_SR$auc, digits=4)  # AUC
+text(x=0.4, y=0.25, paste("Area Under Curve = ", AUC_P, sep=""), col="blue", cex=1.2)
+```
+
+
+## Classification through Decision Trees 
+
+```{r, warning=FALSE, message=FALSE, echo=F}
+library(rpart)
+library(rpart.plot)
+library(tree)
+control <- rpart.control(minsplit = 3,
+                         minbucket = round(4/ 3),
+                         maxdepth = 5,
+                         cp = 0)
+model_trees<- rpart(prostate~., data = training, method = "class", control = control)
+```
+
+
+```{r, echo=F, message=F, warning=FALSE}
+# Obtaining Misclassification
+pred.test_trees <- predict(model_trees, testing, type= 'class')
+conf_mat_T<-confusionMatrix(pred.test_trees, testing$prostate)
+tab_T<- conf_mat_T$table
+misscal_T<- round((1-sum(diag(tab_T)/sum(tab_T)))*100,digits = 2)
+```
+
+
+```{r, echo=F, message=F, warning=FALSE}
+## Ploting the AUC 
+test_pred_T <- predict(model_trees, newdata = testing, type= "prob")
+ROC_SR <- roc(response=testing$prostate, predictor = test_pred_T[, 2])
+plot(ROC_SR, col="brown")
+AUC_T<-round(ROC_SR$auc, digits=4)  # AUC
+text(x=0.4, y=0.25, paste("Area Under Curve = ", AUC_T, sep=""), col="blue", cex=1.2)
+```
+
+## Classification through Naive Bayes 
+```{r,message=FALSE, warning=FALSE, echo= F}
+library(naivebayes)
+set.seed(125)
+model_Naive <- naive_bayes(prostate~., data = training, usekernel = T) 
+```
+
+```{r,message=FALSE, warning=FALSE, echo= F}
+# Obtaining Misclassification
+p2 <- predict(model_Naive, testing)
+tab_N <- table(p2, testing$prostate)
+misscal_N<- (1 - sum(diag(tab_N)) / sum(tab_N))*100
+```
+
+```{r,message=FALSE, warning=FALSE, echo= F}
+# Obtaining and graphing AUC
+test_pred_N <- predict(model_Naive, newdata = testing, type= "prob")
+ROC_SR <- roc(response=testing$prostate, predictor = test_pred_N[, 2])
+plot(ROC_SR, col="brown")
+AUC_N<-round(ROC_SR$auc, digits=4)  # AUC
+text(x=0.4, y=0.25, paste("Area Under Curve = ", AUC_N, sep=""), col="blue", cex=1.2) 
+```
+
+
+## Comparison between the kernels base on their AUC and Misclassification 
+```{r, echo=F}
+Methods<- c("SVM_Linear", "SVM_Radial","SVM_Polynomial","Decision Trees","Naive Bayes")
+AUC<- c(AUC_L,AUC_R,AUC_P,AUC_T, AUC_N)
+Missclassification<- c(misscal_L,misscal_R,
+                       misscal_P,misscal_T, misscal_N)
+compare_table<-data.frame(cbind(Methods,AUC,Missclassification))
+knitr::kable(compare_table, align = "lcc")
+```
+
+
+
+## Prediction using the new duke test data on models.
+```{r, echo=F}
+names(common_test) <- as.character(names(common_test))
+common_test[is.na(common_test)] <- 0 # treating missing values
+t<- test_duke[,7]
+t[is.na(t)]<-0
+t<-ifelse(t == 0, 0,1)
+t<-factor(t, levels = c(0,1))
+common_test_1<- cbind("Prostate"= t, common_test)
+#view.f(common_test_1)
+```
+
+### The SVM Linear
+```{r, echo=F, warning=F, message=F }
+test_pred.svm <- predict(model_linear, newdata = common_test_1, type = 'raw') 
+names(test_pred.svm)<- NULL
+c<-cbind("Observed"=t, "Predicted"=factor(test_pred.svm, levels = c(0,1)))
+result<-as.data.frame(c)
+result$Predicted <- ifelse(result$Predicted=="1", 0, 1)
+result$Observed <- ifelse(result$Observed=="1", 0, 1)
+res<- result %>%
+  mutate("Sample"= test$Samples,"Status"= ifelse(Observed == Predicted, "matched", "mismatched"))%>%
+  relocate(Sample, .before = Observed)
+#duke_1
+knitr::kable(res, align = "lcccc")
+
+table("Observed"=common_test_1$Prostate, "Predicted"=test_pred.svm)
+```
+
+### The SVM radial basis
+```{r, echo=FALSE,warning=F, message=F}
+test_pred.rbfdot <- predict(model_Radial, newdata = common_test_1) 
+names(test_pred.rbfdot)<- NULL
+c<-cbind("Observed"=t, "Predicted"=factor(test_pred.rbfdot, levels = c(0,1)))
+result<-as.data.frame(c)
+result$Predicted <- ifelse(result$Predicted=="1", 0, 1)
+result$Observed <- ifelse(result$Observed=="1", 0, 1)
+res<- result %>%
+  mutate("Sample"= test$Samples,"Status"= ifelse(Observed == Predicted, "matched", "mismatched"))%>%
+  relocate(Sample, .before = Observed)
+
+#duke_1
+knitr::kable(res, align = "lcc")
+
+table("Observed"=common_test_1$Prostate, "Predicted"=test_pred.rbfdot)
+```
+
+
+### SVM Polynomial      
+```{r,echo=FALSE,warning=F, message=F}
+test_pred.svm <- predict(model_Poly, newdata = common_test_1) 
+names(test_pred.svm)<- NULL
+c<-cbind("Observed"=t, "Predicted"=factor(test_pred.svm, levels = c(0,1)))
+result<-as.data.frame(c)
+result$Predicted <- ifelse(result$Predicted=="1", 0, 1)
+result$Observed <- ifelse(result$Observed=="1", 0, 1)
+res<- result %>%
+  mutate("Sample"= test$Samples,"Status"= ifelse(Observed == Predicted, "matched", "mismatched"))%>%
+  relocate(Sample, .before = Observed)
+#duke_1
+knitr::kable(res, align = "lcccc")
+
+table("Observed"=common_test_1$Prostate, "Predicted"=test_pred.svm)
+
+```
+
+
+### Decision Trees
+```{r,echo=FALSE,warning=F, message=F}
+test_pred.svm <- predict(model_trees, newdata = common_test_1, type= "class") 
+names(test_pred.svm)<- NULL
+c<-cbind("Observed"=t, "Predicted"=factor(test_pred.svm, levels = c(0,1)))
+result<-as.data.frame(c)
+result$Predicted <- ifelse(result$Predicted=="1", 0, 1)
+result$Observed <- ifelse(result$Observed=="1", 0, 1)
+res<- result %>%
+  mutate("Sample"= test$Samples,"Status"= ifelse(Observed == Predicted, "matched", "mismatched"))%>%
+  relocate(Sample, .before = Observed)
+#duke_1
+knitr::kable(res, align = "lcccc")
+
+table("Observed"=common_test_1$Prostate, "Predicted"=test_pred.svm)
+
+```
+
+### Naive Bayes
+```{r,echo=FALSE,warning=F, message=F}
+test_pred.svm <- predict(model_Naive, newdata = common_test_1) 
+names(test_pred.svm)<- NULL
+c<-cbind("Observed"=t, "Predicted"=factor(test_pred.svm, levels = c(0,1)))
+result<-as.data.frame(c)
+result$Predicted <- ifelse(result$Predicted=="1", 0, 1)
+result$Observed <- ifelse(result$Observed=="1", 0, 1)
+res<- result %>%
+  mutate("Sample"= test$Samples,"Status"= ifelse(Observed == Predicted, "matched", "mismatched"))%>%
+  relocate(Sample, .before = Observed)
+#duke_1
+knitr::kable(res, align = "lcccc")
+
+table("Observed"=common_test_1$Prostate, "Predicted"=test_pred.svm)
+
+```
+
+
+
+ 
+
