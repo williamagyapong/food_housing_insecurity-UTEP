@@ -269,12 +269,13 @@ FIHI_sub3 <- FIHI_sub2 %>%
 ##------------- Rename the remaining variables ---------------------
 var_names <- c("respondent_id", "enrollment", "employment", "employment_type", "weekly_work_hrs", "ethnicity", "gender", "total_income", "academic_level", "college/school", "mode_transport", "transport_reliability", "living_alone", "dependents", "household_head", "residence", "permanent_address", "spent_night_elsewhere", "know_homelessness_studt", "federal_aid", "FI_q26", "FI_q27", "FI_q28", "FI_q30", "FI_q31", "expenditures_changed", "income_changed", "fed_aid_changed", "debt_changed")
 
+names(FIHI_sub2) <- var_names
 names(FIHI_sub3) <- var_names
 
 
 
 # Save preprocessed file 
-write.csv(FIHI_sub3, paste0(file_path, '/datcsv_clean.csv'))
+# write.csv(FIHI_sub3, paste0(file_path, '/datcsv_clean.csv'))
 
 save(FIHI_sub2, FIHI_sub3, file=paste0(file_path, '/FIHI_clean.RData'))
 
