@@ -191,7 +191,7 @@ FIHI_sub2 <- FIHI_sub %>%
          q9 = ifelse(q9%in%c(6,7), 12, ifelse(q9%in%c(8,9,10), 13, q9)),
          q10 = ifelse(q10>5, 6, q10),
          # q11 = ifelse(q11>6, 7, q11),
-         q12 = ifelse(q12%in%2:3, 9, ifelse(q12%in%5:7, 10, q12)),
+         q12 = ifelse(q12%in%2:3, 9, ifelse(q12%in%5:7, 10, ifelse(q12==0, 11, q12))),
          q25 = ifelse(q25==4, 3, q25)
          )
 
@@ -221,7 +221,7 @@ FIHI_sub3 <- FIHI_sub2 %>%
                       labels = c("Business", "Education", "Engineering", "Health Sciences",
                                  "Liberal Arts", "Science", "Nursing", "Pharmacy",
                                  "Other", "More than one")),
-    q12 = factor(q12, levels = c(1,9,4,10,8,0), 
+    q12 = factor(q12, levels = c(1,9,4,10,8,11), 
                       labels = c("Car (alone)", "Car (someone drives) & Carpool",
                                  "Bus/Public transport", "Bike, Trolley, or Walk",
                                  "Other", "Not applicable")),
@@ -270,6 +270,14 @@ FIHI_sub3 <- FIHI_sub2 %>%
 var_names <- c("respondent_id", "enrollment", "employment", "employment_type", "weekly_work_hrs", "ethnicity", "gender", "total_income", "academic_level", "college/school", "mode_transport", "transport_reliability", "living_alone", "dependents", "household_head", "residence", "permanent_address", "spent_night_elsewhere", "know_homelessness_studt", "federal_aid", "FI_q26", "FI_q27", "FI_q28", "FI_q30", "FI_q31", "expenditures_changed", "income_changed", "fed_aid_changed", "debt_changed")
 
 names(FIHI_sub3) <- var_names
+
+
+
+# Save preprocessed file 
+write.csv(FIHI_sub3, paste0(file_path, '/datcsv_clean.csv'))
+
+save(FIHI_sub2, FIHI_sub3, file=paste0(file_path, '/FIHI_clean.RData'))
+
 
 ```
 
