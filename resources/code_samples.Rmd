@@ -32,6 +32,90 @@ kable(table1, caption = "Table 1: Variables in the heart failure data set")%>%
 ```
 
 
+
+
+
+
+```{r}
+#------ Model building -----------
+# Create a wrapper function to abstract away the common aspects of model fitting
+fit.model <- function(method, tunegrid="", data=NULL, formula=NULL) {
+  
+  data <- train_set
+  if(is.null(formula)) formula <- death_event ~. -time
+      
+  # Train the model
+   train(
+           formula,
+           data = data,
+           method = method,
+           trControl = trainControl(method = "cv", 5),
+           preProcess = c("center","scale"),
+           tuneGrid = tunegrid)
+}
+
+
+# Logistic Regression
+log <-  train(death_event ~ .-time,
+                 data=train_set,
+                 method="glm",
+                 family = binomial(link = "logit"),
+                trControl = trainControl(method = "cv", 5),
+                preProcess = c("center", "scale")) 
+
+# KNN
+knn <- fit.model("knn", data.frame(k=1:10))
+
+# LDA
+lda <- train(death_event ~ .,
+                 data=train_set,
+                 method="lda",
+                trControl = trainControl(method = "cv", 5),
+                preProcess = c("center", "scale"))
+
+#-------------- Elastic Net Models -------------------
+# fit a LASSO model
+lasso <- fit.model("glmnet", expand.grid(.alpha=1, .lambda=seq(0,0.1,0.01)))
+
+# Fit a Ridge regression model
+ridge <- fit.model("glmnet", expand.grid(.alpha=0, .lambda=seq(0,0.1,0.01)))
+
+
+# Bagging
+# bag <- fit.model("rf", data.frame(mtry=11))
+bag <- train(death_event ~ .-time,
+                 data=train_set,
+                 method="rf",
+                trControl = trainControl(method = "cv", 5),
+                preProcess = c("center", "scale"),
+                tuneGrid = data.frame(mtry=11),
+                ntree = 1000) 
+
+
+# Random Forest
+# rf <- fit.model("rf", data.frame(mtry=1:10))
+rf <- train(death_event ~ .-time,
+                 data=train_set,
+                 method="rf",
+                trControl = trainControl(method = "cv", 5),
+                preProcess = c("center", "scale"),
+                tuneGrid = data.frame(mtry=1:10),
+                ntree = 1000) 
+
+#-------------- 
+
+# Support Vector Machine with polynomial kernel
+svc <- fit.model("svmLinear", data.frame(C=c(0.1,0.2, 1,1.4, 1.6, 10)))
+
+# SVM with polynomial kernel
+svmP <- fit.model("svmPoly", expand.grid(C=c(0.1,0.2, 1, 1.4, 1.6, 10),
+                                 degree=2:5,
+                                 scale=1))
+
+# Support Vector Machine with radial kernel
+svmR <- fit.model("svmRadial", expand.grid(C=c(0.1,0.2, 1,1.4, 1.6, 10),                                 sigma=c(0.01, 0.05,0.1,0.5,1)))
+```
+
 ```{r echo=FALSE}
 # Create a custom confusion matrix with performance metrics
 metrics <- function(model_object, test_data=NULL) {
@@ -66,7 +150,7 @@ metrics <- function(model_object, test_data=NULL) {
 ```
 
 
-## Model Comparison
+
 ```{r echo=FALSE}
 
 #------- Compute performance metrics for the full models ---------------
