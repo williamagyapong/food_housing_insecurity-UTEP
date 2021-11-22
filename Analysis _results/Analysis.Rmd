@@ -274,6 +274,8 @@ knitr::kable(compare_table, align = "lcc")
 
 
 
+
+
 ------------------------------------------------------------------------------
 ## Modelling for Spend night elsewhere
 -------------------------------------------------------------------------------
@@ -383,28 +385,76 @@ knitr::kable(compare_table, align = "lcc")
 
 
 
+
+#----------------------------------------------------------------------------------------------
+ Model fitting
+#---------------------------------------------------------------------------------------------
+
 ```{r}
-#registerDoParallel(3)
+library(doParallel)
+#registerdoParallel(3)
 #getDoParWorkers()
-#library(caretEnsemble)
+set.seed(123)
+
+# SVM (radial)
+# rf - Random
+# glm - logistics
+# knn - K nearest N
+# sda - Shrinkage Discriminant Analysis
+# pls - Partial Least square
+# nnet - Neural Network
+# lda - Linear Discriminant Analysis
+
+my_control <- trainControl(method = "cv", # for “cross-validation”
+                           number = 5, # number of k-folds
+                           savePredictions = "final",
+                           allowParallel = TRUE)
 
 set.seed(123)
-my_ctrl <- trainControl(method = "cv", 
-                        number = 5,
-                        classProbs = TRUE,
-                        savePredictions = "final",
-                        index = 
-                        createResample(training$permanent_address, 3),
-                        sampling = "up",
-                        allowParallel = TRUE)
-
-model_list <- caretList(permanent_address ~ .,
-                        data = training,
-                        methodList = c("glm", "nb"),
-                        metric = "Kappa",
+model_list <- caretList(permanent_address ~., data = training,
+                        trControl = my_control,
+                        methodList = c("svmRadial", "rf", "glm","knn", "sda", "pls","nnet",
+                                       "lda","nb"),
                         tuneList = NULL,
-                        continue_on_fail = FALSE,  
-                        preProcess = c("center", "scale"),
-                        trControl = my_ctrl)
-
+                        continue_on_fail = FALSE)
+                       # preProcess = c("center","scale"))
 ```
+
+
+## naive bayes
+
+```{r,message=FALSE, warning=FALSE, echo= F}
+# Obtaining Misclassification
+model_Naive <- model_list$nb
+p2 <- predict(model_Naive, testing)
+tab_N <- table(p2, testing$permanent_address)
+misscal_N<- round((1 - sum(diag(tab_N)) / sum(tab_N))*100, digits = 2)
+```
+
+```{r,message=FALSE, warning=FALSE, echo= F}
+# Obtaining and graphing AUC
+test_pred_N <- predict(model_Naive, newdata = testing, type= "prob")
+ROC_SR <- roc(response=testing$permanent_address, predictor = test_pred_N[, 2])
+plot(ROC_SR, col="brown")
+AUC_N<-round(ROC_SR$auc, digits=4)  # AUC
+text(x=0.4, y=0.25, paste("Area Under Curve = ", AUC_N, sep=""), col="blue", cex=1.2) 
+```
+
+## SVM radial
+```{r, echo=F, message=FALSE}
+# Obtaining Misclassification 
+model_Radial <- model_list$svmRadial
+pred.test_rad <- model_Radial %>% predict(testing)
+conf_mat_R<-confusionMatrix(pred.test_rad, testing$permanent_address)
+tab_R<- conf_mat_R$table
+misscal_R<- round((1-sum(diag(tab_R)/sum(tab_R)))*100,digits = 2)
+```
+
+```{r, echo=F, message=FALSE}
+test_pred_R <- predict(model_Radial, newdata = testing, type= "prob")
+ROC_SR <- roc(response=testing$permanent_address, predictor = factor(test_pred_R[, 2]))
+plot(ROC_SR, col="brown")
+AUC_R<-round(ROC_SR$auc, digits=4)  # AUC
+text(x=0.4, y=0.25, paste("Area Under Curve = ", AUC_R, sep=""), col="blue", cex=1.2) 
+```
+
