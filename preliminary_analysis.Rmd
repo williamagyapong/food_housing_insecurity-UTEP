@@ -206,6 +206,134 @@ gg_miss_var(FIHI_new_sub, show_pct = T)
 ```
 
 
+```{r eval=F}
+
+# Permanent Address
+plotdf <- FIHI_sub3 %>%
+  group_by(permanent_address) %>%
+  summarise(n=n()) %>% 
+  mutate(pct = n/sum(n),
+         lbl = percent(pct))
+
+p1 <- ggplot(plotdf, aes(permanent_address,n, fill=as.factor(permanent_address))) + 
+  geom_bar(stat = "identity",position = "dodge")  +
+  geom_text(aes(label = n), size=3, position = position_stack(vjust = 0.5)) +
+  scale_fill_brewer(palette="Set2") + 
+  labs(x="Had permanent address in the past 12 months?", y="Number of Respondents", title="") +
+  theme_classic() +
+  theme(legend.position = "none")
+
+
+# Spending night elsewhere
+plotdf <- FIHI_sub3 %>%
+  filter(permanent_address=='No') %>%
+  group_by(spent_night_elsewhere) %>%
+  summarise(n=n()) %>% 
+  mutate(pct = n/sum(n),
+         lbl = percent(pct))
+
+p2 <- ggplot(plotdf, aes(spent_night_elsewhere,n, fill=as.factor(spent_night_elsewhere))) + 
+  geom_bar(stat = "identity",position = "dodge")  +
+  geom_text(aes(label = n), size=3, position = position_stack(vjust = 0.5)) +
+  scale_fill_brewer(palette="Set2") + 
+  labs(x="How fequently did you spend the night elsewhere?", y="Number of Respondents", title="") +
+  theme_classic() +
+  theme(legend.position = "none")
+
+# Display plots side by side
+p1 + p2
+
+
+```
+
+
+## Distribution of Food Insecurity Responses
+```{r eval=F}
+
+# Q26: Food bought didn't last
+plotdf <- FIHI_sub3 %>%
+  group_by(FI_q26) %>%
+  summarise(n=n()) %>% 
+  mutate(pct = n/sum(n),
+         lbl = percent(pct))
+
+p1 <- ggplot(plotdf, aes(FI_q26,n, fill=FI_q26)) + 
+  geom_bar(stat = "identity",position = "dodge")  +
+  geom_text(aes(label = n), size=3, position = position_stack(vjust = 0.5)) +
+  scale_fill_brewer(palette="Set2") + 
+  labs(x="Food bought didn't last", y="Number of Respondents", title="") +
+  theme_classic() +
+  theme(legend.position = "none")
+
+
+# Q27: Balanced diet
+plotdf <- FIHI_sub3 %>%
+  group_by(FI_q27) %>%
+  summarise(n=n()) %>% 
+  mutate(pct = n/sum(n),
+         lbl = percent(pct))
+
+p2 <- ggplot(plotdf, aes(FI_q27,n, fill=FI_q27)) + 
+  geom_bar(stat = "identity",position = "dodge")  +
+  geom_text(aes(label = n), size=3, position = position_stack(vjust = 0.5)) +
+  scale_fill_brewer(palette="Set2") + 
+  labs(x="Couldn't afford balanced meals", y="Number of Respondents", title="") +
+  theme_classic() +
+  theme(legend.position = "none")
+
+
+# Q27: Balanced diet
+plotdf <- FIHI_sub3 %>%
+  group_by(FI_q28) %>%
+  summarise(n=n()) %>% 
+  mutate(pct = n/sum(n),
+         lbl = percent(pct))
+
+p3 <- ggplot(plotdf, aes(FI_q28,n, fill=FI_q28)) + 
+  geom_bar(stat = "identity",position = "dodge")  +
+  geom_text(aes(label = n), size=3, position = position_stack(vjust = 0.5)) +
+  scale_fill_brewer(palette="Set2") + 
+  labs(x="Ever cut the size of meals?", y="Number of Respondents", title="") +
+  theme_classic() +
+  theme(legend.position = "none")
+
+# Q27: Balanced diet
+plotdf <- FIHI_sub3 %>%
+  group_by(FI_q30) %>%
+  summarise(n=n()) %>% 
+  mutate(pct = n/sum(n),
+         lbl = percent(pct))
+
+p4 <- ggplot(plotdf, aes(FI_q30,n, fill=FI_q30)) + 
+  geom_bar(stat = "identity",position = "dodge")  +
+  geom_text(aes(label = n), size=3, position = position_stack(vjust = 0.5)) +
+  scale_fill_brewer(palette="Set2") + 
+  labs(x="Ever ate less than you should?", y="Number of Respondents", title="") +
+  theme_classic() +
+  theme(legend.position = "none")
+
+
+# Q27: Balanced diet
+plotdf <- FIHI_sub3 %>%
+  group_by(FI_q31) %>%
+  summarise(n=n()) %>% 
+  mutate(pct = n/sum(n),
+         lbl = percent(pct))
+
+p5 <- ggplot(plotdf, aes(FI_q31,n, fill=FI_q31)) + 
+  geom_bar(stat = "identity",position = "dodge")  +
+  geom_text(aes(label = n), size=3, position = position_stack(vjust = 0.5)) +
+  scale_fill_brewer(palette="Set2") + 
+  labs(x="Ever hungry but didn't eat?", y="Number of Respondents", title="") +
+  theme_classic() +
+  theme(legend.position = "none")
+
+# Display plots side by side
+(p1 + p2)
+
+(p3 + p4)
+
+```
 # References{-}
 
 <div id="refs"></div>

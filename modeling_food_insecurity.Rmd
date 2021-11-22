@@ -82,6 +82,11 @@ na_to_zero <- function(x)
   return(ifelse(is.na(x), 0, x ))
 }
 
+na_to_99 <- function(x) 
+{
+  return(ifelse(is.na(x), 99, x ))
+}
+
 # This function helps restore back any prior missingness. Care must be taken in 
 # order not to apply it to a variable where 0 has a different meaning.
 zero_to_na <- function(x) 
@@ -284,6 +289,28 @@ save(FIHI_sub2, FIHI_sub3, file=paste0(file_path, '/FIHI_clean.RData'))
 
 # Exploratory Data Analysis
 
+## Summary Statistics
+```{r}
+# summary_stats <- as.data.frame(t(summary(FIHI_sub3[,-1])))
+# kable(summary_stats)
+
+pa_tats <- FIHI_sub3 %>%
+  select(permanent_address) %>%
+  group_by(permanent_address) %>%
+  summarise(freq = n())
+names(pa_tats) <- c("Levels", "Obervations")
+
+pa_tats2 <- FIHI_sub3 %>%
+  filter(permanent_address=="No") %>%
+  select(spent_night_elsewhere) %>%
+  group_by(spent_night_elsewhere) %>%
+  summarise(freq = n())
+names(pa_tats2) <- c("Levels", "Obervations")
+
+rbind(pa_tats, pa_tats2)
+```
+
+
 ## Visualizing Missing Data 
 ```{r}
 # install.packages("naniar")
@@ -303,24 +330,65 @@ gg_miss_var(FIHI_sub3, show_pct = T)
 ```
 
 
+```{r plotting-functions}
+# Make data for plotting
+na_to_missing <- function(x) 
+{
+  return(ifelse(is.na(x), 'Missing', x ))
+}
+
+FIHI_sub4 <- FIHI_sub3[, -1] %>% 
+  mutate(across(everything(), na_to_missing))
+  
+
+# For creating bar graphs of the response variables
+mybarplot <- function(var, palette="Set2",
+                      xlab="", ylab="",title="",data='') 
+{
+  # palette=c("Set2","Set3","Accent","Set1","Paired","Dark2")
+  ylab = ifelse(ylab=="", "Number of Respondents", ylab)
+  
+  if(!(class(data) %in% c('data.frame','tbl','tbl_df'))) data <- FIHI_sub3
+
+   if(ncol(data) == 4)
+   {
+     # A plotting data was provided
+     plotdf <- data
+   } else {
+     # prepare data frame for plotting
+      plotdf <- data %>%
+      group_by({{ var }}) %>%
+      summarise(n=n()) %>%
+      mutate(pct = n/sum(n),
+             lbl = percent(pct)) 
+   }
+    
+  # create the plot
+  return(
+    ggplot(plotdf, aes({{ var }},n, fill={{ var }})) +
+    geom_bar(stat = "identity",position = "dodge")  +
+    geom_text(aes(label = n), size=3, position = position_stack(vjust = 0.5)) +
+    scale_fill_brewer(palette=palette) +
+    labs(x=xlab, y=ylab, title=title) +
+    theme_classic() +
+    theme(legend.position = "none")
+  )
+}
+# "Ever hungry but didn't eat?"
+# mybarplot(FI_q31)
+# mybarplot(spent_night_elsewhere, data = FIHI_sub3)
+
+```
+
+
 ## Distribution of Housing Insecurity Responses
+
 ```{r}
 
 # Permanent Address
-plotdf <- FIHI_sub3 %>%
-  group_by(permanent_address) %>%
-  summarise(n=n()) %>% 
-  mutate(pct = n/sum(n),
-         lbl = percent(pct))
-
-p1 <- ggplot(plotdf, aes(permanent_address,n, fill=as.factor(permanent_address))) + 
-  geom_bar(stat = "identity",position = "dodge")  +
-  geom_text(aes(label = n), size=3, position = position_stack(vjust = 0.5)) +
-  scale_fill_brewer(palette="Set2") + 
-  labs(x="Had permanent address in the past 12 months?", y="Number of Respondents", title="") +
-  theme_classic() +
-  theme(legend.position = "none")
-
+p1 <- mybarplot(permanent_address, 
+                xlab = "Had permanent address in the past 12 months?"
+                )
 
 # Spending night elsewhere
 plotdf <- FIHI_sub3 %>%
@@ -329,192 +397,62 @@ plotdf <- FIHI_sub3 %>%
   summarise(n=n()) %>% 
   mutate(pct = n/sum(n),
          lbl = percent(pct))
-
-p2 <- ggplot(plotdf, aes(spent_night_elsewhere,n, fill=as.factor(spent_night_elsewhere))) + 
-  geom_bar(stat = "identity",position = "dodge")  +
-  geom_text(aes(label = n), size=3, position = position_stack(vjust = 0.5)) +
-  scale_fill_brewer(palette="Set2") + 
-  labs(x="How fequently did you spend the night elsewhere?", y="Number of Respondents", title="") +
-  theme_classic() +
-  theme(legend.position = "none")
-
-# Display plots side by side
+p2 <- mybarplot(spent_night_elsewhere, 
+                xlab = "How fequently did you spend the night elsewhere?",
+                data = plotdf
+                )
+plotdf %>% mutate(spent_night_elsewhere = ifelse(is.na(spent_night_elsewhere), 'Missing', spent_night_elsewhere))
+# Display plots side by side with the help of the patchwork package
 p1 + p2
+
 ```
 
 ## Distribution of Food Insecurity Responses
 ```{r}
 
 # Q26: Food bought didn't last
-plotdf <- FIHI_sub3 %>%
-  group_by(FI_q26) %>%
-  summarise(n=n()) %>% 
-  mutate(pct = n/sum(n),
-         lbl = percent(pct))
-
-p1 <- ggplot(plotdf, aes(FI_q26,n, fill=FI_q26)) + 
-  geom_bar(stat = "identity",position = "dodge")  +
-  geom_text(aes(label = n), size=3, position = position_stack(vjust = 0.5)) +
-  scale_fill_brewer(palette="Set2") + 
-  labs(x="Food bought didn't last", y="Number of Respondents", title="") +
-  theme_classic() +
-  theme(legend.position = "none")
-
+p1 <- mybarplot(FI_q26, xlab = "Food bought did not last")
 
 # Q27: Balanced diet
-plotdf <- FIHI_sub3 %>%
-  group_by(FI_q27) %>%
-  summarise(n=n()) %>% 
-  mutate(pct = n/sum(n),
-         lbl = percent(pct))
+p2 <- mybarplot(FI_q27, xlab = "Couldn't afford balanced meals")
 
-p2 <- ggplot(plotdf, aes(FI_q27,n, fill=FI_q27)) + 
-  geom_bar(stat = "identity",position = "dodge")  +
-  geom_text(aes(label = n), size=3, position = position_stack(vjust = 0.5)) +
-  scale_fill_brewer(palette="Set2") + 
-  labs(x="Couldn't afford balanced meals", y="Number of Respondents", title="") +
-  theme_classic() +
-  theme(legend.position = "none")
+# Q28: 
+p3 <- mybarplot(FI_q28, xlab = "Ever cut the size of meals?")
 
+# Q3: 
+p4 <- mybarplot(FI_q30, xlab = "Ever ate less than you should?")
 
-# Q27: Balanced diet
-plotdf <- FIHI_sub3 %>%
-  group_by(FI_q28) %>%
-  summarise(n=n()) %>% 
-  mutate(pct = n/sum(n),
-         lbl = percent(pct))
+# Q31
+p5 <- mybarplot(FI_q31, xlab = "Ever got hungry but didn't eat?")
 
-p3 <- ggplot(plotdf, aes(FI_q28,n, fill=FI_q28)) + 
-  geom_bar(stat = "identity",position = "dodge")  +
-  geom_text(aes(label = n), size=3, position = position_stack(vjust = 0.5)) +
-  scale_fill_brewer(palette="Set2") + 
-  labs(x="Ever cut the size of meals?", y="Number of Respondents", title="") +
-  theme_classic() +
-  theme(legend.position = "none")
-
-# Q27: Balanced diet
-plotdf <- FIHI_sub3 %>%
-  group_by(FI_q30) %>%
-  summarise(n=n()) %>% 
-  mutate(pct = n/sum(n),
-         lbl = percent(pct))
-
-p4 <- ggplot(plotdf, aes(FI_q30,n, fill=FI_q30)) + 
-  geom_bar(stat = "identity",position = "dodge")  +
-  geom_text(aes(label = n), size=3, position = position_stack(vjust = 0.5)) +
-  scale_fill_brewer(palette="Set2") + 
-  labs(x="Ever ate less than you should?", y="Number of Respondents", title="") +
-  theme_classic() +
-  theme(legend.position = "none")
-
-
-# Q27: Balanced diet
-plotdf <- FIHI_sub3 %>%
-  group_by(FI_q31) %>%
-  summarise(n=n()) %>% 
-  mutate(pct = n/sum(n),
-         lbl = percent(pct))
-
-p5 <- ggplot(plotdf, aes(FI_q31,n, fill=FI_q31)) + 
-  geom_bar(stat = "identity",position = "dodge")  +
-  geom_text(aes(label = n), size=3, position = position_stack(vjust = 0.5)) +
-  scale_fill_brewer(palette="Set2") + 
-  labs(x="Ever hungry but didn't eat?", y="Number of Respondents", title="") +
-  theme_classic() +
-  theme(legend.position = "none")
-
-# Display plots side by side
+# Display plots side by side with the help of the patchwork package
 (p1 + p2)
 
 (p3 + p4)
 
 p5
+
 ```
 
 
-##  The effect of potential categorical predictors on  responses.
+##  Association between predictors and responses.
+
 
 ```{r warning=F, message=F, echo=F, eval=F}
-plotdf <- heart_dat %>%
-  group_by(sex, death_event) %>%
+plotdf <- FIHI_sub3 %>%
+  group_by(gender, permanent_address) %>%
   summarise(n=n()) %>% 
   mutate(pct = n/sum(n),
          lbl = percent(pct))
 
-p1 <- ggplot(plotdf, aes(sex, pct, fill=death_event)) + 
+p1 <- ggplot(plotdf, aes(gender, pct, fill=permanent_address)) + 
   geom_bar(stat = "identity",position = "fill") +
   scale_y_continuous(breaks = seq(0,1,0.2), label=percent) +
   geom_text(aes(label = lbl), size=3, position = position_stack(vjust = 0.5)) +
   scale_fill_brewer(palette="Set2") + 
-  labs(x="Sex",y="Percent of patients", fill="Death Event") +
+  labs(x="Gender",y="Percent of respondents", fill="Permanent Address") +
   theme_classic() +
   theme(legend.position = "none")
-
-plotdf <- heart_dat %>%
-  group_by(anaemia, death_event) %>%
-  summarise(n=n()) %>% 
-  mutate(pct = n/sum(n),
-         lbl = percent(pct))
-
-p2 <- ggplot(plotdf, aes(anaemia, pct, fill=death_event)) + 
-  geom_bar(stat = "identity",position = "fill") +
-  scale_y_continuous(breaks = seq(0,1,0.2), label=percent) +
-  geom_text(aes(label = lbl), size=3, position = position_stack(vjust = 0.5)) +
-  scale_fill_brewer(palette="Set2") + 
-  labs(x="Anaemia status",y="", fill="Death Event") +
-  theme_classic() +
-  theme(axis.text.y = element_blank(),
-        axis.ticks.y = element_blank())
-
-plotdf <- heart_dat %>%
-  group_by(diabetes, death_event) %>%
-  summarise(n=n()) %>% 
-  mutate(pct = n/sum(n),
-         lbl = percent(pct))
-
-p3 <- ggplot(plotdf, aes(diabetes, pct, fill=death_event)) + 
-  geom_bar(stat = "identity",position = "fill") +
-  scale_y_continuous(breaks = seq(0,1,0.2), label=percent) +
-  geom_text(aes(label = lbl), size=3, position = position_stack(vjust = 0.5)) +
-  scale_fill_brewer(palette="Set2") + 
-  labs(x="Diabetes status",y="Percent of patients", fill="Death Event") +
-  theme_classic() +
-  theme(legend.position = "none")
-
-plotdf <- heart_dat %>%
-  group_by(HBP, death_event) %>%
-  summarise(n=n()) %>% 
-  mutate(pct = n/sum(n),
-         lbl = percent(pct))
-
-p4 <- ggplot(plotdf, aes(HBP, pct, fill=death_event)) + 
-  geom_bar(stat = "identity",position = "fill") +
-  scale_y_continuous(breaks = seq(0,1,0.2), label=percent) +
-  geom_text(aes(label = lbl), size=3, position = position_stack(vjust = 0.5)) +
-  scale_fill_brewer(palette="Set2") + 
-  labs(x="HBP status",y="", fill="Death Event") +
-  theme_classic() +
-  theme(legend.position = "none",
-        axis.text.y = element_blank(),
-        axis.ticks.y = element_blank())
-
-plotdf <- heart_dat %>%
-  group_by(smoking, death_event) %>%
-  summarise(n=n()) %>% 
-  mutate(pct = n/sum(n),
-         lbl = percent(pct))
-
-p5 <- ggplot(plotdf, aes(smoking, pct, fill=death_event)) + 
-  geom_bar(stat = "identity",position = "fill") +
-  scale_y_continuous(breaks = seq(0,1,0.2), label=percent) +
-  geom_text(aes(label = lbl), size=3, position = position_stack(vjust = 0.5)) +
-  scale_fill_brewer(palette="Set2") + 
-  labs(x="Smoking status",y="", fill="Death Event") +
-  theme_classic() +
-  theme(legend.position = "none",
-        axis.text.y = element_blank(),
-        axis.ticks.y = element_blank()
-        )
 
 # display plots in a grid layout
 (p1 + p2) / (p3 + p4 + p5)
