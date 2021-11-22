@@ -218,6 +218,48 @@ AUC_N<-round(ROC_SR$auc, digits=4)  # AUC
 text(x=0.4, y=0.25, paste("Area Under Curve = ", AUC_N, sep=""), col="blue", cex=1.2) 
 ```
 
+## classification through logistics  regression
+```{r}
+# Training model
+logistic_model <- glm(permanent_address ~., 
+                      data = training, 
+                      family = "binomial")
+#logistic_model
+```
+
+```{r}
+# Predict test data based on model
+predict_reg <- predict(logistic_model,newdata = testing, type = "response")
+# Changing probabilities
+#predict_reg <- ifelse(predict_reg >0.5, 1, 2)
+# using confusion matrix
+table(testing$permanent_address, predict_reg)
+missing_classer <- mean(predict_reg != testing$permanent_address)
+print(paste('Accuracy =', 1 - missing_classer))
+```
+
+```{r}
+# ROC-AUC Curve
+ROCPred <- prediction(predict_reg, testing$permanent_address) 
+ROCPer <- performance(ROCPred, measure = "tpr", 
+                             x.measure = "fpr")
+   
+auc <- performance(ROCPred, measure = "auc")
+auc <- auc@y.values[[1]]
+auc
+   
+# Plotting curve
+plot(ROCPer)
+plot(ROCPer, colorize = TRUE, 
+     print.cutoffs.at = seq(0.1, by = 0.1), 
+     main = "ROC CURVE")
+abline(a = 0, b = 1)
+   
+auc <- round(auc, 4)
+legend(.6, .4, auc, title = "AUC", cex = 1)
+```
+
+
 ## Comparison between the kernels base on their AUC and Misclassification 
 ```{r, echo=F}
 Methods<- c("SVM_Linear", "SVM_Radial","SVM_Polynomial","Decision Trees","Naive Bayes")
@@ -336,3 +378,33 @@ compare_table<-data.frame(cbind(Methods,AUC,Missclassification))
 knitr::kable(compare_table, align = "lcc")
 ```
 
+
+
+
+
+
+```{r}
+#registerDoParallel(3)
+#getDoParWorkers()
+#library(caretEnsemble)
+
+set.seed(123)
+my_ctrl <- trainControl(method = "cv", 
+                        number = 5,
+                        classProbs = TRUE,
+                        savePredictions = "final",
+                        index = 
+                        createResample(training$permanent_address, 3),
+                        sampling = "up",
+                        allowParallel = TRUE)
+
+model_list <- caretList(permanent_address ~ .,
+                        data = training,
+                        methodList = c("glm", "nb"),
+                        metric = "Kappa",
+                        tuneList = NULL,
+                        continue_on_fail = FALSE,  
+                        preProcess = c("center", "scale"),
+                        trControl = my_ctrl)
+
+```
