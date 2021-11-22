@@ -1,0 +1,32 @@
+---
+title: "code_samples"
+author: "Willliam Ofosu Agyapong"
+date: "11/22/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r variables-description, echo=F}
+table1 <- data.frame(rbind(c("Age", "Age of the patient", "Years", paste("[",min(heart_dat$age),",..., ", max(heart_dat$age),"]")),
+                           c("Anaemia","Decrease of red blood cells or hemoglobin","Binary", "0, 1"), 
+                           c("High blood pressure (HBP)", "If a patient has diabetes", "Binary", "0, 1"), 
+                           c("Creatinine phosphokinase (CPK)", "Level of the CPK enzyme in the blood", "mcg/L", paste("[", min(heart_dat$CPK),",...,", max(heart_dat$CPK),"]")), 
+                           c("Diabetes", "If the patient has diabetes", "Binary", "0, 1"),
+                           c("Ejection fraction", "Percentage of blood leaving the heart at each contraction", "Percentage", paste("[", min(heart_dat$ejection_frac),",...,", max(heart_dat$ejection_frac),"]")),
+                           c("Sex", "Woman or man", "Binary", "0, 1"), 
+                           c("Platelets", "Platelets in the blood", "kiloplatelets/mL", paste("[", min(heart_dat$platelets),",...,", max(heart_dat$platelets),"]")),
+                           c("Serum creatinine", "Level of creatinine in the blood", "mg/dL", paste("[", min(heart_dat$serum_creatinine),",...,", max(heart_dat$serum_creatinine),"]")), 
+                           c("Serum sodium", "Level of sodium in the blood", "mEq/L", paste("[", min(heart_dat$serum_sodium),",...,", max(heart_dat$serum_sodium),"]")), 
+                           c("Smoking", "If the patient smokes", "Binary", "0, 1"), 
+                           c("Time", "Follow-up period", "Days", paste("[", min(heart_dat$time),",...,", max(heart_dat$time),"]")),
+                           c("Death event", "If the patient died during the follow-up period", "Binary", "0, 1")))
+names(table1) <- c("Variable Name", "Description", "Measurement Unit", "Range")
+
+kable(table1, caption = "Table 1: Variables in the heart failure data set")%>%
+       kable_paper("hover", full_width = F)%>% 
+       kable_styling(font_size = 12)
+```
