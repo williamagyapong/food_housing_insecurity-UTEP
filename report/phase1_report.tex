@@ -203,12 +203,7 @@ Housing insecurities includes difficulty in paying for living expense, overcrowd
 
 According to a 2019 report by The Hope Center for college, Communities and Justice, nearly 3 out of 5 students experience having insecurities in 2018. Also, 14\% of 4 year student reported experiencing homelessness. Despite the many challenges of housing insecurities, the impact of COVID-19 have increased the likelihood of homelessness among college students. For example, many students lost their jobs and financial due to COVID-19 pandemic.
 
-\begin{itemize}
-\item
-  \textbf{Primary Research Question}: What factors are associated with food insecurity (FI) and housing insecurity (HI) among UTEP students?
-\item
-  \textbf{Secondary Research Question}: Which subpopulations of students are most at risk for FI and HI at UTEP? --\textgreater{}
-\end{itemize}
+\section{Data Preprocessing}
 
 \subsection{ Data Description}
 
@@ -283,21 +278,14 @@ debt\_changed & Since COVID-19, has there been any personal or household change 
 \hline
 \end{tabular}
 \end{table}
+
 \subsection{Collapsing the variables}
 
 In other to obtain a feasible result, the following variables were collapsed due to insignificant proportion of respondent answering those questions. With regards to \textbf{Ethinicity}, we maintained Hispanic , Black/African American, White, Asian and collapsed American Indian, Native Hawaiian, mixed race and other into \textbf{other} . We decided not to keep a mixed race level because the total reduced to 88 after we assigned (Hispanic, white) to Hispanic, and (Hispanic, Black) to Black. \textbf{Gender} was reduced to 3 levels: female, male, and non-binary/non-conforming. With respect to \textbf{Income} we kept first 5 levels and 100000 or more (11)-\textgreater8, collapse (6,7)-\textgreater6, (8,9,10)-\textgreater7. For \textbf{Academic level}, we keep first 5, and collapse last 2 -\textgreater{} 6. For \textbf{College}, we maintain first 6 levels and colapse the remaining ones into other (level 7). For \textbf{Commute}, we keep car, Bus/public and other, and collapse car \& carpool (2,3) -\textgreater{} 9, collapse bike, trolley, walk (5,6,7) -\textgreater{} 10. Keep Not applicable (0). For, \textbf{Federal Aid}, Emergency loan was reduced from 316 to 50, so we added those to loans(3).
 
-\section{Data Preprocessing}
-
-\subsection{Rules for Defining Response Variables}
-
-\subsubsection{A measure of Food Insecurity}
-
-\subsubsection{A measure of Housing Insecurity}
+\section{Analysis Plan}
 
 This document serves to provide a road map to the approaches our group intend to adopt and execute in terms of our modeling approaches and general outline of our final report. We, however, remark that the various plans set forth are subject to changes according to recommendations and suggestions received from our domain experts (Dr.~Amy Wagler and her research colleagues on this same project) upon consultations, and any other future modifications that we shall consider appropriate.
-
-\section{Analysis Plan}
 
 \subsection{Exploratory Data Analysis}
 
@@ -325,7 +313,7 @@ The available data will be inspected for missing and unusual values. Any missing
 \subsection{Modeling Approaches}\label{modeling-approaches}}
 
 \hypertarget{data-partitioning}{%
-\subsection{Data Partitioning}\label{data-partitioning}}
+\subsubsection{Data Partitioning}\label{data-partitioning}}
 
 For the purpose of predictions or testing on the machine learning algorithm models or estimation of the evaluation metrics for the best model selection, a division of the entire into say training data and testing data will be carried out. The training data would be used to fit the models and the testing data was used to derive the metrics for model selection or testing. This partitioning will be done by using the strategy of V -fold cross-validation on the misclassification errors, with V = n, where n would specified base on the sample size of the entire data set. We will randomly divide the data into V folds with stratification on the target variable category. This assures that similar proportions of 0s and 1s are preserved in each fold, and set.seed() will be used for easily reproducible results.
 
@@ -336,20 +324,20 @@ In this part of the analysis, since the nature of the tasks present a classifica
 Candidate models include Logistic regression, Linear Discriminant Analysis (LDA), K-nearest neighbors (KNN), Support Vector Machines/Classifiers, Naive Bayes' algorithm, Multivariate Adaptive Regression Splines, Artificial Neural Network, and Tree-based models such as Random Forest, Bagging, or Boosting. Due to the sensitivity of the KNN model to different scales, the continuous variables will be normalized and kept across the other models for consistency, that is, if we end up fiting a KNN model.
 
 \hypertarget{logistic-regression}{%
-\subsubsection{Logistic Regression}\label{logistic-regression}}
+\paragraph{Logistic Regression}\label{logistic-regression}}
 
 Logistic Regression is very simple and one of the mostly used traditional machine learning algorithms. It is a statistical model for predicting binary classes. However, as remarked by James, Witten, Hastie, and Tibshirani (\protect\hyperlink{ref-james2013introduction}{2013}), multiple-class extension of Logistic Regression exists but \emph{Discriminant Analysis} models are commonly used in place of it. The dependent variable in here follows Bernoulli distribution. Logistic Regression model uses the logistic function or sigmoid function for predictive modeling of the given problem, which takes value between 0 and 1. 1 will be predicted if the curve goes to positive infinity and 0 if it goes to negative infinity. The logistic Regression model performs the predictive analysis based on the relationship between the binary dependent variable and the other one or more independent variables from the given dataset.
 
 \emph{Binary Logistic Regression, we will fit a regularized logistic regression model such as LASSO as one of the baseline classifiers for comparison. LASSO does not require the target variable to be normally distributed, no homogeneity of variance assumption is required, and with the aid of graph and output interpretation is effective under LASSO. LASSO, however, requires more data to achieve stability and is effective mostly on linearly separable.}
 
 \hypertarget{k-nearest-neighbors-classifier}{%
-\subsubsection{K-Nearest Neighbors Classifier}\label{k-nearest-neighbors-classifier}}
+\paragraph{K-Nearest Neighbors Classifier}\label{k-nearest-neighbors-classifier}}
 
 K-nearest neighbors regression (KNN regression) is one of the simplest and best-known
 non-parametric methods. Unlike the Logistic Regression, no assumptions are made about the shape of the decision boundary. Therefore, we can expect this approach to dominate Logistic Regression when the decision boundary is highly non-linear. It uses a distance metric such as the Euclidean distance for separation between points in the feature space. In the KNN classification model, the prediction is purely based on neighbor data values without any assumption on the dataset. The \(K\) in the name of the model represents the number of nearest neighbor data values. This parameter can be tuned to find an optimal value. Based on \(K\), the decision is made by the KNN algorithm on classifying the given dataset.
 
 \hypertarget{classification-trees}{%
-\subsubsection{Classification Trees}\label{classification-trees}}
+\paragraph{Classification Trees}\label{classification-trees}}
 
 According to (James et al., \protect\hyperlink{ref-james2013introduction}{2013}), for a classification tree, we predict that each observation belongs to the most commonly occurring class of training observations in the region to which it belongs. In interpreting the results of a classification tree, we are often interested not only in the class prediction corresponding to a particular terminal node region, but also in the class proportions among the training observations that fall into that region. A recursive binary splitting is used to grow a classification tree. Classification trees are often preferred to other classifiers for the following reasons. One thing, they are non-linear classifiers which do not require the data to be linearly separable. Two, they are easy to read and very easy to explain to people. After a model is generated, it's easy to report back to others regarding how the tree works. Moreover, trees can be displayed graphically, and are easily interpreted even bya non-expert (especially if they are small). Also, decision trees can easily handle qualitative predictors. However, trees can be very non-robust. In other words, a small change in the data can cause a large change in the final estimated tree. For this reason, we will use tree models that help circumvent this challenge and greatly improves the predictive performance by aggregating many decision trees. Such tree models include Random Forest, Boosting, and Bagging.
 
@@ -358,23 +346,23 @@ According to (James et al., \protect\hyperlink{ref-james2013introduction}{2013})
 The random forest is a great predictive model for high dimensional data, and we will use RF as one of the baseline classifiers model. RF has high performance and accuracy with regards to modeling, provides feature importance of estimates, and can automatically handle missing values with no scaling required. However, given that RF has some advantages over other classifiers, its prediction time is high, can overfit the data, and also require more computational time and resources.
 
 \hypertarget{support-vector-machines-svm}{%
-\subsubsection{Support Vector Machines (SVM)}\label{support-vector-machines-svm}}
+\paragraph{Support Vector Machines (SVM)}\label{support-vector-machines-svm}}
 
 Support Vector Machines; SVM is a great classification machine learning model for classifying data of clear classes. Also does not require a predetermined cutoff point for prediction. Given a set of training examples, each marked as belonging to one of two categories, an SVM training algorithm builds a model that assigns new examples to one category or the other, making it a non-probabilistic binary linear classifier (although methods such as Platt scaling exist to use SVM in a probabilistic classification setting). SVM maps training examples to points in space so as to maximize the width of the gap between the two categories. New examples are then mapped into that same space and predicted to belong to a category based on which side of the gap they fall (Wikipedia, \protect\hyperlink{ref-wikipedia}{2021}).
 We will consider using this classification model because it is versatile and effective in high dimensional spaces. They are versatile in the sense that different Kernel functions can be specified for the decision function. Common kernels include polynomial kernels and radial kernels. Support vector classifiers are also able to address the problem of possibly non-linear boundaries between classes. We will try at least three kernel SVM for this analysis noticeably, the Linear SVM and two Non-Linear kernels SVM such as the Gaussian radial basis function (RBF) and Polynomial kernel SVM through packages such as caret and kernlab.
 
 \hypertarget{naive-bayes-classifier}{%
-\subsubsection{Naive Bayes Classifier}\label{naive-bayes-classifier}}
+\paragraph{Naive Bayes Classifier}\label{naive-bayes-classifier}}
 
 It is a classification technique based on Bayes' Theorem with an assumption of independence among predictors. In simple terms, a Naive Bayes classifier assumes that the presence of a particular feature in a class is unrelated to the presence of any other feature. It works on Bayes theorem of probability to predict the class of unknown data sets. Naive Bayes algorithm is particularly useful for very large data sets. Along with simplicity, Naive Bayes is known to outperform even highly sophisticated classification methods. When the assumption of independence holds, a Naive Bayes classifier performs better compare to other models like logistic regression and you need less training data. It should be however noted that this assumption of independent predictors may be unrealistic since, in real life, it is almost impossible that we get a set of predictors which are completely independent. Another disadvantage of the Naive Bayes classifier which might discourage us from using it is that it works only with categorical variables, so one has to transform continuous features to discrete, which might lead to the loss of a lot of information.
 
 \hypertarget{multivariate-adaptive-regression-splines}{%
-\subsubsection{Multivariate Adaptive Regression Splines}\label{multivariate-adaptive-regression-splines}}
+\paragraph{Multivariate Adaptive Regression Splines}\label{multivariate-adaptive-regression-splines}}
 
 We will employ at least one MARS model with an appropriate set-up of parameters as another baseline classifier. The MARS algorithm is also suitable for a large number of predictor variables, robust to outliers, it automatically detects interactions between variables, and despite its complexity, it is an efficient fast algorithm. However, it is susceptible to overfitting, more difficult to understand and interpret as against others, and not good with missing data.
 
 \hypertarget{artificial-neural-network}{%
-\subsubsection{Artificial Neural Network}\label{artificial-neural-network}}
+\paragraph{Artificial Neural Network}\label{artificial-neural-network}}
 
 We will fit at least two different artificial neural networks (ANN) models, specifically with different numbers of layers and different numbers of units. ANN learning algorithms are quite robust o noise in the training data set, they are often used where the fast evaluation of the learned target function is required and its ability to learn and model non-linear and complex relationships. However, the ANN classifier has a disadvantage of unexplained functioning of the network and also no specific rule for determining the structure of artificial neural networks, the appropriate network structure is achieved through experience and trial and error.
 
@@ -389,7 +377,7 @@ The k-fold cross-validation resampling technique will be used to validate our pr
 The following metrics will be employed to examine the performance of the models for best predictive power.
 
 \hypertarget{f-beta-score-f_beta}{%
-\subsection{\texorpdfstring{F-beta Score (\(F_\beta\))}{F-beta Score (F\_\textbackslash beta)}}\label{f-beta-score-f_beta}}
+\subsubsection{\texorpdfstring{F-beta Score (\(F_\beta\))}{F-beta Score (F\_\textbackslash beta)}}\label{f-beta-score-f_beta}}
 
 The F-beta score or F-beta measure is the weighted harmonic mean of precision and recall, reaching its optimal value at 1 and its worst value at 0. It turns the F-measure into a configurable single-score metric for evaluating a binary classification model based on the predictions made for the positive class. The beta parameter determines the weight of recall and precision in the combined score. \(\beta < 1\) lends more weight to precision, while \(\beta > 1\) favors recall. That is, a smaller beta value, such as 0.5, gives more weight to precision and less to recall, whereas a larger beta value, such as 2.0, gives less weight to precision and more weight to recall in the calculation of the score. It is a useful metric to use when both precision and recall are important but slightly more attention is needed on one or the other, such as when false negatives are more important than false positives, or the reverse (Machine Learning Mastery (\protect\hyperlink{ref-MLM}{2021}), Scikit Learn (\protect\hyperlink{ref-scikit_learn}{2021})).
 
@@ -419,224 +407,332 @@ Recall is a metric that quantifies the number of correct positive predictions ma
 \]
 
 \hypertarget{area-under-the-receiver-operator-curve-auroc}{%
-\subsection{Area Under the Receiver Operator Curve (AUROC)}\label{area-under-the-receiver-operator-curve-auroc}}
+\subsubsection{Area Under the Receiver Operator Curve (AUROC)}\label{area-under-the-receiver-operator-curve-auroc}}
 
 The AUROC curve is a graphical illustration of the performance of the prediction model. The
 ROC curve is the relationship between the recall and precision over varying threshold values. The threshold is the positive predictions of the model. The AUROC curve is plotted by keeping the x-axis a false positive rate and the y-axis as a true positive rate. Its value ranges from 0 to 1 (Theerthagiri, Jeena Jacob, Usha Ruby, and Yendapalli, \protect\hyperlink{ref-theerthagiri2021prediction}{2021}).
 
 \hypertarget{area-under-the-precision-recall-curve-auc-pr}{%
-\subsection{Area Under the Precision Recall Curve (AUC-PR)}\label{area-under-the-precision-recall-curve-auc-pr}}
+\subsubsection{Area Under the Precision Recall Curve (AUC-PR)}\label{area-under-the-precision-recall-curve-auc-pr}}
 
 The area under the precision-recall curve (AUC-PR) is a model performance metric for binary responses that is appropriate for rare events and not dependent on model specificity. Precision-recall
 curves have also been recognized as useful for classification performance assessment for unbalanced binary responses in bioinformatics. Like AUC-ROC, AUC-PR is a threshold-independent metric that calculates the area under a curve, where the curve is defined by a trade-off between different aspects of performance as the threshold applied to the model's predictions varies. Both ROC and PR curves are functions of the confusion matrix (Sofaer, Hoeting, and Jarnevich, \protect\hyperlink{ref-sofaer2019area}{2019}).
 
-\subsection{Model Selection}
+\hypertarget{model-selection}{%
+\subsubsection{Model Selection}\label{model-selection}}
 
 Base on the calculated metrics for each classifier algorithm, the best model will be selected, for instance, the model with the highest AUROC will be best among the others, however, AUROC alone is not the measure for selection, hence a contingent table will be obtained with classifier models on the row and metric on the column and base on all the metric estimates the one with the best performance across all metrics will be our final predictive model for analysis.
 
-\subsection{Model Assessment}
+\hypertarget{model-assessment}{%
+\subsubsection{Model Assessment}\label{model-assessment}}
 
 Our final obtained classifier model will be validated using the test data provide. That is we will use our model to predict on test data given, specifically looking at some important measures such as specificity and sensitivity of the predicted outcome by the model. Also, we seek to have a prediction accuracy of approximatley 98\% and above for our model.
 
-\section{Model Deployment}
+\hypertarget{model-deployment}{%
+\subsection{Model Deployment}\label{model-deployment}}
 
 To aid easy deployment and implementation of our proposed model(s), we plan to develop a web application with the R Shiny App package.This dashboard will provide users, among other features, the flexibility to interact with the visualizations and models to assess performance based on changing parameters. We are aiming at an application similar to the online prediction tool developed by Dominguez-Rodriguez et al. (\protect\hyperlink{ref-dominguez2021bayesian}{2021}).
 
 \hypertarget{analysis-and-results}{%
 \section{Analysis and Results}\label{analysis-and-results}}
 
-\hypertarget{methods}{%
-\subsection{Methods}\label{methods}}
-
 \hypertarget{exploratory-data-analysis}{%
 \subsection{Exploratory Data Analysis}\label{exploratory-data-analysis}}
 
-\hypertarget{summary-statistics}{%
-\subsection{Summary Statistics}\label{summary-statistics}}
+\hypertarget{inspecting-missing-values}{%
+\subsubsection{Inspecting missing values}\label{inspecting-missing-values}}
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\CommentTok{# summary_stats <- as.data.frame(t(summary(FIHI_sub3[,-1])))}
-\CommentTok{# kable(summary_stats)}
+\begin{table}
 
-\CommentTok{# pa_tats <- FIHI_sub3 %>%}
-\CommentTok{#   select(permanent_address) %>%}
-\CommentTok{#   group_by(permanent_address) %>%}
-\CommentTok{#   summarise(freq = n())}
-\CommentTok{# names(pa_tats) <- c("Levels", "Obervations")}
-\CommentTok{# }
-\CommentTok{# pa_tats2 <- FIHI_sub3 %>%}
-\CommentTok{#   filter(permanent_address=="No") %>%}
-\CommentTok{#   select(spent_night_elsewhere) %>%}
-\CommentTok{#   group_by(spent_night_elsewhere) %>%}
-\CommentTok{#   summarise(freq = n())}
-\CommentTok{# names(pa_tats2) <- c("Levels", "Obervations")}
-
-\CommentTok{# rbind(pa_tats, pa_tats2)}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\CommentTok{# Make data for plotting}
-\NormalTok{na_to_missing <-}\StringTok{ }\ControlFlowTok{function}\NormalTok{(x) }
-\NormalTok{\{}
-  \KeywordTok{return}\NormalTok{(}\KeywordTok{ifelse}\NormalTok{(}\KeywordTok{is.na}\NormalTok{(x), }\StringTok{'Missing'}\NormalTok{, x ))}
-\NormalTok{\}}
-
-\NormalTok{FIHI_sub4 <-}\StringTok{ }\NormalTok{FIHI_sub3[, }\DecValTok{-1}\NormalTok{] }\OperatorTok{%>%}\StringTok{ }
-\StringTok{  }\KeywordTok{mutate}\NormalTok{(}\KeywordTok{across}\NormalTok{(}\KeywordTok{everything}\NormalTok{(), na_to_missing))}
-  
-
-\CommentTok{# For creating bar graphs of the response variables}
-\NormalTok{mybarplot <-}\StringTok{ }\ControlFlowTok{function}\NormalTok{(var, }\DataTypeTok{palette=}\StringTok{"Set2"}\NormalTok{,}
-                      \DataTypeTok{xlab=}\StringTok{""}\NormalTok{, }\DataTypeTok{ylab=}\StringTok{""}\NormalTok{,}\DataTypeTok{title=}\StringTok{""}\NormalTok{,}\DataTypeTok{data=}\StringTok{''}\NormalTok{) }
-\NormalTok{\{}
-  \CommentTok{# palette=c("Set2","Set3","Accent","Set1","Paired","Dark2")}
-\NormalTok{  ylab =}\StringTok{ }\KeywordTok{ifelse}\NormalTok{(ylab}\OperatorTok{==}\StringTok{""}\NormalTok{, }\StringTok{"Number of Respondents"}\NormalTok{, ylab)}
-  
-  \ControlFlowTok{if}\NormalTok{(}\OperatorTok{!}\NormalTok{(}\KeywordTok{class}\NormalTok{(data) }\OperatorTok{%in%}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{'data.frame'}\NormalTok{,}\StringTok{'tbl'}\NormalTok{,}\StringTok{'tbl_df'}\NormalTok{))) data <-}\StringTok{ }\NormalTok{FIHI_sub3}
-
-   \ControlFlowTok{if}\NormalTok{(}\KeywordTok{ncol}\NormalTok{(data) }\OperatorTok{==}\StringTok{ }\DecValTok{4}\NormalTok{)}
-\NormalTok{   \{}
-     \CommentTok{# A plotting data was provided}
-\NormalTok{     plotdf <-}\StringTok{ }\NormalTok{data}
-\NormalTok{   \} }\ControlFlowTok{else}\NormalTok{ \{}
-     \CommentTok{# prepare data frame for plotting}
-\NormalTok{      plotdf <-}\StringTok{ }\NormalTok{data }\OperatorTok{%>%}
-\StringTok{      }\KeywordTok{group_by}\NormalTok{(\{\{ var \}\}) }\OperatorTok{%>%}
-\StringTok{      }\KeywordTok{summarise}\NormalTok{(}\DataTypeTok{n=}\KeywordTok{n}\NormalTok{()) }\OperatorTok{%>%}
-\StringTok{      }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{pct =}\NormalTok{ n}\OperatorTok{/}\KeywordTok{sum}\NormalTok{(n),}
-             \DataTypeTok{lbl =} \KeywordTok{percent}\NormalTok{(pct)) }
-\NormalTok{   \}}
-    
-  \CommentTok{# create the plot}
-  \KeywordTok{return}\NormalTok{(}
-    \KeywordTok{ggplot}\NormalTok{(plotdf, }\KeywordTok{aes}\NormalTok{(\{\{ var \}\},n, }\DataTypeTok{fill=}\NormalTok{\{\{ var \}\})) }\OperatorTok{+}
-\StringTok{    }\KeywordTok{geom_bar}\NormalTok{(}\DataTypeTok{stat =} \StringTok{"identity"}\NormalTok{,}\DataTypeTok{position =} \StringTok{"dodge"}\NormalTok{)  }\OperatorTok{+}
-\StringTok{    }\KeywordTok{geom_text}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{label =}\NormalTok{ n), }\DataTypeTok{size=}\DecValTok{3}\NormalTok{, }\DataTypeTok{position =} \KeywordTok{position_stack}\NormalTok{(}\DataTypeTok{vjust =} \FloatTok{0.5}\NormalTok{)) }\OperatorTok{+}
-\StringTok{    }\KeywordTok{scale_fill_brewer}\NormalTok{(}\DataTypeTok{palette=}\NormalTok{palette) }\OperatorTok{+}
-\StringTok{    }\KeywordTok{labs}\NormalTok{(}\DataTypeTok{x=}\NormalTok{xlab, }\DataTypeTok{y=}\NormalTok{ylab, }\DataTypeTok{title=}\NormalTok{title) }\OperatorTok{+}
-\StringTok{    }\KeywordTok{theme_classic}\NormalTok{() }\OperatorTok{+}
-\StringTok{    }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{legend.position =} \StringTok{"none"}\NormalTok{)}
-\NormalTok{  )}
-\NormalTok{\}}
-\CommentTok{# "Ever hungry but didn't eat?"}
-\CommentTok{# mybarplot(FI_q31)}
-\CommentTok{# mybarplot(spent_night_elsewhere, data = FIHI_sub3)}
-\end{Highlighting}
-\end{Shaded}
+\caption{\label{tab:unnamed-chunk-2}Table : Missing values table displaying percentages}
+\centering
+\begin{tabu} to \linewidth {>{\raggedright}X>{\centering}X>{\centering}X}
+\hline
+Variable & Number\_Missing & Missing\_Rate\\
+\hline
+enrollment & 7087 & 56.53318\\
+\hline
+employment & 7087 & 56.53318\\
+\hline
+employment\_type & 9448 & 75.36694\\
+\hline
+weekly\_work\_hrs & 9448 & 75.36694\\
+\hline
+ethnicity & 7361 & 58.71889\\
+\hline
+gender & 7383 & 58.89438\\
+\hline
+total\_income & 7361 & 58.71889\\
+\hline
+academic\_level & 7361 & 58.71889\\
+\hline
+college/school & 7361 & 58.71889\\
+\hline
+mode\_transport & 7361 & 58.71889\\
+\hline
+transport\_reliability & 7361 & 58.71889\\
+\hline
+living\_alone & 7361 & 58.71889\\
+\hline
+dependents & 7819 & 62.37237\\
+\hline
+household\_head & 7417 & 59.16560\\
+\hline
+residence & 7441 & 59.35705\\
+\hline
+permanent\_address & 7441 & 59.35705\\
+\hline
+spent\_night\_elsewhere & 12282 & 97.97384\\
+\hline
+know\_homelessness\_studt & 7476 & 59.63625\\
+\hline
+federal\_aid & 7476 & 59.63625\\
+\hline
+FI\_q26 & 7518 & 59.97128\\
+\hline
+FI\_q27 & 7518 & 59.97128\\
+\hline
+FI\_q28 & 7518 & 59.97128\\
+\hline
+FI\_q30 & 7538 & 60.13082\\
+\hline
+FI\_q31 & 7538 & 60.13082\\
+\hline
+expenditures\_changed & 7599 & 60.61742\\
+\hline
+income\_changed & 7599 & 60.61742\\
+\hline
+fed\_aid\_changed & 7599 & 60.61742\\
+\hline
+debt\_changed & 7599 & 60.61742\\
+\hline
+\end{tabu}
+\end{table}
 
 \hypertarget{distribution-of-housing-insecurity-responses}{%
-\subsection{Distribution of Housing Insecurity Responses}\label{distribution-of-housing-insecurity-responses}}
+\subsubsection{Distribution of Housing Insecurity Responses}\label{distribution-of-housing-insecurity-responses}}
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\CommentTok{# Permanent Address}
-\NormalTok{p1 <-}\StringTok{ }\KeywordTok{mybarplot}\NormalTok{(permanent_address, }
-                \DataTypeTok{xlab =} \StringTok{"Had permanent address in the past 12 months?"}
-\NormalTok{                )}
-
-\CommentTok{# Spending night elsewhere}
-\NormalTok{plotdf <-}\StringTok{ }\NormalTok{FIHI_sub3 }\OperatorTok{%>%}
-\StringTok{  }\KeywordTok{filter}\NormalTok{(permanent_address}\OperatorTok{==}\StringTok{'No'}\NormalTok{) }\OperatorTok{%>%}
-\StringTok{  }\KeywordTok{group_by}\NormalTok{(spent_night_elsewhere) }\OperatorTok{%>%}
-\StringTok{  }\KeywordTok{summarise}\NormalTok{(}\DataTypeTok{n=}\KeywordTok{n}\NormalTok{()) }\OperatorTok{%>%}\StringTok{ }
-\StringTok{  }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{pct =}\NormalTok{ n}\OperatorTok{/}\KeywordTok{sum}\NormalTok{(n),}
-         \DataTypeTok{lbl =} \KeywordTok{percent}\NormalTok{(pct))}
-\NormalTok{p2 <-}\StringTok{ }\KeywordTok{mybarplot}\NormalTok{(spent_night_elsewhere, }
-                \DataTypeTok{xlab =} \StringTok{"How fequently did you spend the night elsewhere?"}\NormalTok{,}
-                \DataTypeTok{data =}\NormalTok{ plotdf}
-\NormalTok{                )}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{verbatim}
-## Warning in if (!(class(data) %in% c("data.frame", "tbl", "tbl_df"))) data <-
-## FIHI_sub3: the condition has length > 1 and only the first element will be used
-\end{verbatim}
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{plotdf }\OperatorTok{%>%}\StringTok{ }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{spent_night_elsewhere =} \KeywordTok{ifelse}\NormalTok{(}\KeywordTok{is.na}\NormalTok{(spent_night_elsewhere), }\StringTok{'Missing'}\NormalTok{, spent_night_elsewhere))}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{verbatim}
-## # A tibble: 4 x 4
-##   spent_night_elsewhere     n    pct lbl  
-##   <chr>                 <int>  <dbl> <chr>
-## 1 1                       138 0.521  52.1%
-## 2 2                        83 0.313  31.3%
-## 3 3                        33 0.125  12.5%
-## 4 Missing                  11 0.0415 4.2%
-\end{verbatim}
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\CommentTok{# Display plots side by side with the help of the patchwork package}
-\NormalTok{p1 }\OperatorTok{+}\StringTok{ }\NormalTok{p2}
-\end{Highlighting}
-\end{Shaded}
-
-\includegraphics{phase1_report_files/figure-latex/unnamed-chunk-2-1}
+\includegraphics{phase1_report_files/figure-latex/unnamed-chunk-4-1}
 
 \hypertarget{distribution-of-food-insecurity-responses}{%
-\subsection{Distribution of Food Insecurity Responses}\label{distribution-of-food-insecurity-responses}}
+\subsubsection{Distribution of Food Insecurity Responses}\label{distribution-of-food-insecurity-responses}}
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\CommentTok{# Q26: Food bought didn't last}
-\NormalTok{p1 <-}\StringTok{ }\KeywordTok{mybarplot}\NormalTok{(FI_q26, }\DataTypeTok{xlab =} \StringTok{"Food bought did not last"}\NormalTok{)}
+\includegraphics{phase1_report_files/figure-latex/unnamed-chunk-6-1}
 
-\CommentTok{# Q27: Balanced diet}
-\NormalTok{p2 <-}\StringTok{ }\KeywordTok{mybarplot}\NormalTok{(FI_q27, }\DataTypeTok{xlab =} \StringTok{"Couldn't afford balanced meals"}\NormalTok{)}
+\includegraphics{phase1_report_files/figure-latex/unnamed-chunk-7-1}
 
-\CommentTok{# Q28: }
-\NormalTok{p3 <-}\StringTok{ }\KeywordTok{mybarplot}\NormalTok{(FI_q28, }\DataTypeTok{xlab =} \StringTok{"Ever cut the size of meals?"}\NormalTok{)}
+\includegraphics{phase1_report_files/figure-latex/unnamed-chunk-8-1}
 
-\CommentTok{# Q3: }
-\NormalTok{p4 <-}\StringTok{ }\KeywordTok{mybarplot}\NormalTok{(FI_q30, }\DataTypeTok{xlab =} \StringTok{"Ever ate less than you should?"}\NormalTok{)}
+\includegraphics{phase1_report_files/figure-latex/unnamed-chunk-9-1}
 
-\CommentTok{# Q31}
-\NormalTok{p5 <-}\StringTok{ }\KeywordTok{mybarplot}\NormalTok{(FI_q31, }\DataTypeTok{xlab =} \StringTok{"Ever got hungry but didn't eat?"}\NormalTok{)}
+The table and graphs above display the number of missing values with missing percentages as well as the distribution of the potential response variables. From the results, the following observations were made:
 
-\CommentTok{# Display plots side by side with the help of the patchwork package}
-\NormalTok{p1 }
-\end{Highlighting}
-\end{Shaded}
+\begin{itemize}
+\item
+  It is clear that all variables have some amount of missing observation given they are all above 50\%, hence a necessary missing data treatment is required.
+\item
+  The response variables also contains missing values, hence we filter all missing observation with respect to each response variable out and used the remaining data set for further imputation and analysis analysis.
+\item
+  The mice package aided in imputation the missing values in the predictor variables, specifically by using the median, mice was chosen because it is robust to data and its imputation style.
+\item
+  The selected responses variables exhibited highly imbalanced classification. The imbalanced classification was treated with both sampling methods under the ROSE package.
+\end{itemize}
 
-\includegraphics{phase1_report_files/figure-latex/unnamed-chunk-3-1}
+\hypertarget{model-fitting}{%
+\subsection{Model Fitting}\label{model-fitting}}
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{p2 }
-\end{Highlighting}
-\end{Shaded}
+Given our data set and its structure, the following supervised classification machine learning algorithm were employed to obtained a predictive model for each given response variable;
 
-\includegraphics{phase1_report_files/figure-latex/unnamed-chunk-3-2}
+\begin{itemize}
+\item
+  Logistic Regression
+\item
+  Linear Discriminant Analysis
+\item
+  Least Absolute Shrinkage and Selection Operator
+\item
+  Bagging
+\item
+  Support Vector Machines with Linear Kernel
+\item
+  Support Vector Machines with Radial Basis Kernel
+\end{itemize}
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{(p3 }\OperatorTok{+}\StringTok{ }\NormalTok{p4)}
-\end{Highlighting}
-\end{Shaded}
+\hypertarget{partitioning-data-set}{%
+\subsubsection{Partitioning data set}\label{partitioning-data-set}}
 
-\includegraphics{phase1_report_files/figure-latex/unnamed-chunk-3-3}
+For the purpose of training and validation of each derived model ,and the estimating of the performance metrics, the entire data set was partitioned into training and testing in a ratio of 2/3 and 1/3 respectively.
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{p5}
-\end{Highlighting}
-\end{Shaded}
+\hypertarget{modeling-housing-insecurity}{%
+\subsubsection{Modeling Housing Insecurity}\label{modeling-housing-insecurity}}
 
-\includegraphics{phase1_report_files/figure-latex/unnamed-chunk-3-4}
+Here, we modeled housing insecurity as a response based whether or not the respondent had a permanent address.
+
+\begin{table}[H]
+
+\caption{\label{tab:unnamed-chunk-10}Table : Evaluation metrics for Housing Insecurity with Permanent Address as a response}
+\centering
+\fontsize{12}{14}\selectfont
+\begin{tabular}[t]{l|c|c|c|c|c}
+\hline
+Model & Misclassification Rate & Accuracy & Sensitivity & Specificity & fbeta\\
+\hline
+Logistic & 0.3 & 0.7 & 0.74 & 0.66 & 0.71\\
+\hline
+LDA & 0.3 & 0.7 & 0.75 & 0.66 & 0.72\\
+\hline
+LASSO & 0.3 & 0.7 & 0.74 & 0.65 & 0.71\\
+\hline
+Ridge & 0.3 & 0.7 & 0.75 & 0.65 & 0.71\\
+\hline
+SVC & 0.33 & 0.67 & 0.81 & 0.54 & 0.71\\
+\hline
+SVM (Radial Kernel) & 0.04 & 0.96 & 0.93 & 1 & 0.96\\
+\hline
+\end{tabular}
+\end{table}
+
+\includegraphics{phase1_report_files/figure-latex/unnamed-chunk-10-1}
+
+\hypertarget{modeling-food-insecurity}{%
+\subsubsection{Modeling Food Insecurity}\label{modeling-food-insecurity}}
+
+In this section, we report results for modeling food insecurity in terms response variables based on survey questions as described below:
+
+\begin{itemize}
+\item
+  Food Insecurity 1: In the last 12 months, since (today's date), did you ever cut the size of your meals or skip meals because there was not enough money for food?
+\item
+  Food Insecurity 2: In the last 12 months, did you ever eat less than you felt you should because there was not enough money for food?
+\item
+  Food Insecurity 3: In the past 12 months, were you ever hungry but didn't eat because there wasn't enough money for food?
+\end{itemize}
+
+\hypertarget{results-for-food-insecurity-response-1}{%
+\paragraph{Results for Food Insecurity Response 1}\label{results-for-food-insecurity-response-1}}
+
+\begin{verbatim}
+## line search fails -1.181941 0.01157253 1.063671e-05 8.316553e-07 -2.675015e-08 -1.42704e-09 -2.857203e-13line search fails -1.081641 0.009344736 1.228026e-05 1.266976e-06 -2.630811e-08 -2.391041e-09 -3.260997e-13
+\end{verbatim}
+
+\begin{table}[H]
+
+\caption{\label{tab:unnamed-chunk-11}Table : Evaluation metrics for  food insecurity 1 as a response}
+\centering
+\fontsize{12}{14}\selectfont
+\begin{tabular}[t]{l|c|c|c|c|c}
+\hline
+Model & Misclassification Rate & Accuracy & Sensitivity & Specificity & fbeta\\
+\hline
+Logistic & 0.34 & 0.66 & 0.63 & 0.69 & 0.65\\
+\hline
+LDA & 0.33 & 0.67 & 0.63 & 0.7 & 0.65\\
+\hline
+LASSO & 0.34 & 0.66 & 0.63 & 0.69 & 0.65\\
+\hline
+Ridge & 0.34 & 0.66 & 0.63 & 0.69 & 0.65\\
+\hline
+SVC & 0.33 & 0.67 & 0.62 & 0.73 & 0.65\\
+\hline
+SVM (Radial Kernel) & 0.18 & 0.82 & 0.86 & 0.78 & 0.83\\
+\hline
+\end{tabular}
+\end{table}
+
+\includegraphics{phase1_report_files/figure-latex/unnamed-chunk-11-1}
+
+\hypertarget{results-for-food-insecurity-response-2}{%
+\paragraph{Results for Food Insecurity Response 2}\label{results-for-food-insecurity-response-2}}
+
+\begin{verbatim}
+## line search fails -1.027246 -0.02073477 1.435958e-05 1.508252e-06 -2.892557e-08 -3.82023e-09 -4.21121e-13line search fails -1.258235 -0.04689954 1.070125e-05 9.093496e-07 -3.023704e-08 -3.073889e-09 -3.263693e-13line search fails -0.9117547 -0.03908976 1.045096e-05 1.326122e-06 -1.748728e-08 -3.618849e-09 -1.875579e-13
+\end{verbatim}
+
+\begin{table}[H]
+
+\caption{\label{tab:unnamed-chunk-12}Table : Evaluation metrics for  food insecurity 2 as a response}
+\centering
+\fontsize{12}{14}\selectfont
+\begin{tabular}[t]{l|c|c|c|c|c}
+\hline
+Model & Misclassification Rate & Accuracy & Sensitivity & Specificity & fbeta\\
+\hline
+Logistic & 0.33 & 0.67 & 0.67 & 0.66 & 0.67\\
+\hline
+LDA & 0.33 & 0.67 & 0.67 & 0.67 & 0.67\\
+\hline
+LASSO & 0.33 & 0.67 & 0.67 & 0.67 & 0.67\\
+\hline
+Ridge & 0.34 & 0.66 & 0.66 & 0.67 & 0.66\\
+\hline
+SVC & 0.34 & 0.66 & 0.67 & 0.65 & 0.66\\
+\hline
+SVM (Radial Kernel) & 0.19 & 0.81 & 0.83 & 0.79 & 0.81\\
+\hline
+\end{tabular}
+\end{table}
+
+\includegraphics{phase1_report_files/figure-latex/unnamed-chunk-12-1}
+
+\hypertarget{results-for-food-insecurity-response-3}{%
+\paragraph{Results for Food Insecurity Response 3}\label{results-for-food-insecurity-response-3}}
+
+\begin{verbatim}
+## [1] 4998   18
+\end{verbatim}
+
+\begin{verbatim}
+## line search fails -1.133563 -0.0664331 1.198487e-05 2.752896e-06 -2.726642e-08 -7.801027e-09 -3.482601e-13
+\end{verbatim}
+
+\begin{table}[H]
+
+\caption{\label{tab:unnamed-chunk-13}Table : Evaluation metrics for  food insecurity 3 as a response}
+\centering
+\fontsize{12}{14}\selectfont
+\begin{tabular}[t]{l|c|c|c|c|c}
+\hline
+Model & Misclassification Rate & Accuracy & Sensitivity & Specificity & fbeta\\
+\hline
+Logistic & 0.32 & 0.68 & 0.66 & 0.69 & 0.67\\
+\hline
+LDA & 0.32 & 0.68 & 0.66 & 0.7 & 0.67\\
+\hline
+LASSO & 0.32 & 0.68 & 0.66 & 0.69 & 0.67\\
+\hline
+Ridge & 0.32 & 0.68 & 0.66 & 0.69 & 0.67\\
+\hline
+SVC & 0.33 & 0.67 & 0.66 & 0.67 & 0.67\\
+\hline
+SVM (Radial Kernel) & 0.15 & 0.85 & 0.88 & 0.81 & 0.85\\
+\hline
+\end{tabular}
+\end{table}
+
+\includegraphics{phase1_report_files/figure-latex/unnamed-chunk-13-1}
 
 \hypertarget{discussion}{%
 \section{Discussion}\label{discussion}}
 
+Base on our table of results the best model is selected based on the performance metrics accuracy, misclassification, and fbeta. That is a model with the least misclassification, higher accuracy, and an fbeta score approaching one. Considering the results from the housing insecurity models, the SVM with the radial basis kernel has the highest f\(\beta\) value and the least misclassification rate, followed by the linear discriminate analysis. Hence the support vector machine through the radial basis function is chosen as our best model. The variables are highly associated with predicting housing insecurity as displayed by the graph of the variable of important shows that total income, residence, and transportation reliability been the top variables with federal aid, gender, and weekly work hours being least of importance. However if a cutoff of say 50\% is employed the best or associated variables will be the top three variables together with the head of household, living alone, and spending the night elsewhere.
+
+Furthermore, we observed that SVM performs better with the least misclafficattion rate, the highest accuracy, and f\(\beta\) value of best performance, respectively for the food insecurity. This is associated with the response Food insecurity 1. Assuming a cut off point of 50\%, we can infer from the variable importance plot that, total income, transport reliability and household are the top variables which are associated or predicts the response variable.
+
+Also, we can observe that, support vector machine comes with the lowest misclaffication rate, the highest accuracy, and the best f\(\beta\) value closest to 1. This shows that, SVM performs better considering response variables: Food insecurity 2 and 3. Considering a cut of 50\%, we can conclude from the variable importance plot that total income, transport reliability and known homelessnes student show the strongest associated with food insecurity 2 and 3.
+
+In a general, total income being an underlying factor for both food insecurity and housing insecurity, clearly suggests that the income on which students live for their livelihood appears not to be enough. Also, we observed issues of multiple responses with some of the variables, especially, for the gender variable. We did not find it reasonable for respondents to be given the chance to select more than one options for their gender.
+
 \hypertarget{recommendations}{%
 \section{Recommendations}\label{recommendations}}
+
+From the results and discussions, we make the following recommendations:
+
+\begin{itemize}
+\item
+  There should be proper advertisement of food pantries and shelters if there exist some for low income students to survive on in the absence of adequate financial aid.
+\item
+  With regards to multiple responses, we are of the opinion that this should not be allowed for the gender variable in subsequent surveys.
+\end{itemize}
 
 \hypertarget{future-work-phase-ii}{%
 \section{Future Work (Phase II)}\label{future-work-phase-ii}}
@@ -644,11 +740,9 @@ To aid easy deployment and implementation of our proposed model(s), we plan to d
 \hypertarget{rule-for-defining-response-variable-for-food-and-housing-insecurities}{%
 \subsection{Rule for defining response variable for Food and Housing Insecurities}\label{rule-for-defining-response-variable-for-food-and-housing-insecurities}}
 
-In this section, we provide a rule for classifying a student as food insecure or housing insecure. These rules were used in selecting the appropriate response variables for both food and housing insecurities.
+In the phase of the analysis, we will provide a rule for classifying a student as food insecure or housing insecure. These rules were used in selecting the appropriate response variables for both food and housing insecurities.
 
-We construct a measure of food insecurity as a dichotomous response variable that combines what we consider to be four main dimensions of food insecurity embodied in five of the survey questions, namely, a stable source of food , lack of healthy/balanced meals, inadequate size of food -- eating less and going hungry . Using this definition as proposed by the USDA, we selected \(Q26, Q27, Q28\) and \(Q30\) respectively as our response variable for food insecurity. Therefore, an individual who participated in the survey is classified as being at risk of food insecurity if they answered yes to all of questions \(Q26, Q27, Q31\), and answered yes to either \(Q28\) or \(Q30\) since these two questions are similar in terms of measuring a single dimension of food insecurity. Thus, an individual who reports four conditions that indicate food insecurity are classified as ``food insecure''. Thus, our response variable is defined as follows:
-
-At risk for food insecurity= \$\$\$\$
+We hope to construct a measure of food insecurity as a dichotomous response variable that combines what we consider to be four main dimensions of food insecurity embodied in five of the survey questions, namely, a stable source of food , lack of healthy/balanced meals, inadequate size of food -- eating less and going hungry . Using this definition as proposed by the USDA, we selected \(Q26, Q27, Q28\) and \(Q30\) respectively as our response variable for food insecurity. Therefore, an individual who participated in the survey is classified as being at risk of food insecurity if they answered yes to all of questions \(Q26, Q27, Q31\), and answered yes to either \(Q28\) or \(Q30\) since these two questions are similar in terms of measuring a single dimension of food insecurity. Thus, an individual who reports four conditions that indicate food insecurity are classified as ``food insecure''.
 
 \hypertarget{references}{%
 \section*{References}\label{references}}
@@ -677,46 +771,13 @@ Theerthagiri, P., Jeena Jacob, I., Usha Ruby, A., and Yendapalli, V. (2021). Pre
 Wikipedia. (2021). Support-vector machine. Retrieved October 15, 2021, from \url{https://en.wikipedia.org/wiki/Support-vector_machine}
 
 \hypertarget{apendix}{%
-\section{Apendix}\label{apendix}}
+\section*{Apendix}\label{apendix}}
+\addcontentsline{toc}{section}{Apendix}
 
 \hypertarget{visualizing-missing-data}{%
 \subsection{Visualizing Missing Data}\label{visualizing-missing-data}}
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\CommentTok{# install.packages("naniar")}
-\CommentTok{# install.packages("UpSetR")}
-\KeywordTok{library}\NormalTok{(naniar)}
-\KeywordTok{library}\NormalTok{(UpSetR)}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{verbatim}
-## 
-## Attaching package: 'UpSetR'
-\end{verbatim}
-
-\begin{verbatim}
-## The following object is masked from 'package:lattice':
-## 
-##     histogram
-\end{verbatim}
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\CommentTok{# explore the patterns}
-\KeywordTok{gg_miss_upset}\NormalTok{(FIHI_sub3)}
-\end{Highlighting}
-\end{Shaded}
-
-\includegraphics{phase1_report_files/figure-latex/unnamed-chunk-4-1}
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\CommentTok{# explore missingness in variables with gg_miss_var}
-\KeywordTok{miss_var_summary}\NormalTok{(FIHI_sub3) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{kable}\NormalTok{()}
-\end{Highlighting}
-\end{Shaded}
+\includegraphics{phase1_report_files/figure-latex/unnamed-chunk-14-1}
 
 \begin{tabular}{l|r|r}
 \hline
@@ -782,20 +843,206 @@ respondent\_id & 0 & 0.00000\\
 \hline
 \end{tabular}
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\KeywordTok{gg_miss_var}\NormalTok{(FIHI_sub3) }\OperatorTok{+}\StringTok{ }\KeywordTok{ylab}\NormalTok{(}\StringTok{"Number of missing values"}\NormalTok{)}
-\end{Highlighting}
-\end{Shaded}
+\includegraphics{phase1_report_files/figure-latex/unnamed-chunk-14-2}
+\includegraphics{phase1_report_files/figure-latex/unnamed-chunk-14-3}
 
-\includegraphics{phase1_report_files/figure-latex/unnamed-chunk-4-2}
+\hypertarget{codes}{%
+\subsection{Codes}\label{codes}}
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\KeywordTok{gg_miss_var}\NormalTok{(FIHI_sub3, }\DataTypeTok{show_pct =}\NormalTok{ T) }
+\NormalTok{data_pa<-}\StringTok{ }\NormalTok{data }\OperatorTok{%>%}
+\StringTok{  }\NormalTok{dplyr}\OperatorTok{::}\KeywordTok{select}\NormalTok{(}\OperatorTok{-}\KeywordTok{starts_with}\NormalTok{(}\StringTok{"FI_"}\NormalTok{), }\OperatorTok{-}\KeywordTok{ends_with}\NormalTok{(}\StringTok{"_changed"}\NormalTok{), }\OperatorTok{-}\StringTok{`}\DataTypeTok{college/school}\StringTok{`}\NormalTok{) }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{filter}\NormalTok{(permanent_address }\OperatorTok{!=}\StringTok{ "NA"}\NormalTok{) }
+
+\CommentTok{# dim(data_pa)}
+
+
+
+\KeywordTok{set.seed}\NormalTok{(}\DecValTok{123}\NormalTok{)}
+\KeywordTok{suppressPackageStartupMessages}\NormalTok{(}\KeywordTok{library}\NormalTok{(mice))}
+\NormalTok{data_imputed <-}\StringTok{ }\KeywordTok{mice}\NormalTok{(data_pa[,}\OperatorTok{-}\DecValTok{15}\NormalTok{], }\DataTypeTok{printFlag =}\NormalTok{ F)}
+\NormalTok{data_}\DecValTok{1}\NormalTok{ <-}\StringTok{ }\KeywordTok{complete}\NormalTok{(data_imputed, }\DecValTok{1}\NormalTok{)}
+\NormalTok{data1 <-}\StringTok{ }\KeywordTok{as.data.frame}\NormalTok{(data_}\DecValTok{1}\NormalTok{)}
+\NormalTok{data_pad<-}\KeywordTok{cbind}\NormalTok{(}\StringTok{"permanent_address"}\NormalTok{=data_pa}\OperatorTok{$}\NormalTok{permanent_address,data1)}
+\KeywordTok{rm}\NormalTok{(data_imputed, data_}\DecValTok{1}\NormalTok{, data1)}
+
+
+\CommentTok{# Treating imbalance classification}
+
+
+\NormalTok{ data_pad_balance<-}\KeywordTok{ovun.sample}\NormalTok{(permanent_address }\OperatorTok{~}\StringTok{ }\NormalTok{., }\DataTypeTok{data =}\NormalTok{ data_pad, }\DataTypeTok{method =} \StringTok{"both"}\NormalTok{, }\DataTypeTok{p=}\FloatTok{0.5}\NormalTok{,                             }\DataTypeTok{N=}\KeywordTok{NROW}\NormalTok{(data_pad), }\DataTypeTok{seed =} \DecValTok{125}\NormalTok{)}\OperatorTok{$}\NormalTok{data}
+ \CommentTok{# dim(data_pad_balance)}
+
+
+
+\NormalTok{data_pad_balance <-}\StringTok{ }\NormalTok{data_pad_balance }\OperatorTok{%>%}
+\StringTok{   }\KeywordTok{mutate}\NormalTok{(}\KeywordTok{across}\NormalTok{(}\KeywordTok{everything}\NormalTok{(), as.factor))}
+
+
+\CommentTok{# PARTITION DATA}
+\KeywordTok{set.seed}\NormalTok{(}\DecValTok{123}\NormalTok{)}
+\NormalTok{intrain <-}\StringTok{ }\KeywordTok{createDataPartition}\NormalTok{(}\DataTypeTok{y=}\DecValTok{1}\OperatorTok{:}\KeywordTok{NROW}\NormalTok{(data_pad_balance), }\DataTypeTok{p=} \FloatTok{0.67}\NormalTok{, }\DataTypeTok{list =} \OtherTok{FALSE}\NormalTok{)}
+\NormalTok{training <-}\StringTok{ }\NormalTok{data_pad_balance[intrain,];  testing <-}\StringTok{ }\NormalTok{data_pad_balance[}\OperatorTok{-}\NormalTok{intrain,]}
+
+\CommentTok{# dim(training) # training data}
+\CommentTok{# dim(testing)}
+
+
+
+
+
+\CommentTok{#------ Model building -----------}
+\CommentTok{# Create a wrapper function to abstract away the common aspects of model fitting}
+\NormalTok{formula<-}\StringTok{ }\NormalTok{permanent_address}\OperatorTok{~}\NormalTok{.}
+\NormalTok{fit.model <-}\StringTok{ }\ControlFlowTok{function}\NormalTok{(method, }\DataTypeTok{tunegrid=}\StringTok{""}\NormalTok{, }\DataTypeTok{data=}\OtherTok{NULL}\NormalTok{, }\DataTypeTok{formula=}\OtherTok{NULL}\NormalTok{) \{}
+  
+\NormalTok{  data <-}\StringTok{ }\NormalTok{training}
+  \ControlFlowTok{if}\NormalTok{(}\KeywordTok{is.null}\NormalTok{(formula)) formula<-}\StringTok{ }\NormalTok{permanent_address}\OperatorTok{~}\NormalTok{.}
+  
+  \CommentTok{# Train the model}
+   \KeywordTok{train}\NormalTok{(}
+\NormalTok{           formula,}
+           \DataTypeTok{data =}\NormalTok{ data,}
+           \DataTypeTok{method =}\NormalTok{ method,}
+           \DataTypeTok{trControl =} \KeywordTok{trainControl}\NormalTok{(}\DataTypeTok{method =} \StringTok{"cv"}\NormalTok{, }\DecValTok{5}\NormalTok{),}
+           \DataTypeTok{preProcess =} \KeywordTok{c}\NormalTok{(}\StringTok{"center"}\NormalTok{,}\StringTok{"scale"}\NormalTok{),}
+           \DataTypeTok{tuneGrid =}\NormalTok{ tunegrid)}
+          
+\NormalTok{\}}
+
+
+
+\CommentTok{# Logistic Regression}
+\NormalTok{log <-}\KeywordTok{train}\NormalTok{(formula,}
+                 \DataTypeTok{data=}\NormalTok{training,}
+                 \DataTypeTok{method=}\StringTok{"glm"}\NormalTok{,}
+                 \DataTypeTok{family =} \KeywordTok{binomial}\NormalTok{(}\DataTypeTok{link =} \StringTok{"logit"}\NormalTok{),}
+                \DataTypeTok{trControl =} \KeywordTok{trainControl}\NormalTok{(}\DataTypeTok{method =} \StringTok{"cv"}\NormalTok{, }\DecValTok{5}\NormalTok{),}
+                \DataTypeTok{preProcess =} \KeywordTok{c}\NormalTok{(}\StringTok{"center"}\NormalTok{, }\StringTok{"scale"}\NormalTok{)) }
+
+
+
+\CommentTok{# LDA}
+\NormalTok{lda <-}\StringTok{ }\KeywordTok{train}\NormalTok{(formula,}
+                 \DataTypeTok{data=}\NormalTok{training,}
+                 \DataTypeTok{method=}\StringTok{"lda"}\NormalTok{,}
+                \DataTypeTok{trControl =} \KeywordTok{trainControl}\NormalTok{(}\DataTypeTok{method =} \StringTok{"cv"}\NormalTok{, }\DecValTok{5}\NormalTok{),}
+                \DataTypeTok{preProcess =} \KeywordTok{c}\NormalTok{(}\StringTok{"center"}\NormalTok{, }\StringTok{"scale"}\NormalTok{))}
+
+
+
+
+\CommentTok{#-------------- Elastic Net Models -------------------}
+\CommentTok{# fit a LASSO model}
+\NormalTok{lasso <-}\StringTok{ }\KeywordTok{fit.model}\NormalTok{(}\StringTok{"glmnet"}\NormalTok{, }\KeywordTok{expand.grid}\NormalTok{(}\DataTypeTok{.alpha=}\DecValTok{1}\NormalTok{, }\DataTypeTok{.lambda=}\KeywordTok{seq}\NormalTok{(}\DecValTok{0}\NormalTok{,}\FloatTok{0.1}\NormalTok{,}\FloatTok{0.01}\NormalTok{)))}
+
+\CommentTok{# Fit a Ridge regression model}
+\NormalTok{ridge <-}\StringTok{ }\KeywordTok{fit.model}\NormalTok{(}\StringTok{"glmnet"}\NormalTok{, }\KeywordTok{expand.grid}\NormalTok{(}\DataTypeTok{.alpha=}\DecValTok{0}\NormalTok{, }\DataTypeTok{.lambda=}\KeywordTok{seq}\NormalTok{(}\DecValTok{0}\NormalTok{,}\FloatTok{0.1}\NormalTok{,}\FloatTok{0.01}\NormalTok{)))}
+
+
+
+
+\CommentTok{# Bagging}
+\CommentTok{# bag <- fit.model("rf", data.frame(mtry=11))}
+\CommentTok{# bag <- train(formula,}
+\CommentTok{#                  data=training,}
+\CommentTok{#                  method="rf",}
+\CommentTok{#                 trControl = trainControl(method = "cv", 5),}
+\CommentTok{#                 preProcess = c("center", "scale"),}
+\CommentTok{#                 tuneGrid = data.frame(mtry=11),}
+\CommentTok{#                 ntree = 1000) }
+
+
+
+
+\CommentTok{#-------------- }
+
+\CommentTok{# Support Vector Machine with linear kernel}
+\KeywordTok{set.seed}\NormalTok{(}\DecValTok{125}\NormalTok{)}
+\NormalTok{trctrl <-}\StringTok{ }\KeywordTok{trainControl}\NormalTok{(}\DataTypeTok{method =} \StringTok{"cv"}\NormalTok{, }\DataTypeTok{number=}\DecValTok{5}\NormalTok{)}
+\NormalTok{svc <-}\StringTok{ }\KeywordTok{train}\NormalTok{(formula, }\DataTypeTok{data =}\NormalTok{ training, }\DataTypeTok{method =} \StringTok{"svmLinear"}\NormalTok{,}
+                    \DataTypeTok{trControl=}\NormalTok{trctrl, }\DataTypeTok{prob.model=}\NormalTok{T,}
+                    \DataTypeTok{tuneLength =} \DecValTok{10}\NormalTok{)}
+
+
+
+
+\CommentTok{# Support Vector Machine with radial kernel}
+\KeywordTok{set.seed}\NormalTok{(}\DecValTok{125}\NormalTok{)}
+\NormalTok{trctrl <-}\StringTok{ }\KeywordTok{trainControl}\NormalTok{(}\DataTypeTok{method =} \StringTok{"cv"}\NormalTok{, }\DataTypeTok{number=}\DecValTok{5}\NormalTok{)}
+\NormalTok{svmR <-}\StringTok{ }\KeywordTok{train}\NormalTok{(formula , }\DataTypeTok{data =}\NormalTok{ training, }\DataTypeTok{method =} \StringTok{"svmRadial"}\NormalTok{,}
+                    \DataTypeTok{trControl=}\NormalTok{trctrl, }\DataTypeTok{prob.model=}\NormalTok{T,}
+                    \DataTypeTok{tuneLength =} \DecValTok{10}\NormalTok{)}
+
+
+
+\CommentTok{## Making predictions }
+
+
+\CommentTok{# Create a custom confusion matrix with performance metrics}
+\NormalTok{metrics <-}\StringTok{ }\ControlFlowTok{function}\NormalTok{(model_object, }\DataTypeTok{response=}\StringTok{""}\NormalTok{, }\DataTypeTok{test_data=}\OtherTok{NULL}\NormalTok{) \{}
+  \CommentTok{# response = "permanent_address"}
+  \CommentTok{# model_object <- log}
+  \CommentTok{# }
+  \ControlFlowTok{if}\NormalTok{(}\KeywordTok{is.null}\NormalTok{(test_data)) test_data <-}\StringTok{ }\NormalTok{testing}
+  
+  \CommentTok{# make predictions}
+\NormalTok{  prediction <-}\StringTok{ }\KeywordTok{predict}\NormalTok{(model_object, test_data) }
+  
+\NormalTok{  target <-}\StringTok{ }\NormalTok{test_data[, response]}
+  
+\NormalTok{  cmat <-}\StringTok{ }\KeywordTok{confusionMatrix}\NormalTok{(prediction, target, }\DataTypeTok{mode =} \StringTok{"prec_recall"}\NormalTok{)}
+  
+\NormalTok{  misscal<-}\StringTok{ }\KeywordTok{round}\NormalTok{(}\KeywordTok{mean}\NormalTok{(prediction }\OperatorTok{!=}\StringTok{ }\NormalTok{target),}\DataTypeTok{digits =} \DecValTok{2}\NormalTok{)}
+  
+ \CommentTok{# Returned outputs}
+ \KeywordTok{return}\NormalTok{(}\KeywordTok{list}\NormalTok{(}
+   \DataTypeTok{accuracy =}\NormalTok{ (}\DecValTok{1}\OperatorTok{-}\NormalTok{misscal),}
+   \DataTypeTok{mcr =}\NormalTok{ misscal,}
+   \DataTypeTok{sens =} \KeywordTok{round}\NormalTok{(cmat}\OperatorTok{$}\NormalTok{byClass[}\DecValTok{1}\NormalTok{],}\DecValTok{2}\NormalTok{),}
+   \DataTypeTok{spec =} \KeywordTok{round}\NormalTok{(cmat}\OperatorTok{$}\NormalTok{byClass[}\DecValTok{2}\NormalTok{],}\DecValTok{2}\NormalTok{),}
+   \DataTypeTok{fbeta =} \KeywordTok{round}\NormalTok{(cmat}\OperatorTok{$}\NormalTok{byClass[}\DecValTok{7}\NormalTok{],}\DecValTok{2}\NormalTok{)}
+\NormalTok{ ))}
+  
+\NormalTok{\}}
+
+\NormalTok{metric_log <-}\StringTok{ }\KeywordTok{metrics}\NormalTok{(lasso, }\DataTypeTok{response =} \StringTok{"permanent_address"}\NormalTok{)}
+\CommentTok{#------- Compute performance metrics for the full models ---------------}
+\NormalTok{log.metric <-}\StringTok{ }\KeywordTok{metrics}\NormalTok{(log, }\DataTypeTok{response =} \StringTok{"permanent_address"}\NormalTok{)}
+\NormalTok{lda.metric <-}\StringTok{ }\KeywordTok{metrics}\NormalTok{(lda, }\DataTypeTok{response =} \StringTok{"permanent_address"}\NormalTok{)}
+\CommentTok{# knn.metric <- metrics(knn)}
+\NormalTok{lasso.metric <-}\StringTok{ }\KeywordTok{metrics}\NormalTok{(lasso, }\DataTypeTok{response =} \StringTok{"permanent_address"}\NormalTok{)}
+\NormalTok{ridge.metric <-}\StringTok{ }\KeywordTok{metrics}\NormalTok{(ridge, }\DataTypeTok{response =} \StringTok{"permanent_address"}\NormalTok{)}
+\CommentTok{# bag.metric <- metrics(bag, response = "permanent_address")}
+\CommentTok{# rf.metric <- metrics(rf)}
+\NormalTok{svc.metric <-}\StringTok{ }\KeywordTok{metrics}\NormalTok{(svc, }\DataTypeTok{response =} \StringTok{"permanent_address"}\NormalTok{)}
+\CommentTok{# svmP.metric <- metrics(svmP)}
+\NormalTok{svmR.metric <-}\StringTok{ }\KeywordTok{metrics}\NormalTok{(svmR, }\DataTypeTok{response =} \StringTok{"permanent_address"}\NormalTok{)}
+
+\NormalTok{mod.sum <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\KeywordTok{rbind}\NormalTok{(}
+                          \KeywordTok{c}\NormalTok{(}\StringTok{"Logistic"}\NormalTok{, log.metric}\OperatorTok{$}\NormalTok{mcr, log.metric}\OperatorTok{$}\NormalTok{accuracy, log.metric}\OperatorTok{$}\NormalTok{sens, log.metric}\OperatorTok{$}\NormalTok{spec, log.metric}\OperatorTok{$}\NormalTok{fbeta),}
+                          \KeywordTok{c}\NormalTok{(}\StringTok{"LDA"}\NormalTok{,  lda.metric}\OperatorTok{$}\NormalTok{mcr, lda.metric}\OperatorTok{$}\NormalTok{accuracy, lda.metric}\OperatorTok{$}\NormalTok{sens, lda.metric}\OperatorTok{$}\NormalTok{spec, lda.metric}\OperatorTok{$}\NormalTok{fbeta),}
+                          \KeywordTok{c}\NormalTok{(}\StringTok{"LASSO"}\NormalTok{, lasso.metric}\OperatorTok{$}\NormalTok{mcr, lasso.metric}\OperatorTok{$}\NormalTok{accuracy, lasso.metric}\OperatorTok{$}\NormalTok{sens, lasso.metric}\OperatorTok{$}\NormalTok{spec, lasso.metric}\OperatorTok{$}\NormalTok{fbeta),}
+                          \KeywordTok{c}\NormalTok{(}\StringTok{"Ridge"}\NormalTok{, ridge.metric}\OperatorTok{$}\NormalTok{mcr, ridge.metric}\OperatorTok{$}\NormalTok{accuracy, ridge.metric}\OperatorTok{$}\NormalTok{sens, ridge.metric}\OperatorTok{$}\NormalTok{spec, ridge.metric}\OperatorTok{$}\NormalTok{fbeta),}
+                          \CommentTok{# c("Bagging", bag.metric$mcr, bag.metric$accuracy, bag.metric$sens, bag.metric$spec, bag.metric$fbeta),}
+                          \KeywordTok{c}\NormalTok{(}\StringTok{"SVC"}\NormalTok{,  svc.metric}\OperatorTok{$}\NormalTok{mcr, svc.metric}\OperatorTok{$}\NormalTok{accuracy, svc.metric}\OperatorTok{$}\NormalTok{sens, svc.metric}\OperatorTok{$}\NormalTok{spec, svc.metric}\OperatorTok{$}\NormalTok{fbeta),}
+                          \KeywordTok{c}\NormalTok{(}\StringTok{"SVM (Radial Kernel)"}\NormalTok{, svmR.metric}\OperatorTok{$}\NormalTok{mcr, svmR.metric}\OperatorTok{$}\NormalTok{accuracy, svmR.metric}\OperatorTok{$}\NormalTok{sens, svmR.metric}\OperatorTok{$}\NormalTok{spec, svmR.metric}\OperatorTok{$}\NormalTok{fbeta)))}
+
+\KeywordTok{names}\NormalTok{(mod.sum) <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"Model"}\NormalTok{, }\StringTok{"Misclassification Rate"}\NormalTok{, }\StringTok{"Accuracy"}\NormalTok{, }\StringTok{"Sensitivity"}\NormalTok{, }\StringTok{"Specificity"}\NormalTok{, }\StringTok{"fbeta"}\NormalTok{)}
+
+\KeywordTok{kable}\NormalTok{(mod.sum, }\DataTypeTok{align =} \StringTok{"lccccc"}\NormalTok{, }\DataTypeTok{caption =} \StringTok{"Table : Evaluation metrics for Housing Insecurity with Permanent Address as a response"}\NormalTok{) }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{kable_paper}\NormalTok{(}\StringTok{"hover"}\NormalTok{, }\DataTypeTok{full_width =}\NormalTok{ F)}\OperatorTok{%>%}\StringTok{ }
+\StringTok{       }\KeywordTok{kable_styling}\NormalTok{(}\DataTypeTok{font_size =} \DecValTok{12}\NormalTok{, }\DataTypeTok{latex_options =} \KeywordTok{c}\NormalTok{(}\StringTok{"HOLD_position"}\NormalTok{))}
+
+
+
+
+\NormalTok{Var <-}\StringTok{ }\KeywordTok{varImp}\NormalTok{(svmR, }\DataTypeTok{scale =} \OtherTok{FALSE}\NormalTok{)}
+\KeywordTok{plot}\NormalTok{(Var, }\DataTypeTok{main =}\StringTok{"Figure: Variable of Importance"}\NormalTok{)}
+
+\CommentTok{######}
 \end{Highlighting}
 \end{Shaded}
-
-\includegraphics{phase1_report_files/figure-latex/unnamed-chunk-4-3}
 
 \end{document}

@@ -107,7 +107,7 @@ dim(training) # training data
 dim(testing)
 ```
 
-For the purpose of training and validation of each derived model ,and the estimating of the performance metrics, the entire data set was partitioned in training and testing in a ratio of 2/3 and 1/3 respectively.
+For the purpose of training and validation of each derived model ,and the estimating of the performance metrics, the entire data set was partitioned into training and testing in a ratio of 2/3 and 1/3 respectively.
 
 
 ## Model fitting 
