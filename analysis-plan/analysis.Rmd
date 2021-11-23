@@ -1,0 +1,327 @@
+---
+title: "Modeling Food and Housing Insecurity at UTEP - Phase 1"
+subtitle: "Analysis Plan"
+author: 
+ - "George E. Quaye"
+ - "Johnson Koomson"
+ - "Willliam O. Agyapong"
+  
+affiliation: "Department of Mathematical Sciences, University of Texas at El Paso"
+date: \center University of Texas, El Paso (UTEP)\center
+       \center Department of Mathematical Sciences \center
+output:
+  bookdown::pdf_document2:
+    fig_caption: yes
+    keep_tex: yes
+    latex_engine: pdflatex
+    number_sections: yes
+    toc: yes
+    toc_depth: 4
+header-includes:
+  - \usepackage{float}
+  - \usepackage{setspace}
+  - \doublespacing
+  - \usepackage{bm}
+  - \usepackage{amsmath}
+  - \usepackage{amssymb}
+  - \usepackage{amsfonts}
+  - \usepackage{amsthm}
+  - \usepackage{fancyhdr}
+  - \pagestyle{fancy}
+  - \fancyhf{}
+  - \rhead{George Quaye, Johnson Koomson, William Agyapong}
+  - \lhead{Analysis Plan - DS 6335}
+  - \cfoot{\thepage}
+  - \usepackage{algorithm}
+  - \usepackage[noend]{algpseudocode}
+geometry: margin = 0.8in
+fontsize: 10pt
+bibliography: ../references.bib
+link-citations: yes
+linkcolor: blue
+csl: ../apa-6th-edition-no-ampersand.csl
+nocite: |
+---
+
+
+
+\newpage
+
+
+\section{Introduction}
+
+In this section, we provide an overview of Food and Housing Insecurity in Colleges in the U.S. in addition to  the challenges faced by households in America. Also, we provide a description of the surveyed data obtained by The University of Texas at El Paso, processing of data cleaning and variable description.
+
+
+This section  primarily provides a background to the study by means of an overview of food insecurity and housing insecurity in the US in general and at El Paso, the satellite region of our target population, in particular. 
+
+
+## Overview of the study
+This project is aimed at analyzing data based on a survey constructed in summer 2019 and 2020 by a team of researchers at UTEP (Moya, Crouse, Schober, Wagler) to assess the state of food and housing insecurity among UTEP students. A slightly modified version of the survey was administered summer 2020. In this work, we seek to assess whether there are any changes to food and housing insecurities since 2019. This is particularly important since the worldwide pandemic hit during this period. The primary and secondary research questions are listed below. 
+
+
+1. **Primary Research Question**: What factors are associated with food insecurity (FI) and housing insecurity (HI) among UTEP students?
+
+2. **Secondary Research Question**: Which subpopulations of students are most at risk for FI and HI at UTEP?
+
+There are two phases to the project, phase I is concerned with the primary research question while phase II will be based on the secondary research question.
+
+
+## Overview of Food Insecurity
+Food insecurity is defined by the United States Department of Agriculture (USDA) as the lack of consistent access to enough food for active healthy life. It can also be defined as a physical discomfort, thus the definition can relate to an individual or a family's lack of resources to obtain enough food for a healthy living. With the increasing spread of COVID-19, and many Americans losing their jobs, one of America's challenge worsened: hunger.During this period, communities and colleges in America in particular faced the longest queue's for food compared to past years.
+
+According to the USDA, 13.7 million or 10.5% of all households in the U.s. experienced food insecurity at some point during the COVID-19 pandemic. In addition, it was observed that, nearly 40% of college students were food insecure. That means,24 of every 60 students are food insecure. After several years of research on food insecurity, researchers discovered food insecurity as a likelihood to deter college students from completing their degree.
+
+Further research from USDAS stated over the past 20 years and a study completed in 2017  showed that, racial minorities, first-generation students, low income students, student with children and LGBTQ+ students are highly affected by COVID-19. These variables were included in analyzing the factors affecting food insecurities at UTEP.
+
+## Overview of Housing Insecurity ##
+
+Housing insecurities includes  difficulty in paying for living expense, overcrowding, substandard living and frequently moving out. Though housing insecurities can affect anyone, lower income families are known to be highly impacted since they pay high proportion of their lower income on high cost rent.
+
+According to a 2019 report by The Hope Center for college, Communities and Justice, nearly 3 out of 5 students experience having insecurities in 2018. Also, 14% of 4 year student reported experiencing homelessness. Despite the many challenges of housing insecurities, the impact of COVID-19 have increased the likelihood of homelessness among college students. For example, many students lost their jobs and financial due to COVID-19 pandemic.
+
+
+* **Primary Research Question**: What factors are associated with food insecurity (FI) and housing insecurity (HI) among UTEP students?
+
+* **Secondary Research Question**: Which subpopulations of students are most at risk for FI and HI at UTEP? -->
+
+
+\subsection{ Data Description}
+
+\subsection{Data cleaning and naming of variables}
+In this section, we provide a brief description of the data for prediction and a method for renaming and collapsing the variables. The initial data from the survey comprises 12,536 observations with 104 columns. From the data, we observed enrollment and employment as the variables with the minimum number of missing values. In preparation of our data for modeling, we excluded the following questions from the our analysis: respondent ID, the age of the respondent, what pronouns do you use to describe yourself, how many persons depend on you, and where do you live. Table 1 shows the recoded names of the variables we considered in our analysis. 
+
+
+```{r variables-description, echo=F}
+
+var_names <- c("enrollment", "employment", "employment_type", "weekly_work_hrs", "ethnicity", "gender", "total_income", "academic_level", "college/school", "mode_transport", "transport_reliability", "living_alone", "dependents", "household_head", "residence", "permanent_address", "spent_night_elsewhere", "know_homelessness_studt", "federal_aid", "FI_q26", "FI_q27", "FI_q28", "FI_q30", "FI_q31", "expenditures_changed", "income_changed", "fed_aid_changed", "debt_changed")
+
+# description = rep('brief description of the variable', length(var_names))
+
+description = c(
+  "Your enrollment at UTEP (Q1)",
+  "Are you employ (Q2)",
+  " You are consistenly working at which employment type (Q2)",
+  "How many hours a week are you consistently working (Q3)",
+  "What is your ethnicity (Q4)",
+  "Which gender do you identify with",
+  "The The estimated income for your household in 2019 (Q9)",
+  "What is your academic level (Q10)",
+  " Which College/School are you a student of (Q11)",
+  "The common mode of commute (Q12)",
+  "How reliable is it getting you to/from college (Q13)",
+  "Do you live alone (Q14)",
+  "Do you have dependents (Q15)",
+  "Are you the head of the household (Q17)",
+  "Where do you live (Q19)",
+  " In the past 12 months, have you had a prmament adress (Q20)",
+  " How frequently did you spent the night somewhere due to lack of housing (Q22)",
+  "Do you know UTE students who have experienced homelessness (Q23)",
+  "Have you received financial aid in the past 10 months (Q25)",
+  " The food that I bought just didn't last. and I didn't have enough money to get more (Q26)",
+  "I couldn't afford to eat balanced meal, how often (Q27)",
+  " Did you ever cut the size of your meal (Q28)",
+  " In the pst 12 months, have you eat less than you felt you should because there was not enough money (Q30)",
+   " In the past 12 months, were you hungry but didn't eat because there wasn't enough money for food (Q31)",
+"Since COVID-19, has there been any personal or household change in expenditures (Q32)",
+"Since COVID-19, has there been any personal or household change in financial Income (Q33)",
+"Since COVID-19, has there been any personal or household change in financial Aid (Q34)",
+"Since COVID-19, has there been any personal or household change in debt (Q35)")
+
+table1 <- data.frame(cbind(var_names, description))
+names(table1) <- c("Variable Name", "Description")
+
+kable(table1, caption = "Table 1: Table of recoded variable names from survey data")%>%
+       kable_paper("hover", full_width = F)%>% 
+       kable_styling(font_size = 12)
+```
+\subsection{Collapsing the variables}
+
+In other to obtain a feasible result, the following variables were collapsed due to insignificant proportion of respondent answering those questions. With regards to **Ethinicity**, we maintained Hispanic , Black/African American, White, Asian and collapsed American Indian, Native Hawaiian, mixed race and other into **other** . We decided not to keep a mixed race level because the total reduced to 88 after we  assigned (Hispanic, white) to Hispanic, and (Hispanic, Black) to Black. **Gender** was reduced to  3 levels: female, male, and non-binary/non-conforming. With respect to **Income** we kept first 5 levels and 100000 or more (11)->8, collapse (6,7)->6, (8,9,10)->7. For **Academic level**, we keep first 5, and collapse last 2 -> 6. For **College**, we maintain first 6 levels and colapse the remaining ones into other (level 7). For **Commute**, we keep car, Bus/public and other, and collapse car & carpool (2,3) -> 9, collapse bike, trolley, walk (5,6,7) -> 10. Keep Not applicable (0). For, **Federal Aid**, Emergency loan was reduced from 316 to 50, so we added those to loans(3).
+ 
+
+
+
+\section{Data Preprocessing}
+
+\subsection{Rules for Defining Response Variables}
+
+\subsubsection{A measure of Food Insecurity}
+
+
+\subsubsection{A measure of Housing Insecurity}
+
+This document serves to provide a road map to the approaches our group intend to adopt and execute in terms of our modeling approaches and general outline of our final report. We, however, remark that the various plans set forth are subject to changes according to recommendations and suggestions received from our domain experts (Dr. Amy Wagler and her research colleagues on this same project) upon consultations, and any other future modifications that we shall consider appropriate.
+
+\section{Analysis Plan}
+
+
+
+\subsection{Exploratory Data Analysis}
+
+In this section, we will provide descriptive analyses of the data including numerical summaries and graphical displays as a first-hand insight into the data to help ourselves and our audiences to better understand the underlying dataset. We will primarily be looking at the distributions of our target variable (death event) and all the predictor variables.
+
+In terms of the types of graphs or visualizations, I would like my group to consider creating comparative boxplots/histograms, segmented or comparative bar graphs  and, possibly, density plots.  We will critically assess these graphs and settle on a few which will help us to effectively tell a compelling story about the data. We will build animation effects into some of the graphs where possible or appropriate.
+
+* **Cross Tabulations (Contingency Tables)**: Provide numerical summary of how responses differ by some categories. 
+
+* **Comparative Boxplots/Histograms/Density plots**: These graphs will be used to describe the distribution of the continuous or numeric variables across the levels of the target variable.
+
+* **Bar graphs (Segmented/Comparative bar graphs) and Mossaic Plots**: To explore how the available categorical predictors are distributed across the levels of the target or response variable.
+
+* **Correlation plots** will be utilized to detect the presence of multicolinearity among the continuous predictors.
+
+\subsubsection{Missing Data/Outliers and their treatments}
+
+The available data will be inspected for missing and unusual values. Any missing data and/or outlying data identified from our data preprocessing and exploratory analysis will be treated appropriately depending on the nature of the missingness and the information we are able to gather about the possible reasons for the missingness or unusual values. Possible methods to likely to be considered include imputation, listwise deletion, among others.
+
+
+\subsection{Modeling Approaches}
+
+\subsubsection{Data Partitioning}
+
+For the purpose of predictions or testing on the machine learning algorithm models or estimation of the evaluation metrics for the best model selection, a division of the entire into say training data and testing data will be carried out. The training data would be used to fit the models and the testing data was used to derive the metrics for model selection or testing. This partitioning will be done by using the strategy of V -fold cross-validation on the misclassification errors, with V = n, where n would specified base on the sample size of the entire data set. We will randomly divide the data into V folds with stratification on the target variable category. This assures that similar proportions of 0s and 1s are preserved in each fold, and set.seed() will be used for easily reproducible results.
+
+
+\subsubsection{Predictive Models}
+
+In this part of the analysis, since the nature of the tasks present a classification problem, we will fit several classification models to the target variable as a function of all the possible predictors in the dataset that we will deem fit. All the models considered are *supervised* learning algorithms.
+
+Candidate models include Logistic regression, Linear Discriminant Analysis (LDA), K-nearest neighbors (KNN), Support Vector Machines/Classifiers, Naive Bayes' algorithm, Multivariate Adaptive Regression Splines, Artificial Neural Network, and  Tree-based models such as Random Forest, Bagging, or Boosting. Due to the sensitivity of the KNN model to different scales, the continuous variables will be normalized and kept across the other models for consistency, that is, if we end up fiting a KNN model.
+
+
+\subsubsubsection{Logistic Regression}
+
+Logistic Regression is very simple and one of the mostly used traditional machine learning algorithms. It is a statistical model for predicting binary classes. However, as remarked by @james2013introduction, multiple-class extension of Logistic Regression exists but *Discriminant Analysis* models are commonly used in place of it. The dependent variable in here follows Bernoulli distribution. Logistic Regression model uses the logistic function or sigmoid function for predictive modeling of the given problem, which takes value between 0 and 1. 1 will be predicted if the curve goes to positive infinity and 0 if it goes to negative infinity. The logistic Regression model performs the predictive analysis based on the relationship between the binary dependent variable and the other one or more independent variables from the given dataset.
+
+*Binary Logistic Regression, we will fit a regularized logistic regression model such as LASSO as one of the baseline classifiers for comparison. LASSO does not require the target variable to be normally distributed, no homogeneity of variance assumption is required, and with the aid of graph and output interpretation is effective under LASSO. LASSO, however, requires more data to achieve stability and is effective mostly on linearly separable.*
+
+
+\subsubsubsection{K-Nearest Neighbors Classifier}
+
+K-nearest neighbors regression (KNN regression) is one of the simplest and best-known
+non-parametric methods. Unlike the Logistic Regression, no assumptions are made about the shape of the decision boundary. Therefore, we can expect this approach to dominate Logistic Regression when the decision boundary is highly non-linear. It uses a distance metric such as the Euclidean distance for separation between points in the feature space. In the KNN classification model, the prediction is purely based on neighbor data values without any assumption on the dataset. The $K$ in the name of the model represents the number of nearest neighbor data values. This parameter can be tuned to find an optimal value. Based on $K$, the decision is made by the KNN algorithm on classifying the given dataset. 
+
+
+\subsubsubsection{Classification Trees}
+
+According to [@james2013introduction], for a classification tree, we predict that each observation belongs to the most commonly occurring class of training observations in the region to which it belongs. In interpreting the results of a classification tree, we are often interested not only in the class prediction corresponding to a particular terminal node region, but also in the class proportions among the training observations that fall into that region. A recursive binary splitting is used to grow a classification tree. Classification trees are often preferred to other classifiers for the following reasons. One thing, they are non-linear classifiers which do not require the data to be linearly separable. Two, they are easy to read and very easy to explain to people. After a model is generated, it’s easy to report back to others regarding how the tree works. Moreover, trees can be displayed graphically, and are easily interpreted even bya non-expert (especially if they are small). Also, decision trees can easily handle qualitative predictors. However, trees can be very non-robust. In other words, a small change in the data can cause a large change in the final estimated tree. For this reason, we will use tree models that help circumvent this challenge and greatly improves the predictive performance by aggregating many decision trees. Such tree models include Random Forest, Boosting, and Bagging. 
+
+\paragraph{Random forest}
+
+The random forest is a great predictive model for high dimensional data, and we will use RF as one of the baseline classifiers model. RF has high performance and accuracy with regards to modeling, provides feature importance of estimates, and can automatically handle missing values with no scaling required. However, given that RF has some advantages over other classifiers, its prediction time is high, can overfit the data, and also require more computational time and resources.
+
+<!-- **Boosting** works in a similar way, except that the trees are grown sequentially: each tree is grown using information from previously grown trees. Boosting does not involve bootstrap sampling; instead each
+tree is fit on a modified version of the original data set. -->
+
+\subsubsubsection{Support Vector Machines (SVM)}
+
+Support Vector Machines; SVM is a great classification machine learning model for classifying data of clear classes. Also does not require a predetermined cutoff point for prediction. Given a set of training examples, each marked as belonging to one of two categories, an SVM training algorithm builds a model that assigns new examples to one category or the other, making it a non-probabilistic binary linear classifier (although methods such as Platt scaling exist to use SVM in a probabilistic classification setting). SVM maps training examples to points in space so as to maximize the width of the gap between the two categories. New examples are then mapped into that same space and predicted to belong to a category based on which side of the gap they fall [@wikipedia].
+We will consider using this classification model because it is versatile and effective in high dimensional spaces. They are versatile in the sense that different Kernel functions can be specified for the decision function. Common kernels include polynomial kernels and radial kernels. Support vector classifiers are also able to address the problem of possibly non-linear boundaries between classes. We will try at least three kernel SVM for this analysis noticeably, the Linear SVM and two Non-Linear kernels SVM such as the Gaussian radial basis function (RBF) and Polynomial kernel SVM through packages such as caret and kernlab.
+
+
+\subsubsubsection{Naive Bayes Classifier}
+
+It is a classification technique based on Bayes’ Theorem with an assumption of independence among predictors. In simple terms, a Naive Bayes classifier assumes that the presence of a particular feature in a class is unrelated to the presence of any other feature. It works on Bayes theorem of probability to predict the class of unknown data sets. Naive Bayes algorithm is particularly useful for very large data sets. Along with simplicity, Naive Bayes is known to outperform even highly sophisticated classification methods. When the assumption of independence holds, a Naive Bayes classifier performs better compare to other models like logistic regression and you need less training data. It should be however noted that this assumption of independent predictors may be unrealistic since, in real life, it is almost impossible that we get a set of predictors which are completely independent.  Another disadvantage of the Naive Bayes classifier which might discourage us from using it is that it works only with categorical variables, so one has to transform continuous features to discrete, which might lead to the loss of a lot of information.
+
+\subsubsubsection{Multivariate Adaptive Regression Splines}
+
+We will employ at least one MARS model with an appropriate set-up of parameters as another baseline classifier. The MARS algorithm is also suitable for a large number of predictor variables, robust to outliers, it automatically detects interactions between variables, and despite its complexity, it is an efficient fast algorithm. However, it is susceptible to overfitting, more difficult to understand and interpret as against others, and not good with missing data.
+
+
+\subsubsubsection{Artificial Neural Network}
+
+We will fit at least two different artificial neural networks (ANN) models, specifically with different numbers of layers and different numbers of units. ANN learning algorithms are quite robust o noise in the training data set, they are often used where the fast evaluation of the learned target function is required and its ability to learn and model non-linear and complex relationships. However, the ANN classifier has a disadvantage of unexplained functioning of the network and also no specific rule for determining the structure of artificial neural networks, the appropriate network structure is achieved through experience and trial and error.
+
+
+\subsection{Model Validation}
+
+The k-fold cross-validation resampling technique will be used to validate our prediction models. 
+
+
+\subsection{Performance/Evaluation Metrics}
+
+The following metrics will be employed to examine the performance of the models for best predictive power.
+
+\subsubsection{F-beta Score ($F_\beta$)}
+
+The F-beta score or F-beta measure is the weighted harmonic mean of precision and recall, reaching its optimal value at 1 and its worst value at 0. It turns the F-measure into a configurable single-score metric for evaluating a binary classification model based on the predictions made for the positive class. The beta parameter determines the weight of recall and precision in the combined score. $\beta < 1$ lends more weight to precision, while $\beta > 1$ favors recall. That is, a smaller beta value, such as 0.5, gives more weight to precision and less to recall, whereas a larger beta value, such as 2.0, gives less weight to precision and more weight to recall in the calculation of the score. It is a useful metric to use when both precision and recall are important but slightly more attention is needed on one or the other, such as when false negatives are more important than false positives, or the reverse (@MLM, @scikit_learn). 
+
+We can compute the F-beta score by
+
+$$
+  F_\beta = \frac{(1 + \beta^2) * Precision * Recall}{\beta^2 * Precision + Recall},
+$$
+where **precision** and **recall** are defined below.
+
+The choice of the beta parameter will be used in the name of the F-beta score. For example, a $\beta$ value of 1 is referred to as the $F_1$-measure or the $F_1$ score. A $\beta$ value of 2 is referred to as $F_2$-measure or $F_2$-score. 
+
+
+**Precision**
+
+Precision is a metric that quantifies the number of correct positive predictions made. It is computed as the ratio of correctly predicted positive classes divided by the total number of positive classes that were predicted as in the formula below.
+
+$$
+\text{Precision} = \frac{TP}{TP + FP} = \frac{\text{True Positives}}{\text{Total Predicted Positives}}
+$$
+
+**Recall**
+
+Recall is a metric that quantifies the number of correct positive predictions made out of all positive predictions that could have been made. The intuition for recall is that it is not concerned with false positives and it minimizes false negatives [@MLM]. It is calculated as
+
+$$
+\text{Recall} = \frac{\text{True Positives}}{\text{True Positives} + \text{True Negatives}} = \frac{TP}{TP + NP}
+$$
+
+
+
+\subsubsection{Area Under the Receiver Operator Curve (AUROC)}
+
+The AUROC curve is a graphical illustration of the performance of the prediction model. The
+ROC curve is the relationship between the recall and precision over varying threshold values. The threshold is the positive predictions of the model. The AUROC curve is plotted by keeping the x-axis a false positive rate and the y-axis as a true positive rate. Its value ranges from 0 to 1 [@theerthagiri2021prediction].
+
+
+\subsubsection{Area Under the Precision Recall Curve (AUC-PR)}
+
+The area under the precision-recall curve (AUC-PR) is a model performance metric for binary responses that is appropriate for rare events and not dependent on model specificity. Precision-recall
+curves have also been recognized as useful for classification performance assessment for unbalanced binary responses in bioinformatics. Like AUC-ROC, AUC-PR is a threshold-independent metric that calculates the area under a curve, where the curve is defined by a trade-off between different aspects of performance as the threshold applied to the model's predictions varies. Both ROC and PR curves are functions of the confusion matrix [@sofaer2019area].
+
+\subsection{Model Selection}
+Base on the calculated metrics for each classifier algorithm, the best model will be selected, for instance, the model with the highest AUROC will be best among the others, however, AUROC alone is not the measure for selection, hence a contingent table will be obtained with classifier models on the row and metric on the column and base on all the metric estimates the one with the best performance across all metrics will be our final predictive model for analysis.
+
+\subsection{Model Assessment}
+Our final obtained classifier model will be validated using the test data provide. That is we will use our model to predict on test data given, specifically looking at some important measures such as specificity and sensitivity of the predicted outcome by the model. Also, we seek to have a prediction accuracy of approximatley 98% and above for our model.
+
+
+\section{Model Deployment}
+
+To aid easy deployment and implementation of our proposed model(s), we plan to develop a web application with the R Shiny App package.This dashboard will provide users, among other features, the flexibility to interact with the visualizations and models to assess performance based on changing parameters. We are aiming at an application similar to the online prediction tool developed by @dominguez2021bayesian. 
+
+
+
+# Analysis and Results
+
+## 
+
+# Discussion
+
+# Recommendations
+
+# Future Work (Phase II)
+
+## Rule for defining response variable for Food and Housing Insecurities ##
+
+In this section, we provide a rule for classifying a student as food insecure or housing insecure. These rules were used in selecting the appropriate response variables for both food and housing insecurities.
+
+We construct a measure of food insecurity as a dichotomous response variable that combines what we consider to be four main dimensions of food insecurity embodied in five of the survey questions, namely, a stable source of food , lack of healthy/balanced meals, inadequate size of food – eating less and going hungry . Using this definition as proposed by the USDA, we selected $Q26, Q27, Q28$ and $Q30$ respectively as our response variable for food insecurity. Therefore, an individual who participated in the survey is classified as being at risk of food insecurity if they answered yes to all of questions $Q26, Q27, Q31$, and answered yes to either $Q28$ or  $Q30$ since these two questions are similar in terms of measuring a single dimension of food insecurity. Thus, an individual who reports four conditions that indicate food insecurity are classified as “food insecure”. Thus, our response variable is defined as follows:
+
+ At risk for food insecurity= $$\bigg$$
+
+
+
+
+# References{-}
+
+<div id="refs"></div>
+
+
