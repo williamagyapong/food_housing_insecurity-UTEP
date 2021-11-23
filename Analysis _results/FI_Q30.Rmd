@@ -44,7 +44,7 @@ head(missing_rate)
 library(dplyr)
 data_pa<- data %>%
   rename(college_school = `college/school`) %>%
-  dplyr::select(-permanent_address, -spent_night_elsewhere, -ends_with("_changed")) %>%
+  dplyr::select(-c(permanent_address,spent_night_elsewhere, FI_q26, FI_q27, FI_q28,FI_q31), -ends_with("_changed")) %>%
   filter(FI_q30 != "NA") 
 
 dim(data_pa)
