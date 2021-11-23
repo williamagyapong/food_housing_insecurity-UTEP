@@ -211,3 +211,25 @@ kable(mod2.sum, align = "lccccccc", caption = "Table 5: Results from the reduced
   kable_paper("hover", full_width = F)%>% 
        kable_styling(font_size = 12)
 ```
+
+
+
+
+```{r}
+#load dataset
+data <- ISLR::Default
+
+#view first six rows of dataset
+head(data)
+
+#make this example reproducible
+set.seed(1)
+
+#Use 70% of dataset as training set and remaining 30% as testing set
+sample <- sample(c(TRUE, FALSE), nrow(data), replace=TRUE, prob=c(0.7,0.3))
+train <- data[sample, ]
+test <- data[!sample, ] 
+
+#fit logistic regression model
+model <- glm(default~student+balance+income, family="binomial", data=train)
+```
