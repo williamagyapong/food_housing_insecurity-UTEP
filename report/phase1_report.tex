@@ -48,46 +48,6 @@
   pdfcreator={LaTeX via pandoc}}
 \urlstyle{same} % disable monospaced font for URLs
 \usepackage[margin = 0.8in]{geometry}
-\usepackage{color}
-\usepackage{fancyvrb}
-\newcommand{\VerbBar}{|}
-\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
-\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
-% Add ',fontsize=\small' for more characters per line
-\usepackage{framed}
-\definecolor{shadecolor}{RGB}{248,248,248}
-\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
-\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
-\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
-\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
-\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
-\newcommand{\BuiltInTok}[1]{#1}
-\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
-\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
-\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
-\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
-\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
-\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
-\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
-\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
-\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
-\newcommand{\ExtensionTok}[1]{#1}
-\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
-\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
-\newcommand{\ImportTok}[1]{#1}
-\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
-\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
-\newcommand{\NormalTok}[1]{#1}
-\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
-\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
-\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
-\newcommand{\RegionMarkerTok}[1]{#1}
-\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
-\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
-\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
-\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
-\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
-\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
 \usepackage{longtable,booktabs}
 % Correct order of tables after \paragraph or \subparagraph
 \usepackage{etoolbox}
@@ -126,7 +86,7 @@
 \pagestyle{fancy}
 \fancyhf{}
 \rhead{George Quaye, John Koomson, William Agyapong}
-\lhead{Analysis Plan - DS 6335}
+\lhead{Report - DS 6335}
 \cfoot{\thepage}
 \usepackage{algorithm}
 \usepackage[noend]{algpseudocode}
@@ -211,7 +171,7 @@ According to a 2019 report by The Hope Center for college, Communities and Justi
 
 In this section, we provide a brief description of the data for prediction and a method for renaming and collapsing the variables. The initial data from the survey comprises 12,536 observations with 104 columns. From the data, we observed enrollment and employment as the variables with the minimum number of missing values. In preparation of our data for modeling, we excluded the following questions from the our analysis: respondent ID, the age of the respondent, what pronouns do you use to describe yourself, how many persons depend on you, and where do you live. Table 1 shows the recoded names of the variables we considered in our analysis.
 
-\begin{table}
+\begin{table}[H]
 
 \caption{\label{tab:variables-description}Table 1: Table of recoded variable names from survey data}
 \centering
@@ -442,7 +402,7 @@ To aid easy deployment and implementation of our proposed model(s), we plan to d
 \hypertarget{inspecting-missing-values}{%
 \subsubsection{Inspecting missing values}\label{inspecting-missing-values}}
 
-\begin{table}
+\begin{table}[H]
 
 \caption{\label{tab:unnamed-chunk-2}Table : Missing values table displaying percentages}
 \centering
@@ -849,200 +809,6 @@ respondent\_id & 0 & 0.00000\\
 \hypertarget{codes}{%
 \subsection{Codes}\label{codes}}
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{data_pa<-}\StringTok{ }\NormalTok{data }\OperatorTok{%>%}
-\StringTok{  }\NormalTok{dplyr}\OperatorTok{::}\KeywordTok{select}\NormalTok{(}\OperatorTok{-}\KeywordTok{starts_with}\NormalTok{(}\StringTok{"FI_"}\NormalTok{), }\OperatorTok{-}\KeywordTok{ends_with}\NormalTok{(}\StringTok{"_changed"}\NormalTok{), }\OperatorTok{-}\StringTok{`}\DataTypeTok{college/school}\StringTok{`}\NormalTok{) }\OperatorTok{%>%}
-\StringTok{  }\KeywordTok{filter}\NormalTok{(permanent_address }\OperatorTok{!=}\StringTok{ "NA"}\NormalTok{) }
-
-\CommentTok{# dim(data_pa)}
-
-
-
-\KeywordTok{set.seed}\NormalTok{(}\DecValTok{123}\NormalTok{)}
-\KeywordTok{suppressPackageStartupMessages}\NormalTok{(}\KeywordTok{library}\NormalTok{(mice))}
-\NormalTok{data_imputed <-}\StringTok{ }\KeywordTok{mice}\NormalTok{(data_pa[,}\OperatorTok{-}\DecValTok{15}\NormalTok{], }\DataTypeTok{printFlag =}\NormalTok{ F)}
-\NormalTok{data_}\DecValTok{1}\NormalTok{ <-}\StringTok{ }\KeywordTok{complete}\NormalTok{(data_imputed, }\DecValTok{1}\NormalTok{)}
-\NormalTok{data1 <-}\StringTok{ }\KeywordTok{as.data.frame}\NormalTok{(data_}\DecValTok{1}\NormalTok{)}
-\NormalTok{data_pad<-}\KeywordTok{cbind}\NormalTok{(}\StringTok{"permanent_address"}\NormalTok{=data_pa}\OperatorTok{$}\NormalTok{permanent_address,data1)}
-\KeywordTok{rm}\NormalTok{(data_imputed, data_}\DecValTok{1}\NormalTok{, data1)}
-
-
-\CommentTok{# Treating imbalance classification}
-
-
-\NormalTok{ data_pad_balance<-}\KeywordTok{ovun.sample}\NormalTok{(permanent_address }\OperatorTok{~}\StringTok{ }\NormalTok{., }\DataTypeTok{data =}\NormalTok{ data_pad, }\DataTypeTok{method =} \StringTok{"both"}\NormalTok{, }\DataTypeTok{p=}\FloatTok{0.5}\NormalTok{,                             }\DataTypeTok{N=}\KeywordTok{NROW}\NormalTok{(data_pad), }\DataTypeTok{seed =} \DecValTok{125}\NormalTok{)}\OperatorTok{$}\NormalTok{data}
- \CommentTok{# dim(data_pad_balance)}
-
-
-
-\NormalTok{data_pad_balance <-}\StringTok{ }\NormalTok{data_pad_balance }\OperatorTok{%>%}
-\StringTok{   }\KeywordTok{mutate}\NormalTok{(}\KeywordTok{across}\NormalTok{(}\KeywordTok{everything}\NormalTok{(), as.factor))}
-
-
-\CommentTok{# PARTITION DATA}
-\KeywordTok{set.seed}\NormalTok{(}\DecValTok{123}\NormalTok{)}
-\NormalTok{intrain <-}\StringTok{ }\KeywordTok{createDataPartition}\NormalTok{(}\DataTypeTok{y=}\DecValTok{1}\OperatorTok{:}\KeywordTok{NROW}\NormalTok{(data_pad_balance), }\DataTypeTok{p=} \FloatTok{0.67}\NormalTok{, }\DataTypeTok{list =} \OtherTok{FALSE}\NormalTok{)}
-\NormalTok{training <-}\StringTok{ }\NormalTok{data_pad_balance[intrain,];  testing <-}\StringTok{ }\NormalTok{data_pad_balance[}\OperatorTok{-}\NormalTok{intrain,]}
-
-\CommentTok{# dim(training) # training data}
-\CommentTok{# dim(testing)}
-
-
-
-
-
-\CommentTok{#------ Model building -----------}
-\CommentTok{# Create a wrapper function to abstract away the common aspects of model fitting}
-\NormalTok{formula<-}\StringTok{ }\NormalTok{permanent_address}\OperatorTok{~}\NormalTok{.}
-\NormalTok{fit.model <-}\StringTok{ }\ControlFlowTok{function}\NormalTok{(method, }\DataTypeTok{tunegrid=}\StringTok{""}\NormalTok{, }\DataTypeTok{data=}\OtherTok{NULL}\NormalTok{, }\DataTypeTok{formula=}\OtherTok{NULL}\NormalTok{) \{}
-  
-\NormalTok{  data <-}\StringTok{ }\NormalTok{training}
-  \ControlFlowTok{if}\NormalTok{(}\KeywordTok{is.null}\NormalTok{(formula)) formula<-}\StringTok{ }\NormalTok{permanent_address}\OperatorTok{~}\NormalTok{.}
-  
-  \CommentTok{# Train the model}
-   \KeywordTok{train}\NormalTok{(}
-\NormalTok{           formula,}
-           \DataTypeTok{data =}\NormalTok{ data,}
-           \DataTypeTok{method =}\NormalTok{ method,}
-           \DataTypeTok{trControl =} \KeywordTok{trainControl}\NormalTok{(}\DataTypeTok{method =} \StringTok{"cv"}\NormalTok{, }\DecValTok{5}\NormalTok{),}
-           \DataTypeTok{preProcess =} \KeywordTok{c}\NormalTok{(}\StringTok{"center"}\NormalTok{,}\StringTok{"scale"}\NormalTok{),}
-           \DataTypeTok{tuneGrid =}\NormalTok{ tunegrid)}
-          
-\NormalTok{\}}
-
-
-
-\CommentTok{# Logistic Regression}
-\NormalTok{log <-}\KeywordTok{train}\NormalTok{(formula,}
-                 \DataTypeTok{data=}\NormalTok{training,}
-                 \DataTypeTok{method=}\StringTok{"glm"}\NormalTok{,}
-                 \DataTypeTok{family =} \KeywordTok{binomial}\NormalTok{(}\DataTypeTok{link =} \StringTok{"logit"}\NormalTok{),}
-                \DataTypeTok{trControl =} \KeywordTok{trainControl}\NormalTok{(}\DataTypeTok{method =} \StringTok{"cv"}\NormalTok{, }\DecValTok{5}\NormalTok{),}
-                \DataTypeTok{preProcess =} \KeywordTok{c}\NormalTok{(}\StringTok{"center"}\NormalTok{, }\StringTok{"scale"}\NormalTok{)) }
-
-
-
-\CommentTok{# LDA}
-\NormalTok{lda <-}\StringTok{ }\KeywordTok{train}\NormalTok{(formula,}
-                 \DataTypeTok{data=}\NormalTok{training,}
-                 \DataTypeTok{method=}\StringTok{"lda"}\NormalTok{,}
-                \DataTypeTok{trControl =} \KeywordTok{trainControl}\NormalTok{(}\DataTypeTok{method =} \StringTok{"cv"}\NormalTok{, }\DecValTok{5}\NormalTok{),}
-                \DataTypeTok{preProcess =} \KeywordTok{c}\NormalTok{(}\StringTok{"center"}\NormalTok{, }\StringTok{"scale"}\NormalTok{))}
-
-
-
-
-\CommentTok{#-------------- Elastic Net Models -------------------}
-\CommentTok{# fit a LASSO model}
-\NormalTok{lasso <-}\StringTok{ }\KeywordTok{fit.model}\NormalTok{(}\StringTok{"glmnet"}\NormalTok{, }\KeywordTok{expand.grid}\NormalTok{(}\DataTypeTok{.alpha=}\DecValTok{1}\NormalTok{, }\DataTypeTok{.lambda=}\KeywordTok{seq}\NormalTok{(}\DecValTok{0}\NormalTok{,}\FloatTok{0.1}\NormalTok{,}\FloatTok{0.01}\NormalTok{)))}
-
-\CommentTok{# Fit a Ridge regression model}
-\NormalTok{ridge <-}\StringTok{ }\KeywordTok{fit.model}\NormalTok{(}\StringTok{"glmnet"}\NormalTok{, }\KeywordTok{expand.grid}\NormalTok{(}\DataTypeTok{.alpha=}\DecValTok{0}\NormalTok{, }\DataTypeTok{.lambda=}\KeywordTok{seq}\NormalTok{(}\DecValTok{0}\NormalTok{,}\FloatTok{0.1}\NormalTok{,}\FloatTok{0.01}\NormalTok{)))}
-
-
-
-
-\CommentTok{# Bagging}
-\CommentTok{# bag <- fit.model("rf", data.frame(mtry=11))}
-\CommentTok{# bag <- train(formula,}
-\CommentTok{#                  data=training,}
-\CommentTok{#                  method="rf",}
-\CommentTok{#                 trControl = trainControl(method = "cv", 5),}
-\CommentTok{#                 preProcess = c("center", "scale"),}
-\CommentTok{#                 tuneGrid = data.frame(mtry=11),}
-\CommentTok{#                 ntree = 1000) }
-
-
-
-
-\CommentTok{#-------------- }
-
-\CommentTok{# Support Vector Machine with linear kernel}
-\KeywordTok{set.seed}\NormalTok{(}\DecValTok{125}\NormalTok{)}
-\NormalTok{trctrl <-}\StringTok{ }\KeywordTok{trainControl}\NormalTok{(}\DataTypeTok{method =} \StringTok{"cv"}\NormalTok{, }\DataTypeTok{number=}\DecValTok{5}\NormalTok{)}
-\NormalTok{svc <-}\StringTok{ }\KeywordTok{train}\NormalTok{(formula, }\DataTypeTok{data =}\NormalTok{ training, }\DataTypeTok{method =} \StringTok{"svmLinear"}\NormalTok{,}
-                    \DataTypeTok{trControl=}\NormalTok{trctrl, }\DataTypeTok{prob.model=}\NormalTok{T,}
-                    \DataTypeTok{tuneLength =} \DecValTok{10}\NormalTok{)}
-
-
-
-
-\CommentTok{# Support Vector Machine with radial kernel}
-\KeywordTok{set.seed}\NormalTok{(}\DecValTok{125}\NormalTok{)}
-\NormalTok{trctrl <-}\StringTok{ }\KeywordTok{trainControl}\NormalTok{(}\DataTypeTok{method =} \StringTok{"cv"}\NormalTok{, }\DataTypeTok{number=}\DecValTok{5}\NormalTok{)}
-\NormalTok{svmR <-}\StringTok{ }\KeywordTok{train}\NormalTok{(formula , }\DataTypeTok{data =}\NormalTok{ training, }\DataTypeTok{method =} \StringTok{"svmRadial"}\NormalTok{,}
-                    \DataTypeTok{trControl=}\NormalTok{trctrl, }\DataTypeTok{prob.model=}\NormalTok{T,}
-                    \DataTypeTok{tuneLength =} \DecValTok{10}\NormalTok{)}
-
-
-
-\CommentTok{## Making predictions }
-
-
-\CommentTok{# Create a custom confusion matrix with performance metrics}
-\NormalTok{metrics <-}\StringTok{ }\ControlFlowTok{function}\NormalTok{(model_object, }\DataTypeTok{response=}\StringTok{""}\NormalTok{, }\DataTypeTok{test_data=}\OtherTok{NULL}\NormalTok{) \{}
-  \CommentTok{# response = "permanent_address"}
-  \CommentTok{# model_object <- log}
-  \CommentTok{# }
-  \ControlFlowTok{if}\NormalTok{(}\KeywordTok{is.null}\NormalTok{(test_data)) test_data <-}\StringTok{ }\NormalTok{testing}
-  
-  \CommentTok{# make predictions}
-\NormalTok{  prediction <-}\StringTok{ }\KeywordTok{predict}\NormalTok{(model_object, test_data) }
-  
-\NormalTok{  target <-}\StringTok{ }\NormalTok{test_data[, response]}
-  
-\NormalTok{  cmat <-}\StringTok{ }\KeywordTok{confusionMatrix}\NormalTok{(prediction, target, }\DataTypeTok{mode =} \StringTok{"prec_recall"}\NormalTok{)}
-  
-\NormalTok{  misscal<-}\StringTok{ }\KeywordTok{round}\NormalTok{(}\KeywordTok{mean}\NormalTok{(prediction }\OperatorTok{!=}\StringTok{ }\NormalTok{target),}\DataTypeTok{digits =} \DecValTok{2}\NormalTok{)}
-  
- \CommentTok{# Returned outputs}
- \KeywordTok{return}\NormalTok{(}\KeywordTok{list}\NormalTok{(}
-   \DataTypeTok{accuracy =}\NormalTok{ (}\DecValTok{1}\OperatorTok{-}\NormalTok{misscal),}
-   \DataTypeTok{mcr =}\NormalTok{ misscal,}
-   \DataTypeTok{sens =} \KeywordTok{round}\NormalTok{(cmat}\OperatorTok{$}\NormalTok{byClass[}\DecValTok{1}\NormalTok{],}\DecValTok{2}\NormalTok{),}
-   \DataTypeTok{spec =} \KeywordTok{round}\NormalTok{(cmat}\OperatorTok{$}\NormalTok{byClass[}\DecValTok{2}\NormalTok{],}\DecValTok{2}\NormalTok{),}
-   \DataTypeTok{fbeta =} \KeywordTok{round}\NormalTok{(cmat}\OperatorTok{$}\NormalTok{byClass[}\DecValTok{7}\NormalTok{],}\DecValTok{2}\NormalTok{)}
-\NormalTok{ ))}
-  
-\NormalTok{\}}
-
-\NormalTok{metric_log <-}\StringTok{ }\KeywordTok{metrics}\NormalTok{(lasso, }\DataTypeTok{response =} \StringTok{"permanent_address"}\NormalTok{)}
-\CommentTok{#------- Compute performance metrics for the full models ---------------}
-\NormalTok{log.metric <-}\StringTok{ }\KeywordTok{metrics}\NormalTok{(log, }\DataTypeTok{response =} \StringTok{"permanent_address"}\NormalTok{)}
-\NormalTok{lda.metric <-}\StringTok{ }\KeywordTok{metrics}\NormalTok{(lda, }\DataTypeTok{response =} \StringTok{"permanent_address"}\NormalTok{)}
-\CommentTok{# knn.metric <- metrics(knn)}
-\NormalTok{lasso.metric <-}\StringTok{ }\KeywordTok{metrics}\NormalTok{(lasso, }\DataTypeTok{response =} \StringTok{"permanent_address"}\NormalTok{)}
-\NormalTok{ridge.metric <-}\StringTok{ }\KeywordTok{metrics}\NormalTok{(ridge, }\DataTypeTok{response =} \StringTok{"permanent_address"}\NormalTok{)}
-\CommentTok{# bag.metric <- metrics(bag, response = "permanent_address")}
-\CommentTok{# rf.metric <- metrics(rf)}
-\NormalTok{svc.metric <-}\StringTok{ }\KeywordTok{metrics}\NormalTok{(svc, }\DataTypeTok{response =} \StringTok{"permanent_address"}\NormalTok{)}
-\CommentTok{# svmP.metric <- metrics(svmP)}
-\NormalTok{svmR.metric <-}\StringTok{ }\KeywordTok{metrics}\NormalTok{(svmR, }\DataTypeTok{response =} \StringTok{"permanent_address"}\NormalTok{)}
-
-\NormalTok{mod.sum <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\KeywordTok{rbind}\NormalTok{(}
-                          \KeywordTok{c}\NormalTok{(}\StringTok{"Logistic"}\NormalTok{, log.metric}\OperatorTok{$}\NormalTok{mcr, log.metric}\OperatorTok{$}\NormalTok{accuracy, log.metric}\OperatorTok{$}\NormalTok{sens, log.metric}\OperatorTok{$}\NormalTok{spec, log.metric}\OperatorTok{$}\NormalTok{fbeta),}
-                          \KeywordTok{c}\NormalTok{(}\StringTok{"LDA"}\NormalTok{,  lda.metric}\OperatorTok{$}\NormalTok{mcr, lda.metric}\OperatorTok{$}\NormalTok{accuracy, lda.metric}\OperatorTok{$}\NormalTok{sens, lda.metric}\OperatorTok{$}\NormalTok{spec, lda.metric}\OperatorTok{$}\NormalTok{fbeta),}
-                          \KeywordTok{c}\NormalTok{(}\StringTok{"LASSO"}\NormalTok{, lasso.metric}\OperatorTok{$}\NormalTok{mcr, lasso.metric}\OperatorTok{$}\NormalTok{accuracy, lasso.metric}\OperatorTok{$}\NormalTok{sens, lasso.metric}\OperatorTok{$}\NormalTok{spec, lasso.metric}\OperatorTok{$}\NormalTok{fbeta),}
-                          \KeywordTok{c}\NormalTok{(}\StringTok{"Ridge"}\NormalTok{, ridge.metric}\OperatorTok{$}\NormalTok{mcr, ridge.metric}\OperatorTok{$}\NormalTok{accuracy, ridge.metric}\OperatorTok{$}\NormalTok{sens, ridge.metric}\OperatorTok{$}\NormalTok{spec, ridge.metric}\OperatorTok{$}\NormalTok{fbeta),}
-                          \CommentTok{# c("Bagging", bag.metric$mcr, bag.metric$accuracy, bag.metric$sens, bag.metric$spec, bag.metric$fbeta),}
-                          \KeywordTok{c}\NormalTok{(}\StringTok{"SVC"}\NormalTok{,  svc.metric}\OperatorTok{$}\NormalTok{mcr, svc.metric}\OperatorTok{$}\NormalTok{accuracy, svc.metric}\OperatorTok{$}\NormalTok{sens, svc.metric}\OperatorTok{$}\NormalTok{spec, svc.metric}\OperatorTok{$}\NormalTok{fbeta),}
-                          \KeywordTok{c}\NormalTok{(}\StringTok{"SVM (Radial Kernel)"}\NormalTok{, svmR.metric}\OperatorTok{$}\NormalTok{mcr, svmR.metric}\OperatorTok{$}\NormalTok{accuracy, svmR.metric}\OperatorTok{$}\NormalTok{sens, svmR.metric}\OperatorTok{$}\NormalTok{spec, svmR.metric}\OperatorTok{$}\NormalTok{fbeta)))}
-
-\KeywordTok{names}\NormalTok{(mod.sum) <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"Model"}\NormalTok{, }\StringTok{"Misclassification Rate"}\NormalTok{, }\StringTok{"Accuracy"}\NormalTok{, }\StringTok{"Sensitivity"}\NormalTok{, }\StringTok{"Specificity"}\NormalTok{, }\StringTok{"fbeta"}\NormalTok{)}
-
-\KeywordTok{kable}\NormalTok{(mod.sum, }\DataTypeTok{align =} \StringTok{"lccccc"}\NormalTok{, }\DataTypeTok{caption =} \StringTok{"Table : Evaluation metrics for Housing Insecurity with Permanent Address as a response"}\NormalTok{) }\OperatorTok{%>%}
-\StringTok{  }\KeywordTok{kable_paper}\NormalTok{(}\StringTok{"hover"}\NormalTok{, }\DataTypeTok{full_width =}\NormalTok{ F)}\OperatorTok{%>%}\StringTok{ }
-\StringTok{       }\KeywordTok{kable_styling}\NormalTok{(}\DataTypeTok{font_size =} \DecValTok{12}\NormalTok{, }\DataTypeTok{latex_options =} \KeywordTok{c}\NormalTok{(}\StringTok{"HOLD_position"}\NormalTok{))}
-
-
-
-
-\NormalTok{Var <-}\StringTok{ }\KeywordTok{varImp}\NormalTok{(svmR, }\DataTypeTok{scale =} \OtherTok{FALSE}\NormalTok{)}
-\KeywordTok{plot}\NormalTok{(Var, }\DataTypeTok{main =}\StringTok{"Figure: Variable of Importance"}\NormalTok{)}
-
-\CommentTok{######}
-\end{Highlighting}
-\end{Shaded}
+Codes for the analysis is available upon request.
 
 \end{document}

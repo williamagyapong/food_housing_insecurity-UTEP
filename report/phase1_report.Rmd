@@ -30,7 +30,7 @@ header-includes:
   - \pagestyle{fancy}
   - \fancyhf{}
   - \rhead{George Quaye, John Koomson, William Agyapong}
-  - \lhead{Analysis Plan - DS 6335}
+  - \lhead{Report - DS 6335}
   - \cfoot{\thepage}
   - \usepackage{algorithm}
   - \usepackage[noend]{algpseudocode}
@@ -40,7 +40,7 @@ bibliography: ../references.bib
 link-citations: yes
 linkcolor: blue
 csl: ../apa-6th-edition-no-ampersand.csl
-nocite: |
+
 ---
 
 ```{r setup, warning=F, message=F, include=FALSE, echo=FALSE}
@@ -139,7 +139,7 @@ names(table1) <- c("Variable Name", "Description")
 
 kable(table1, caption = "Table 1: Table of recoded variable names from survey data")%>%
        kable_paper("hover", full_width = F)%>% 
-       kable_styling(font_size = 12)
+       kable_styling(font_size = 12, latex_options = c("HOLD_position"))
 ```
 
 \subsection{Collapsing the variables}
@@ -1353,7 +1353,9 @@ gg_miss_var(FIHI_sub3, show_pct = T)
 
 ## Codes
 
-```{r, echo=T, eval=F}
+Codes for the analysis is available upon request.
+
+```{r, echo=F, eval=F}
 
 data_pa<- data %>%
   dplyr::select(-starts_with("FI_"), -ends_with("_changed"), -`college/school`) %>%
