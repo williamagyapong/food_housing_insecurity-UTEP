@@ -12,3 +12,7 @@ library(kableExtra)
 library(scales)
 library(patchwork)
 library(ROSE)
+
+# Generating missing data maps and summaries
+library(naniar) 
+library(UpSetR)
