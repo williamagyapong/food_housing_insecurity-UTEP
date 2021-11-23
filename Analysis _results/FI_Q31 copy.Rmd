@@ -294,11 +294,19 @@ The plot above displays the variable of important base on our best model.
 
 
 
+Base on our table of results the best model is selected based on the performance metrics accuracy, misclassification, and fbeta. That is a model with the least misclassification, higher accuracy, and an fbeta score approaching one. Considering the results from the housing insecurity models, the SVM with the radial basis kernel has the highest f\beta of 96% and the least misclassification rate of 0.4%, followed by the linear discriminate analysis with f\beta 72% and misclassification of 3%. Hence the support vector machine through the radial basis function is chosen as our best model. The variables are highly associated with predicting housing insecurity as displayed by the graph of the variable of important shows that total income, residence, and transportation reliability been the top variables with federal aid, gender, and weekly work hours being least of importance. However if a cutoff of say 50% is employed the best or associated variables will be the top three variables together with the head of household, living alone, and spending the night elsewhere. 
+
+Furthermore, we observed that SVM performs better with a misclafficattion rate of 0.08, accuracy of 0.92, and f\beta of 0.92 respectively for the food insecurity. This is associated with the response Food insecurity 1. Using a cut of 50%, we can infer from the variable importance plot that, total income,  transport reliability and household are the top variables which is associated or predicts the response variable.
+ 
+Also, we can observe that, support vector machine with misclaffication rate of 0.14, with accuracy of 0.86, and f\beta of 0.86 shows that, SVM performs better considering response variable: Food insecurity 3. Considering a cut of 50%, we can observe infer from the variable importance plot that total income, transport reliability and known homelessnes student predict or is associated with food insecurity 3. 
+
+Finally, we can observe that, support vector machine with misclaffication rate of 0.07, with accuracy of 0.93, and f\beta of 0.93 shows that, SVM performs better considering response variable: Food insecurity 2 . Considering a cut of 50%, we can observe infer from the variable importance plot that total income, transport reliability and known_homelessnes_student predict or is associated with food insecurity. We can observe that, the total income, total reliability and known_homelessness_student are associated with both food insecurity 2  and 3.
 
 
 
 
 
+ 
 
 
 
