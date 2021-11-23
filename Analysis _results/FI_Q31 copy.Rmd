@@ -44,8 +44,8 @@ head(missing_rate)
 library(dplyr)
 data_pa<- data %>%
   rename(college_school = `college/school`) %>%
-  dplyr::select(-starts_with("FI_"), -ends_with("_changed")) %>%
-  filter(spent_night_elsewhere != "NA") 
+  dplyr::select(-c(permanent_address,spent_night_elsewhere, FI_q26,FI_q28,FI_q27,FI_q30), -ends_with("_changed")) %>%
+  filter(FI_q31 != "NA") 
 
 dim(data_pa)
 ```
@@ -58,17 +58,17 @@ Method I
 #Missing  value imputation
 set.seed(123)
 suppressPackageStartupMessages(library(mice))
-data_imputed <- mice(data_pa[,-15], printFlag = F)
+data_imputed <- mice(data_pa[,-18], printFlag = F)
 data_1 <- complete(data_imputed, 1)
 data1 <- as.data.frame(data_1)
-data_pad<-cbind("spent_night_elsewhere"=data_pa$spent_night_elsewhere,data1)
+data_pad<-cbind("FI_q31"=data_pa$FI_q31,data1)
 rm(data_imputed, data_1, data1)
 ```
 
 # Treating imbalance classification
 ```{r}
 library(ROSE)
- data_pad_balance<-ovun.sample(spent_night_elsewhere ~ ., data = data_pad, method = "both", p=0.5,                             N=NROW(data_pad), seed = 125)$data
+ data_pad_balance<-ovun.sample(FI_q31 ~ ., data = data_pad, method = "both", p=0.5,                             N=NROW(data_pad), seed = 125)$data
  dim(data_pad_balance)
 ```
 
@@ -99,11 +99,11 @@ The testing data has 32 observation with 1887 now (old= 1057 when compared) vari
 ```{r}
 #------ Model building -----------
 # Create a wrapper function to abstract away the common aspects of model fitting
-formula<- permanent_address~.
+formula<- FI_q31~.
 fit.model <- function(method, tunegrid="", data=NULL, formula=NULL) {
   
   data <- training
-  if(is.null(formula)) formula<- permanent_address~.
+  if(is.null(formula)) formula<- FI_q31~.
   
   # Train the model
    train(
@@ -198,28 +198,11 @@ svmR <- train(formula , data = training, method = "svmRadial",
 
 ## Making predictions 
 
-```{r}
-# pred <- function(model){
-#   model <- lasso
-#     pred.test<- predict(model, testing)
-#     misscal<- round(mean(pred.test != testing$permanent_address),digits = 2)
-#     
-#    #  test_pred_1 <- predict(model, newdata = testing, type= "prob")
-#    #  ROC_SR <- roc(testing$permanent_address, predictor = test_pred_1[,2])
-#    #  # # plot(ROC_SR, col="brown")
-#    #  AUC<-round(ROC_SR$auc, digits=4)*100  # AUC
-#    #  # text(x=0.4, y=0.25, paste("Area Under Curve = ", AUC, sep=""), col="blue", cex=1.2)
-#    # AUC  = 0
-#   return(list(missclass=misscal))
-#}
-```
-
 Metrics
 ```{r}
-library(mlr3measures)
 # Create a custom confusion matrix with performance metrics
 metrics <- function(model_object, response="", test_data=NULL) {
-  # response = "permanent_address"
+  # response = "FI_q31"
   # model_object <- log
   # 
   if(is.null(test_data)) test_data <- testing
@@ -246,18 +229,18 @@ metrics <- function(model_object, response="", test_data=NULL) {
 ```
 
 ```{r}
-metric_log <- metrics(lasso, response = "permanent_address")
+metric_log <- metrics(lasso, response = "FI_q31")
 #------- Compute performance metrics for the full models ---------------
-log.metric <- metrics(log, response = "permanent_address")
-lda.metric <- metrics(lda, response = "permanent_address")
+log.metric <- metrics(log, response = "FI_q31")
+lda.metric <- metrics(lda, response = "FI_q31")
 # knn.metric <- metrics(knn)
-lasso.metric <- metrics(lasso, response = "permanent_address")
-ridge.metric <- metrics(ridge, response = "permanent_address")
-bag.metric <- metrics(bag, response = "permanent_address")
+lasso.metric <- metrics(lasso, response = "FI_q31")
+ridge.metric <- metrics(ridge, response = "FI_q31")
+bag.metric <- metrics(bag, response = "FI_q31")
 # rf.metric <- metrics(rf)
-svc.metric <- metrics(svc, response = "permanent_address")
+svc.metric <- metrics(svc, response = "FI_q31")
 # svmP.metric <- metrics(svmP)
-svmR.metric <- metrics(svmR, response = "permanent_address")
+svmR.metric <- metrics(svmR, response = "FI_q31")
 
 mod.sum <- data.frame(rbind(
                           c("Logistic", log.metric$mcr, log.metric$accuracy, log.metric$sens, log.metric$spec, log.metric$fbeta),
@@ -280,7 +263,8 @@ Base on our table of results SVM with radial basis function is the best
 ```{r}
 
 Var <- varImp(svmR, scale = FALSE)
-plot(Var)
+plot(Var, main =
+       "Variable of Important plot for hungry and didn't eat due to lack of money")
 
 ```
 
