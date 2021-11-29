@@ -36,7 +36,7 @@ header-includes:
   - \pagestyle{fancy}
   - \fancyhf{}
   - \rhead{George Quaye, Johnson Koomson, William Agyapong}
-  - \lhead{Analysis Plan - DS 6335}
+  - \lhead{Modeling - DS 6335}
   - \cfoot{\thepage}
   - \usepackage{algorithm}
   - \usepackage[noend]{algpseudocode}
