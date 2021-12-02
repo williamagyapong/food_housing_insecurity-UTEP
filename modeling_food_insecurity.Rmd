@@ -105,7 +105,7 @@ FIHI_new <- FIHI %>%
   rename_with(tolower) %>%
   # Removing unwanted variables
   select(-externalid, -satellite, -email, -datetime, -carddata,
-                        -starts_with(c("q5", "q8","q16", "q18", "q21", "q29", "q24", "q36", "q37", "q38", "q39"))
+                        -starts_with(c("q5", "q8", "q18", "q21", "q29", "q24", "q36", "q37", "q38", "q39"))
          ) %>%
   # Strip off trailing strings to get clean variable names
   rename_with(~gsub('\\..*', '', .x))  
@@ -164,8 +164,14 @@ FIHI_sub <- FIHI_new_ %>%
   relocate(q25, .after = starts_with("q23")) %>%
   mutate(across(starts_with(c("q6", "q7", "q11", "q25")), zero_to_na))
 
-# test_df <- FIHI_sub %>% mutate(across(!respondentid, as.factor)) # convert all variables except the respondent id to a factor
+##---------- Removing respondents with 0 or extremely few responses ---------
 
+# Found 7087 zero responses, 160 2 responses, and 114 4 responses
+# We decided to get rid of these
+FIHI_sub <- FIHI_sub %>%
+  mutate(count = rowSums(!is.na(select(., -respondentid)))) %>%
+  filter(count > 4) %>%
+  select(-count)
 
 ##---------- Collapsing levels within some of the variables ---------
 #
@@ -185,6 +191,9 @@ FIHI_sub <- FIHI_new_ %>%
 # Commute (q12): keep car(1), Bus/public (4) and other(8), collapse car & carpool (2,3) -> 9,
 # collapse bike, trolley, walk (5,6,7) -> 10. Keep Not applicable (0)
 #
+# Combine Q15 and Q16 into a single variable, number of dependents.
+# No for Q15 becomes 0 with a level of 4, while levels of Q16 are maintained 
+# 
 # Federal Aid(q25): Emergency loan reduced from 316 to 50, so we added those to loans(3)
 #
 # Q26: Never -> 1, sometimes true -> 2, often true -> 3
@@ -197,10 +206,15 @@ FIHI_sub2 <- FIHI_sub %>%
          q10 = ifelse(q10>5, 6, q10),
          # q11 = ifelse(q11>6, 7, q11),
          q12 = ifelse(q12%in%2:3, 9, ifelse(q12%in%5:7, 10, ifelse(q12==0, 11, q12))),
+         q15 = ifelse(q15==2, 4, q16),
          q25 = ifelse(q25==4, 3, q25)
-         )
+         ) %>% 
+  select(-q16) # remove this variable since it has already been used up
 
-##------------------ Assign labels to the various levels -----------------------
+
+
+##------------------ Assign labels to the various levels for EDA -----------------------
+
 FIHI_sub3 <- FIHI_sub2 %>%
   mutate(
     q1 = factor(q1, levels = 1:2, 
@@ -235,8 +249,8 @@ FIHI_sub3 <- FIHI_sub2 %>%
                                  "Fairly reliable", "Very reliable")),
     q14 = factor(q14, levels = 1:2, 
                       labels = c("Yes", "No")),
-    q15 = factor(q15, levels = 1:2, 
-                      labels = c("Yes", "No")),
+    q15 = factor(q15, levels = c(4, 1:3), 
+                      labels = c("0", "1", "2 - 3", "4 or more")),
     q17 = factor(q17, levels = 1:2, 
                       labels = c("Yes", "No")),
     q19 = factor(q19, levels = 1:4, 
@@ -294,20 +308,20 @@ save(FIHI_sub2, FIHI_sub3, file=paste0(file_path, '/FIHI_clean.RData'))
 # summary_stats <- as.data.frame(t(summary(FIHI_sub3[,-1])))
 # kable(summary_stats)
 
-pa_tats <- FIHI_sub3 %>%
+pa_stats <- FIHI_sub3 %>%
   select(permanent_address) %>%
   group_by(permanent_address) %>%
   summarise(freq = n())
-names(pa_tats) <- c("Levels", "Obervations")
+names(pa_stats) <- c("Levels", "Obervations")
 
-pa_tats2 <- FIHI_sub3 %>%
+pa_stats2 <- FIHI_sub3 %>%
   filter(permanent_address=="No") %>%
   select(spent_night_elsewhere) %>%
   group_by(spent_night_elsewhere) %>%
   summarise(freq = n())
-names(pa_tats2) <- c("Levels", "Obervations")
+names(pa_stats2) <- c("Levels", "Obervations")
 
-rbind(pa_tats, pa_tats2)
+rbind(pa_stats, pa_stats2)
 ```
 
 

@@ -1,0 +1,334 @@
+---
+title: "Modeling Food and Housing Insecurity at UTEP - Phase 1"
+author:
+- George E. Quaye
+- John Koomson
+- Willliam O. Agyapong
+date: \center University of Texas, El Paso (UTEP)\center \center Department of Mathematical
+  Sciences \center
+output:
+  pdf_document:
+    toc: yes
+    toc_depth: '4'
+  bookdown::pdf_document2:
+    fig_caption: yes
+    keep_tex: no
+    latex_engine: pdflatex
+    number_sections: yes
+    toc: yes
+    toc_depth: 4
+  html_document:
+    fig_caption: yes
+    keep_tex: no
+    number_sections: yes
+    toc: yes
+    toc_depth: 4
+subtitle: Data Exploration
+affiliation: Department of Mathematical Sciences, University of Texas at El Paso
+header-includes:
+- \usepackage{float}
+- \usepackage{setspace}
+- \doublespacing
+- \usepackage{bm}
+- \usepackage{amsmath}
+- \usepackage{amssymb}
+- \usepackage{amsfonts}
+- \usepackage{amsthm}
+- \usepackage{fancyhdr}
+- \pagestyle{fancy}
+- \fancyhf{}
+- \rhead{George Quaye, Johnson Koomson, William Agyapong}
+- \lhead{Modeling - DS 6335}
+- \cfoot{\thepage}
+- \usepackage{algorithm}
+- \usepackage[noend]{algpseudocode}
+geometry: margin = 0.8in
+fontsize: 10pt
+bibliography: references.bib
+link-citations: yes
+linkcolor: blue
+csl: apa-6th-edition-no-ampersand.csl
+nocite: null
+---
+\end{center}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = F)
+
+# Load required packages
+library(dplyr)
+library(stringr)
+library(ggplot2)
+library(RColorBrewer)
+library(ggcorrplot) # for correlation plot
+library(ggthemes)
+library(patchwork)
+library(knitr)
+library(kableExtra)
+library(scales) # for the percent function
+```
+
+
+
+```{r load-data}
+# Importing preprocessed data
+load("FIHI_clean.RData")
+
+# Make new data for EDA
+eda_dat <- FIHI_sub3 %>%
+  select(-ends_with("_changed"), -respondent_id)
+
+```
+
+# Exploratory Data Analysis
+
+## Summary Statistics
+```{r}
+## For data cleaning:
+# - remove participants who didn't answer a great number of questions
+# - create a count column after fixing multiple response issues to help 
+# identify such instances
+
+# Tracking follow-up questions to fix incorrect missing data instances:
+# Respondents who answered NO or gave a response not in favor of the follow-up 
+# question will incorrectly count as missing data for the follow-up questions
+# - employment_type (Q3): filter out NO for employed
+# - weekly_work_hrs (Q4): filter out NO for employed
+# - transport_reliability (Q13): filter out Not applicable for mode_transport
+# Problem with Q13 though, the same number carried over from Q12 instead of 
+# falling short of Not applicable respondents
+# - 
+# - spent night elsewhere (Q22): filter out 'Yes' for permanent address
+# - 
+
+summ_stats <- data.frame() # initialize summary statistics container
+nc <- NCOL(eda_dat)
+var_name <- variable.names(eda_dat)
+nr_vec <- vector(length = nc) # to store number of rows for the summary df of each variable
+dd <- c("employment_type"="No", "weekly_work_hrs"="No", "transport_reliability"="Not applicable", "spent_night_elsewhere"="Yes")
+aa <- c("employment_type"="employment", "weekly_work_hrs"="employment", "transport_reliability"="mode_transport", "spent_night_elsewhere"="permanent_address")
+
+for (i in 1:nc) {
+
+  # Computing the summary statistics for the ith variable
+  
+  if(var_name[i] %in% names(dd)) {
+    summ <- eda_dat %>% 
+              filter(!!as.name(aa[var_name[i]]) != dd[var_name[i]]) %>%
+              select(!!as.name(var_name[i]))%>%
+              group_by(!!as.name(var_name[i])) %>%
+              summarise(freq = n()) %>%
+              mutate(pct = freq/sum(freq),
+                     pct = percent(pct, 0.01))
+  } else {
+    summ <- eda_dat %>% select(!!as.name(var_name[i]))%>%
+              group_by(!!as.name(var_name[i])) %>%
+              summarise(freq = n()) %>%
+              mutate(pct = freq/sum(freq),
+                     pct = percent(pct, 0.01))
+  }
+  
+  # add extra column indicating the particular variable for which the summary was generated
+  var_col <- c(var_name[i], rep("", (NROW(summ)-1))) 
+  summ <- cbind(var_col, summ) 
+  
+  # Renaming the columns
+  names(summ) <- c("Variable", "Levels", "Obervations", "Percentage")
+  
+  # Storing summary statistics for each variable
+  summ_stats <- rbind(summ_stats, summ, stringsAsFactors = F)
+  nr_vec[i] <-  length(var_col)
+}
+
+get_stripe_index <- function(indices)
+{
+  index_vec <- NULL
+ 
+  for(i in seq_along(indices)) {
+    
+    if(i%%2 == 0) next # skip the even values
+    
+    end <- sum(indices[1:i])
+    
+    begin <- end - (indices[i]-1)
+    
+    index_vec <- c(index_vec, begin:end)
+    
+  }
+  return(index_vec)
+}
+
+kable(summ_stats, align = "llll", longtable=T, booktabs=T, linesep="",
+      caption = " A summary of variables of interest") %>%
+  kable_paper("hover", full_width = F)%>%
+  kable_styling(font_size = 9, 
+                latex_options = c("HOLD_position", "striped", "repeat_header"),
+                stripe_index = get_stripe_index(nr_vec)
+                )
+
+
+ # kable(sum_stats, caption = "Summary statistics for variables of interest",format = "latex", booktabs=T, linesep="") %>% 
+ #    kable_styling(full_width = F, font_size = 11,latex_options = c("HOLD_position", "striped"),stripe_index = c(1:nrow(pa_stats))) 
+ 
+```
+
+
+## Visualizing Missing Data 
+```{r}
+# install.packages("naniar")
+# install.packages("UpSetR")
+library(naniar)
+library(UpSetR)
+
+# explore the patterns
+gg_miss_upset(FIHI_sub3)
+
+# explore missingness in variables with gg_miss_var
+miss_var_summary(FIHI_sub3) %>% kable()
+
+gg_miss_var(FIHI_sub3) + ylab("Number of missing values")
+
+gg_miss_var(FIHI_sub3, show_pct = T) 
+```
+
+
+```{r plotting-functions}
+# # Make data for plotting
+# na_to_missing <- function(x) 
+# {
+#   return(ifelse(is.na(x), 'Missing', x ))
+# }
+# 
+# FIHI_sub4 <- FIHI_sub3[, -1] %>% 
+#   mutate(across(everything(), na_to_missing))
+#   
+
+# For creating bar graphs of the response variables
+mybarplot <- function(var, palette="Set2",
+                      xlab="", ylab="",title="",data='') 
+{
+  # palette=c("Set2","Set3","Accent","Set1","Paired","Dark2")
+  ylab = ifelse(ylab=="", "Number of Respondents", ylab)
+  
+  if(!(class(data) %in% c('data.frame','tbl','tbl_df'))) data <- FIHI_sub3
+
+   if(ncol(data) == 4)
+   {
+     # A plotting data was provided
+     plotdf <- data
+   } else {
+     # prepare data frame for plotting
+      plotdf <- data %>%
+      group_by({{ var }}) %>%
+      summarise(n=n()) %>%
+      mutate(pct = n/sum(n),
+             lbl = percent(pct)) 
+   }
+    
+  # create the plot
+  return(
+    ggplot(plotdf, aes({{ var }},n, fill={{ var }})) +
+    geom_bar(stat = "identity",position = "dodge")  +
+    geom_text(aes(label = n), size=3, position = position_stack(vjust = 0.5)) +
+    scale_fill_brewer(palette=palette) +
+    labs(x=xlab, y=ylab, title=title) +
+    theme_classic() +
+    theme(legend.position = "none")
+  )
+}
+# "Ever hungry but didn't eat?"
+# mybarplot(FI_q31)
+# mybarplot(spent_night_elsewhere, data = FIHI_sub3)
+
+```
+
+
+## Distribution of Housing Insecurity Responses
+
+```{r}
+
+# Permanent Address
+p1 <- mybarplot(permanent_address, 
+                xlab = "Had permanent address in the past 12 months?"
+                )
+
+# Spending night elsewhere
+plotdf <- FIHI_sub3 %>%
+  filter(permanent_address=='No') %>%
+  group_by(spent_night_elsewhere) %>%
+  summarise(n=n()) %>% 
+  mutate(pct = n/sum(n),
+         lbl = percent(pct))
+p2 <- mybarplot(spent_night_elsewhere, 
+                xlab = "How fequently did you spend the night elsewhere?",
+                data = plotdf
+                )
+plotdf %>% mutate(spent_night_elsewhere = ifelse(is.na(spent_night_elsewhere), 'Missing', spent_night_elsewhere))
+# Display plots side by side with the help of the patchwork package
+p1 + p2
+
+```
+
+## Distribution of Food Insecurity Responses
+```{r}
+
+# Q26: Food bought didn't last
+p1 <- mybarplot(FI_q26, xlab = "Food bought did not last")
+
+# Q27: Balanced diet
+p2 <- mybarplot(FI_q27, xlab = "Couldn't afford balanced meals")
+
+# Q28: 
+p3 <- mybarplot(FI_q28, xlab = "Ever cut the size of meals?")
+
+# Q3: 
+p4 <- mybarplot(FI_q30, xlab = "Ever ate less than you should?")
+
+# Q31
+p5 <- mybarplot(FI_q31, xlab = "Ever got hungry but didn't eat?")
+
+# Display plots side by side with the help of the patchwork package
+(p1 + p2)
+
+(p3 + p4)
+
+p5
+
+```
+
+
+##  Association between predictors and responses.
+
+
+```{r warning=F, message=F, echo=F, eval=F}
+plotdf <- FIHI_sub3 %>%
+  group_by(gender, permanent_address) %>%
+  summarise(n=n()) %>% 
+  mutate(pct = n/sum(n),
+         lbl = percent(pct))
+
+p1 <- ggplot(plotdf, aes(gender, pct, fill=permanent_address)) + 
+  geom_bar(stat = "identity",position = "fill") +
+  scale_y_continuous(breaks = seq(0,1,0.2), label=percent) +
+  geom_text(aes(label = lbl), size=3, position = position_stack(vjust = 0.5)) +
+  scale_fill_brewer(palette="Set2") + 
+  labs(x="Gender",y="Percent of respondents", fill="Permanent Address") +
+  theme_classic() +
+  theme(legend.position = "none")
+
+# display plots in a grid layout
+(p1 + p2) / (p3 + p4 + p5)
+```
+
+
+```{r}
+
+```
+
+
+# References{-}
+
+<div id="refs"></div>
+
+

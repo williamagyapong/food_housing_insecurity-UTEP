@@ -247,7 +247,7 @@ kable(missing_rate, align = "lcc", caption = "Table : Missing values table displ
   kable_styling(font_size = 12, latex_options = c("HOLD_position"))
 
 
-```{r plotting-functions}
+
 # Make data for plotting
 
 # For creating bar graphs of the response variables
