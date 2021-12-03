@@ -103,7 +103,7 @@ In this section, we provide a brief description of the data for prediction and a
 
 ```{r variables-description, echo=F}
 
-var_names <- c("enrollment", "employment", "employment_type", "weekly_work_hrs", "ethnicity", "gender", "total_income", "academic_level", "college/school", "mode_transport", "transport_reliability", "living_alone", "dependents", "household_head", "residence", "permanent_address", "spent_night_elsewhere", "know_homelessness_studt", "federal_aid", "FI_q26", "FI_q27", "FI_q28", "FI_q30", "FI_q31", "expenditures_changed", "income_changed", "fed_aid_changed", "debt_changed")
+var_names <- c("enrollment", "employment", "employment_type", "weekly_work_hrs", "ethnicity", "gender", "total_income", "academic_level", "college/school", "mode_transport", "transport_reliability", "living_alone", "dependents", "household_head", "residence", "permanent_address", "spent_night_elsewhere", "know_homeless_student", "federal_student_aid", "FI_q26", "FI_q27", "FI_q28", "FI_q30", "FI_q31", "expenditures_changed", "income_changed", "fed_aid_changed", "debt_changed")
 
 # description = rep('brief description of the variable', length(var_names))
 

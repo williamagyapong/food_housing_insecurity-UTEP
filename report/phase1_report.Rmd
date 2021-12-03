@@ -516,7 +516,6 @@ data1 <- as.data.frame(data_1)
 data_pad<-cbind("permanent_address"=data_pa$permanent_address,data1)
 rm(data_imputed, data_1, data1)
 
-
 # Treating imbalance classification
 
 

@@ -77,21 +77,17 @@ load("FIHI_clean.RData")
 
 # Make new data for EDA
 eda_dat <- FIHI_sub3 %>%
-  select(-ends_with("_changed"), -respondent_id)
+  dplyr::select(-ends_with("_changed"), -respondent_id)
 
 ```
 
 # Exploratory Data Analysis
 
 ## Summary Statistics
-```{r}
-## For data cleaning:
-# - remove participants who didn't answer a great number of questions
-# - create a count column after fixing multiple response issues to help 
-# identify such instances
+```{r, summary-stats}
 
 # Tracking follow-up questions to fix incorrect missing data instances:
-# Respondents who answered NO or gave a response not in favor of the follow-up 
+# Problem: Respondents who gave a response not in favor of the follow-up 
 # question will incorrectly count as missing data for the follow-up questions
 # - employment_type (Q3): filter out NO for employed
 # - weekly_work_hrs (Q4): filter out NO for employed
@@ -99,29 +95,36 @@ eda_dat <- FIHI_sub3 %>%
 # Problem with Q13 though, the same number carried over from Q12 instead of 
 # falling short of Not applicable respondents
 # - 
-# - spent night elsewhere (Q22): filter out 'Yes' for permanent address
+# - spent_night_elsewhere (Q22): filter out 'Yes' for permanent address
 # - 
 
 summ_stats <- data.frame() # initialize summary statistics container
 nc <- NCOL(eda_dat)
 var_name <- variable.names(eda_dat)
-nr_vec <- vector(length = nc) # to store number of rows for the summary df of each variable
-dd <- c("employment_type"="No", "weekly_work_hrs"="No", "transport_reliability"="Not applicable", "spent_night_elsewhere"="Yes")
-aa <- c("employment_type"="employment", "weekly_work_hrs"="employment", "transport_reliability"="mode_transport", "spent_night_elsewhere"="permanent_address")
+nr_vec <- vector(length = nc) # a vector of number of rows for the summary df of 
+# each variable to aid in creating a striped formatted table.
+
+# Key-value pairs matching follow-up question variables to their main questions
+main_var <- c("employment_type"="employment", "weekly_work_hrs"="employment", "transport_reliability"="mode_transport", "spent_night_elsewhere"="permanent_address")
+# Key-value pairs matching follow-up question variables to tokens for filtering the true sample sizes
+filter_token <- c("employment_type"="No", "weekly_work_hrs"="No", "transport_reliability"="Not applicable", "spent_night_elsewhere"="Yes")
 
 for (i in 1:nc) {
 
   # Computing the summary statistics for the ith variable
-  
-  if(var_name[i] %in% names(dd)) {
+  if(var_name[i] %in% names(main_var)) {
+    # Get summary stats for variables from follow-up survey questions.
+    # This part is necessary to account for the true sample sizes and the true
+    # missing values for such variables.
     summ <- eda_dat %>% 
-              filter(!!as.name(aa[var_name[i]]) != dd[var_name[i]]) %>%
+              filter(!!as.name(main_var[var_name[i]]) != filter_token[var_name[i]]) %>%
               select(!!as.name(var_name[i]))%>%
               group_by(!!as.name(var_name[i])) %>%
               summarise(freq = n()) %>%
               mutate(pct = freq/sum(freq),
                      pct = percent(pct, 0.01))
   } else {
+    # Get summary stats for variables from main survey questions
     summ <- eda_dat %>% select(!!as.name(var_name[i]))%>%
               group_by(!!as.name(var_name[i])) %>%
               summarise(freq = n()) %>%
@@ -129,7 +132,7 @@ for (i in 1:nc) {
                      pct = percent(pct, 0.01))
   }
   
-  # add extra column indicating the particular variable for which the summary was generated
+  # Add extra column indicating the particular variable for which the summary was generated
   var_col <- c(var_name[i], rep("", (NROW(summ)-1))) 
   summ <- cbind(var_col, summ) 
   
@@ -137,10 +140,11 @@ for (i in 1:nc) {
   names(summ) <- c("Variable", "Levels", "Obervations", "Percentage")
   
   # Storing summary statistics for each variable
-  summ_stats <- rbind(summ_stats, summ, stringsAsFactors = F)
-  nr_vec[i] <-  length(var_col)
+  summ_stats <- rbind(summ_stats, summ)
+  nr_vec[i] <-  length(var_col) # store the number of rows for each variable in the df.
 }
 
+# To help highlight each variable information as a block
 get_stripe_index <- function(indices)
 {
   index_vec <- NULL
@@ -149,11 +153,11 @@ get_stripe_index <- function(indices)
     
     if(i%%2 == 0) next # skip the even values
     
-    end <- sum(indices[1:i])
+    end_index <- sum(indices[1:i])
     
-    begin <- end - (indices[i]-1)
+    start_index <- end_index - (indices[i]-1)
     
-    index_vec <- c(index_vec, begin:end)
+    index_vec <- c(index_vec, start_index:end_index)
     
   }
   return(index_vec)
@@ -166,10 +170,6 @@ kable(summ_stats, align = "llll", longtable=T, booktabs=T, linesep="",
                 latex_options = c("HOLD_position", "striped", "repeat_header"),
                 stripe_index = get_stripe_index(nr_vec)
                 )
-
-
- # kable(sum_stats, caption = "Summary statistics for variables of interest",format = "latex", booktabs=T, linesep="") %>% 
- #    kable_styling(full_width = F, font_size = 11,latex_options = c("HOLD_position", "striped"),stripe_index = c(1:nrow(pa_stats))) 
  
 ```
 
