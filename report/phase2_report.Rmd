@@ -44,7 +44,7 @@ csl: ../apa-6th-edition-no-ampersand.csl
 ---
 
 ```{r setup, warning=F, message=F, include=FALSE, echo=FALSE}
-knitr::opts_chunk$set(echo = F, warning=F, message=F, fig.pos = "!H", out.extra = "")
+knitr::opts_chunk$set(echo = F, warning=F, message=F, comment = F, fig.pos = "!H", out.extra = "")
 
 # Load required packages and preprocessed data from the project root directory
 
@@ -458,12 +458,6 @@ The table and graphs above display the number of missing values with missing per
 
 ## Model Fitting  
 
-```{r message=FALSE, warning=FALSE, echo= F}
-# 
-source("modeling_functions.R")
-```
-
-
 Given our data set and its structure, the following supervised classification machine learning algorithm were employed to obtained a predictive model for each given response variable;
 
 * Logistic Regression
@@ -487,6 +481,11 @@ For the purpose of training and validation of each derived model ,and the estima
 ### Modeling Housing Insecurity
 
 Here, we modeled housing insecurity as a response based whether or not the respondent had a permanent address.
+
+```{r load_mod_functions, message=FALSE, warning=FALSE, echo= F}
+# 
+source("modeling_functions.R")
+```
 
 ```{r message=FALSE, warning=FALSE, echo= F}
 dat <- modeling("permanent_address")
@@ -518,7 +517,7 @@ In this section, we report results for modeling food insecurity in terms respons
 
 #### Results for Food Insecurity Response 1
 
-```{r message=FALSE, warning=FALSE, echo= F}
+```{r message=FALSE, warning=FALSE, echo= F, eval=FALSE}
 dat <- modeling("FI_q28")
 
 eval_table(dat$model_list, "FI_q28", "Food Insecurity 1")
@@ -538,7 +537,7 @@ plot(Var, main ="Figure: Variable of Importance by the LDA model")
 
 #### Results for Food Insecurity Response 2
 
-```{r message=FALSE, warning=FALSE, echo= F}
+```{r FI_q30_models, message=FALSE, warning=FALSE, echo= F}
 dat <- modeling("FI_q30")
 
 eval_table(dat$model_list, "FI_q30", "Food Insecurity 2")

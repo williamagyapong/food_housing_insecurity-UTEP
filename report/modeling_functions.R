@@ -21,12 +21,9 @@ FIHI_sub2 <- FIHI_sub2 %>%
 # 
 modeling <- function(response) 
 {
-  # response <- 'FI_q31'
-  
+ 
   # Assign data from the global environment 
    data <- FIHI_sub2[, -1] # remove the response id
-  
-  # Remove respondent id
   
   # Create a vector of all potential response variables
   response_set <- c("permanent_address", "spent_night_elsewhere", "FI_q26",
@@ -66,7 +63,7 @@ modeling <- function(response)
   
   
   #------ Model building -----------
-  registerDoParallel(7)
+  registerDoParallel(6)
   getDoParWorkers()
   set.seed(100)
   
@@ -96,7 +93,6 @@ modeling <- function(response)
                             trControl = trctrl)
 
 
-  # return(logis) # 
   return(list(train=training, test=testing, model_list=model_list, ensemble= ensemble))
 }
 

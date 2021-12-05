@@ -446,18 +446,18 @@ debt\_changed & 238 & 4.5990338\\
 \hypertarget{distribution-of-housing-insecurity-responses}{%
 \subsubsection{Distribution of Housing Insecurity Responses}\label{distribution-of-housing-insecurity-responses}}
 
-\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-4-1}
+\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-3-1}
 
 \hypertarget{distribution-of-food-insecurity-responses}{%
 \subsubsection{Distribution of Food Insecurity Responses}\label{distribution-of-food-insecurity-responses}}
+
+\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-5-1}
 
 \includegraphics{phase2_report_files/figure-latex/unnamed-chunk-6-1}
 
 \includegraphics{phase2_report_files/figure-latex/unnamed-chunk-7-1}
 
 \includegraphics{phase2_report_files/figure-latex/unnamed-chunk-8-1}
-
-\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-9-1}
 
 The table and graphs above display the number of missing values with missing percentages as well as the distribution of the potential response variables. From the results, the following observations were made:
 
@@ -502,6 +502,51 @@ For the purpose of training and validation of each derived model ,and the estima
 
 Here, we modeled housing insecurity as a response based whether or not the respondent had a permanent address.
 
+\begin{verbatim}
+FALSE # weights:  58
+FALSE initial  value 4429.971131 
+FALSE iter  10 value 3795.646761
+FALSE iter  20 value 3681.868936
+FALSE iter  30 value 3663.194375
+FALSE iter  40 value 3654.494476
+FALSE iter  50 value 3649.830524
+FALSE iter  60 value 3649.382161
+FALSE iter  70 value 3643.761990
+FALSE iter  80 value 3638.416441
+FALSE iter  90 value 3627.761237
+FALSE iter 100 value 3618.838152
+FALSE final  value 3618.838152 
+FALSE stopped after 100 iterations
+\end{verbatim}
+
+\begin{table}[H]
+
+\caption{\label{tab:unnamed-chunk-9}Evaluation metrics for Permanent House Address  as a response variable}
+\centering
+\fontsize{12}{14}\selectfont
+\begin{tabular}[t]{l|c|c|c|c|c|c}
+\hline
+Model & Misclassification Rate & Accuracy & Sensitivity & Specificity & fbeta & AUC\\
+\hline
+Logistic & 0.24 & 0.76 & 0.77 & 0.57 & 0.86 & 0.7197\\
+\hline
+LDA & 0.22 & 0.78 & 0.79 & 0.59 & 0.87 & 0.7249\\
+\hline
+KNN & 0.35 & 0.65 & 0.65 & 0.61 & 0.78 & 0.6806\\
+\hline
+Neural Network & 0.17 & 0.83 & 0.85 & 0.41 & 0.91 & 0.6922\\
+\hline
+SVM Linear & 0.23 & 0.77 & 0.78 & 0.57 & 0.87 & 0.7168\\
+\hline
+SVM Radial & 0.17 & 0.83 & 0.85 & 0.47 & 0.91 & 0.7217\\
+\hline
+\end{tabular}
+\end{table}
+
+\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-9-1}
+\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-9-2}
+\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-9-3}
+
 \hypertarget{modeling-food-insecurity}{%
 \subsubsection{Modeling Food Insecurity}\label{modeling-food-insecurity}}
 
@@ -522,8 +567,100 @@ In this section, we report results for modeling food insecurity in terms respons
 \hypertarget{results-for-food-insecurity-response-2}{%
 \paragraph{Results for Food Insecurity Response 2}\label{results-for-food-insecurity-response-2}}
 
+\begin{verbatim}
+FALSE # weights:  58
+FALSE initial  value 3397.285239 
+FALSE iter  10 value 3049.307539
+FALSE iter  20 value 2813.613382
+FALSE iter  30 value 2711.947683
+FALSE iter  40 value 2683.198365
+FALSE iter  50 value 2667.284508
+FALSE iter  60 value 2649.866422
+FALSE iter  70 value 2641.641009
+FALSE iter  80 value 2638.081624
+FALSE iter  90 value 2637.085627
+FALSE iter 100 value 2636.738851
+FALSE final  value 2636.738851 
+FALSE stopped after 100 iterations
+\end{verbatim}
+
+\textbackslash begin\{table\}{[}H{]}
+
+\textbackslash caption\{(\#tab:FI\_q30\_models)Evaluation metrics for Food Insecurity 2 as a response variable\}
+\centering
+\fontsize{12}{14}\selectfont
+
+\begin{tabular}[t]{l|c|c|c|c|c|c}
+\hline
+Model & Misclassification Rate & Accuracy & Sensitivity & Specificity & fbeta & AUC\\
+\hline
+Logistic & 0.34 & 0.66 & 0.63 & 0.68 & 0.56 & 0.7189\\
+\hline
+LDA & 0.33 & 0.67 & 0.63 & 0.7 & 0.57 & 0.72\\
+\hline
+KNN & 0.38 & 0.62 & 0.58 & 0.64 & 0.51 & 0.6522\\
+\hline
+Neural Network & 0.34 & 0.66 & 0.64 & 0.67 & 0.56 & 0.717\\
+\hline
+SVM Linear & 0.33 & 0.67 & 0.63 & 0.69 & 0.57 & 0.7168\\
+\hline
+SVM Radial & 0.32 & 0.68 & 0.62 & 0.7 & 0.57 & 0.7183\\
+\hline
+\end{tabular}
+
+\textbackslash end\{table\}
+
+\includegraphics{phase2_report_files/figure-latex/FI_q30_models-1}
+\includegraphics{phase2_report_files/figure-latex/FI_q30_models-2}
+\includegraphics{phase2_report_files/figure-latex/FI_q30_models-3}
+
 \hypertarget{results-for-food-insecurity-response-3}{%
 \paragraph{Results for Food Insecurity Response 3}\label{results-for-food-insecurity-response-3}}
+
+\begin{verbatim}
+FALSE # weights:  58
+FALSE initial  value 3832.057631 
+FALSE iter  10 value 3437.852387
+FALSE iter  20 value 3112.530410
+FALSE iter  30 value 2960.923100
+FALSE iter  40 value 2945.256338
+FALSE iter  50 value 2941.098880
+FALSE iter  60 value 2937.360638
+FALSE iter  70 value 2931.303311
+FALSE iter  80 value 2927.195704
+FALSE iter  90 value 2925.535513
+FALSE iter 100 value 2925.154814
+FALSE final  value 2925.154814 
+FALSE stopped after 100 iterations
+\end{verbatim}
+
+\begin{table}[H]
+
+\caption{\label{tab:unnamed-chunk-11}Evaluation metrics for Food Insecurity 3  as a response variable}
+\centering
+\fontsize{12}{14}\selectfont
+\begin{tabular}[t]{l|c|c|c|c|c|c}
+\hline
+Model & Misclassification Rate & Accuracy & Sensitivity & Specificity & fbeta & AUC\\
+\hline
+Logistic & 0.31 & 0.69 & 0.64 & 0.71 & 0.52 & 0.7327\\
+\hline
+LDA & 0.31 & 0.69 & 0.64 & 0.71 & 0.52 & 0.7333\\
+\hline
+KNN & 0.37 & 0.63 & 0.57 & 0.65 & 0.44 & 0.658\\
+\hline
+Neural Network & 0.32 & 0.68 & 0.65 & 0.69 & 0.51 & 0.7319\\
+\hline
+SVM Linear & 0.31 & 0.69 & 0.65 & 0.7 & 0.51 & 0.7286\\
+\hline
+SVM Radial & 0.29 & 0.71 & 0.62 & 0.74 & 0.52 & 0.7354\\
+\hline
+\end{tabular}
+\end{table}
+
+\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-11-1}
+\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-11-2}
+\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-11-3}
 
 \hypertarget{discussion}{%
 \section{Discussion}\label{discussion}}
@@ -591,7 +728,7 @@ Wikipedia. (2021). Support-vector machine. Retrieved October 15, 2021, from \url
 \hypertarget{visualizing-missing-data}{%
 \subsection{Visualizing Missing Data}\label{visualizing-missing-data}}
 
-\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-14-1}
+\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-12-1}
 
 \begin{tabular}{l|r|r}
 \hline
@@ -657,8 +794,8 @@ living\_alone & 0 & 0.0000000\\
 \hline
 \end{tabular}
 
-\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-14-2}
-\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-14-3}
+\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-12-2}
+\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-12-3}
 
 \hypertarget{codes}{%
 \subsection{Codes}\label{codes}}
