@@ -63,17 +63,6 @@ data_1 <- complete(data_imputed, 1)# use the first of 5 imputed data
 data1 <- as.data.frame(data_1)
 data_pad<-cbind("FI_q30"=data_pa$FI_q30,data1)
 
-#------ checking the effect of the imputation
-
-# dim(data_1) # the observations has reduced to 4998 (looks like some values were not imputed)
-# data_imputed$method # we notice that some of the variables were skipped. The method used for those imputed is 'pmm': predictive mean matching.
-# 
-# # what was the issue?
-# issues <- data_imputed$loggedEvents
-# issue_columns <- subset(data_imputed$loggedEvents, 
-#                         meth == "constant" | meth == "collinear")
-# print(issue_columns)
-
 rm(data_imputed, data_1, data1)
 ```
 
@@ -88,9 +77,6 @@ library(ROSE)
 ```{r,message=FALSE, warning=FALSE, echo= F}
 data_pad_balance <- data_pad_balance %>%
    mutate(across(everything(), as.factor))
-
-data_pa %>%
-   mutate(across(everything(), as.factor)) %>% summary()
 
 ```
 

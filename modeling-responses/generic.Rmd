@@ -1,0 +1,93 @@
+---
+title: "Predictive modelling"
+author: "George, John & William"
+date: "11/17/2021"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, echo=F, message=FALSE, warning=FALSE}
+source("Packages.R")
+
+
+load("FIHI_clean.RData")
+```
+
+## Data Preparation and cleaning 
+```{r, echo=F,message=FALSE, warning=FALSE, echo= F}
+
+# An omnibus function for modeling responses
+# 
+model <- function(response) 
+{
+  # response <- 'permanent_address'
+  
+  # Assign data from the global environment 
+   data <- FIHI_sub2[, -1] # remove the response id
+  
+  # Remove respondent id
+  
+  # Create a vector of all potential response variables
+  response_set <- c("permanent_address", "spent_night_elsewhere", "FI_q26",
+                 "FI_q27", "FI_q28", "FI_q30", "FI_q31")
+  # Exclude the current variable being modeled
+  response_set_sub <- response_set[-which(response_set==response)]
+  
+  ## Prepare data for modeling
+  # - all potential responses related to the one being modeled are removed to 
+  # prevent issue of multicollinearity.
+  # - remove also any variable not considered a reasonable predictor.
+  
+  data<- data %>%
+  rename(college_school = `college/school`) %>% # the forward slash serves our 
+    # EDA well but not for the modeling: it interferes with aspects of data imputation
+  dplyr::select(!contains(response_set_sub), -ends_with("_changed")) %>%
+  filter(!!as.name(response) != "NA") # use only complete cases for the response
+  
+  #Missing  value imputation
+  set.seed(123)
+  imputed_df <- mice(data[,-which(names(data)==response)], printFlag = F)
+  data_imputed <- as.data.frame(complete(imputed_df, 1)) # use the first imputed data
+  # model_df_imputed <- cbind(response = model_df[,response], model_df_imputed)
+  data_imputed[[response]] <- data[[response]]
+  rm(imputed_df)
+  
+  # Treating imbalance classification
+  formula <- as.formula(paste(response, "~ ."))
+  
+   ## currently disabled due to an error of 'data_imputed' not found.
+   # data_imputed_bal<-ovun.sample(formula, 
+   #                               data = data_imputed, method = "both", p=0.5,
+   #                               N=NROW(data_imputed), seed = 125)$data
+  
+  # Since all variables are categorical, convert them to factors 
+  data_imputed_bal <- data_imputed
+  data_imputed_bal <- data_imputed_bal %>%
+     mutate(across(everything(), as.factor))
+  
+  
+  # PARTITION DATA
+  set.seed(123)
+  intrain <- createDataPartition(y=1:NROW(data_imputed_bal), p= 0.67, list = FALSE)
+  training <- data_imputed_bal[intrain,];  testing <- data_imputed_bal[-intrain,]
+  
+  #------ Model building -----------
+  logis <-train(formula,
+                 data=training,
+                 method="glm",
+                 family = binomial(link = "logit"),
+                trControl = trainControl(method = "cv", 5, sampling = "up"),
+                preProcess = c("center", "scale")) 
+
+  
+  return(logis) # list(train=training, test=testing)
+}
+
+dd <- model(response = "FI_q31")
+dd2 <- model(response = "permanent_address")
+```
+
+
