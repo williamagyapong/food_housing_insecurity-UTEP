@@ -17,8 +17,8 @@ source("Packages.R")
 ```{r, echo=F,message=FALSE, warning=FALSE, echo= F}
 # PREPARATION AND CLEANING
 
-load("FIHI_clean.RData")
-data <- FIHI_sub2[,-1]
+load("FIHI_clean.RData") 
+data <- FIHI_sub2[,-1] # removing the id variable 
 ```
 
 
@@ -67,7 +67,7 @@ rm(data_imputed, data_1, data1)
 # Treating imbalance classification
 ```{r}
 library(ROSE)
- data_pad_balance<-ovun.sample(permanent_address ~ ., data = data_pad, method = "both", p=0.5,                             N=NROW(data_pad), seed = 125)$data
+ data_pad_balance<-ovun.sample(permanent_address ~ ., data = data_pad, method = "both", p=0.5,N=NROW(data_pad), seed = 125)$data
  dim(data_pad_balance)
 ```
 
@@ -136,7 +136,6 @@ lda <- train(formula,
 
 ```
 
-
 ```{r}
 #-------------- Elastic Net Models -------------------
 # fit a LASSO model
@@ -197,22 +196,6 @@ svmR <- train(formula , data = training, method = "svmRadial",
 
 ## Making predictions 
 
-```{r}
-# pred <- function(model){
-#   model <- lasso
-#     pred.test<- predict(model, testing)
-#     misscal<- round(mean(pred.test != testing$permanent_address),digits = 2)
-#     
-#    #  test_pred_1 <- predict(model, newdata = testing, type= "prob")
-#    #  ROC_SR <- roc(testing$permanent_address, predictor = test_pred_1[,2])
-#    #  # # plot(ROC_SR, col="brown")
-#    #  AUC<-round(ROC_SR$auc, digits=4)*100  # AUC
-#    #  # text(x=0.4, y=0.25, paste("Area Under Curve = ", AUC, sep=""), col="blue", cex=1.2)
-#    # AUC  = 0
-#   return(list(missclass=misscal))
-#}
-```
-
 Metrics
 ```{r}
 library(mlr3measures)
@@ -225,10 +208,18 @@ metrics <- function(model_object, response="", test_data=NULL) {
   
   # make predictions
   prediction <- predict(model_object, test_data) 
+  prediction_A <- predict(model_object, test_data, type="prob") 
   
   target <- test_data[, response]
   
   cmat <- confusionMatrix(prediction, target, mode = "prec_recall")
+  ROC <- roc(target, predictor = prediction_A[,2])
+  AUC_m<-round(ROC$auc, digits=4) 
+  
+  # Plotting the ROC_auc curves
+  plot <- ggroc(ROC, colour = 'blue', size = 2) +
+  ggtitle(paste0('(AUC = ', AUC_m, ')')) +
+  theme(plot.title = element_text(hjust = 1))+ theme_minimal()
   
   misscal<- round(mean(prediction != target),digits = 2)
   
@@ -238,11 +229,13 @@ metrics <- function(model_object, response="", test_data=NULL) {
    mcr = misscal,
    sens = round(cmat$byClass[1],2),
    spec = round(cmat$byClass[2],2),
-   fbeta = round(cmat$byClass[7],2)
+   fbeta = round(cmat$byClass[7],2),
+   auc = AUC_m,
+   plot = plot
  ))
-  
 }
 ```
+
 
 ```{r}
 metric_log <- metrics(lasso, response = "permanent_address")
@@ -259,17 +252,17 @@ svc.metric <- metrics(svc, response = "permanent_address")
 svmR.metric <- metrics(svmR, response = "permanent_address")
 
 mod.sum <- data.frame(rbind(
-                          c("Logistic", log.metric$mcr, log.metric$accuracy, log.metric$sens, log.metric$spec, log.metric$fbeta),
-                          c("LDA",  lda.metric$mcr, lda.metric$accuracy, lda.metric$sens, lda.metric$spec, lda.metric$fbeta),
-                          c("LASSO", lasso.metric$mcr, lasso.metric$accuracy, lasso.metric$sens, lasso.metric$spec, lasso.metric$fbeta),
-                          c("Ridge", ridge.metric$mcr, ridge.metric$accuracy, ridge.metric$sens, ridge.metric$spec, ridge.metric$fbeta),
-                          c("Bagging", bag.metric$mcr, bag.metric$accuracy, bag.metric$sens, bag.metric$spec, bag.metric$fbeta),
-                          c("SVC",  svc.metric$mcr, svc.metric$accuracy, svc.metric$sens, svc.metric$spec, svc.metric$fbeta),
-                          c("SVM (Radial Kernel)", svmR.metric$mcr, svmR.metric$accuracy, svmR.metric$sens, svmR.metric$spec, svmR.metric$fbeta)))
+                          c("Logistic", log.metric$mcr, log.metric$accuracy, log.metric$sens, log.metric$spec, log.metric$fbeta, log.metric$auc),
+                          c("LDA",  lda.metric$mcr, lda.metric$accuracy, lda.metric$sens, lda.metric$spec, lda.metric$fbeta, lda.metric$auc),
+                          c("LASSO", lasso.metric$mcr, lasso.metric$accuracy, lasso.metric$sens, lasso.metric$spec, lasso.metric$fbeta, lasso.metric$auc),
+                          c("Ridge", ridge.metric$mcr, ridge.metric$accuracy, ridge.metric$sens, ridge.metric$spec, ridge.metric$fbeta, ridge.metric$auc),
+                          c("Bagging", bag.metric$mcr, bag.metric$accuracy, bag.metric$sens, bag.metric$spec, bag.metric$fbeta, bag.metric$auc),
+                          c("SVC",  svc.metric$mcr, svc.metric$accuracy, svc.metric$sens, svc.metric$spec, svc.metric$fbeta, svc.metric$auc),
+                          c("SVM (Radial Kernel)", svmR.metric$mcr, svmR.metric$accuracy, svmR.metric$sens, svmR.metric$spec, svmR.metric$fbeta, svmR.metric$auc)))
 
-names(mod.sum) <- c("Model", "Misclassification Rate", "Accuracy", "Sensitivity", "Specificity", "fbeta")
+names(mod.sum) <- c("Model", "Misclassification Rate", "Accuracy", "Sensitivity", "Specificity", "fbeta", "AUC")
 
-kable(mod.sum, align = "lccccc", caption = "Table : Evaluation metrics for Housing Insecurity with Permanent Address as a response") %>%
+kable(mod.sum, align = "lcccccc", caption = "Table : Evaluation metrics for Housing Insecurity with Permanent Address as a response") %>%
   kable_paper("hover", full_width = F)%>% 
        kable_styling(font_size = 12)
 
@@ -283,13 +276,15 @@ plot(Var)
 
 ```
 
+## Graphing 
 
+```{r}
+library(ggpubr)
+ggarrange(log.metric$plot, lda.metric$plot, lasso.metric$plot, ridge.metric$plot, svc.metric$plot, svmR.metric$plot + rremove("x.text"), 
+          labels = c("log", "LDA", "Lasso", "Ridge","Linear","Radial"),
+          ncol = 3, nrow = 2)
 
-
-
-
-
-
+```
 
 
 
