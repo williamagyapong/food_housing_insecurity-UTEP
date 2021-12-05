@@ -38,7 +38,7 @@ FIHI_sub2 <- FIHI_sub2 %>%
 # 
 modeling <- function(response) 
 {
-  # response <- 'FI_q31'
+  response <- 'FI_q28'
   
   # Assign data from the global environment 
    data <- FIHI_sub2[, -1] # remove the response id
@@ -101,7 +101,7 @@ modeling <- function(response)
   savePredictions="final",
   classProbs=TRUE,
   sampling = "up",
-  index=createResample(training[[response]], 5),
+  index=createResample(training[[response]]),
   summaryFunction=twoClassSummary,
   allowParallel = TRUE
   )
@@ -177,19 +177,29 @@ eval_table <- function(model_list,response, resp_label='---')
   svc.metric <- metrics(model_list$svmLinear, response)
   svmR.metric <- metrics(model_list$svmRadial, response)
   
-  mod.sum <- data.frame(rbind(
-                            c("Logistic", log.metric$mcr, log.metric$accuracy, log.metric$sens, log.metric$spec, log.metric$fbeta, log.metric$auc),
-                            c("LDA",  lda.metric$mcr, lda.metric$accuracy, lda.metric$sens, lda.metric$spec, lda.metric$fbeta, lda.metric$auc),
-                            c("KNN", knn.metric$mcr, knn.metric$accuracy, knn.metric$sens, knn.metric$spec, knn.metric$fbeta, knn.metric$auc),
-                            c("Neural Network", nnet.metric$mcr, nnet.metric$accuracy, nnet.metric$sens, nnet.metric$spec, nnet.metric$fbeta, nnet.metric$auc),
-                            # c("Bagging", bag.metric$mcr, bag.metric$accuracy, bag.metric$sens, bag.metric$spec, bag.metric$fbeta),
-                            c("SVM Linear",  svc.metric$mcr, svc.metric$accuracy, svc.metric$sens, svc.metric$spec, svc.metric$fbeta, svc.metric$auc),
-                            c("SVM Radial", svmR.metric$mcr, svmR.metric$accuracy, svmR.metric$sens, svmR.metric$spec, svmR.metric$fbeta, svmR.metric$auc)))
+  metrics.summ <- data.frame(rbind(
+                            c("Logistic", log.metric$mcr, log.metric$accuracy, 
+                              log.metric$sens, log.metric$spec, log.metric$fbeta, log.metric$auc),
+                            
+                            c("LDA",  lda.metric$mcr, lda.metric$accuracy, lda.metric$sens,
+                              lda.metric$spec, lda.metric$fbeta, lda.metric$auc),
+                            
+                            c("KNN", knn.metric$mcr, knn.metric$accuracy, knn.metric$sens,
+                              knn.metric$spec, knn.metric$fbeta, knn.metric$auc),
+                            
+                            c("Neural Network",nnet.metric$mcr,nnet.metric$accuracy,nnet.metric$sens,
+                              nnet.metric$spec, nnet.metric$fbeta, nnet.metric$auc),
+                            
+                            c("SVM Linear",  svc.metric$mcr, svc.metric$accuracy, svc.metric$sens,
+                              svc.metric$spec, svc.metric$fbeta, svc.metric$auc),
+                            
+                            c("SVM Radial", svmR.metric$mcr, svmR.metric$accuracy, svmR.metric$sens,
+                              svmR.metric$spec, svmR.metric$fbeta, svmR.metric$auc)))
   
-  names(mod.sum) <- c("Model", "Misclassification Rate", "Accuracy", 
+  names(metrics.summ) <- c("Model", "Misclassification Rate", "Accuracy", 
                       "Sensitivity", "Specificity", "fbeta", "AUC")
   
-  kable(mod.sum, align = "lcccccc", caption = paste("Evaluation metrics for", resp_label, " as a response variable") ) %>%
+  kable(metrics.summ, align = "lcccccc", caption = paste("Evaluation metrics for", resp_label, " as a response variable") ) %>%
     kable_paper("hover", full_width = F)%>% 
          kable_styling(font_size = 12, latex_options = c("HOLD_position"))
 
@@ -198,6 +208,7 @@ eval_table <- function(model_list,response, resp_label='---')
 # display table
 # eval_table(dat$model_list, "FI_q31", "Food Insecurity 3")
 ```
+
 
 ## Comparing Models
 ```{r}

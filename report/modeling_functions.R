@@ -33,7 +33,7 @@ modeling <- function(response)
   
   ## Prepare data for modeling
   # - all potential responses related to the one being modeled are removed to 
-  # prevent issue of multicollinearity.
+  # prevent issue of "multicollinearity".
   # - remove also any variable not considered a reasonable predictor.
   
   data<- data %>%
@@ -46,48 +46,53 @@ modeling <- function(response)
   set.seed(123)
   imputed_df <- mice(data[,-which(names(data)==response)], printFlag = F)
   data_imputed <- as.data.frame(complete(imputed_df, 1)) # use the first imputed data
-  # model_df_imputed <- cbind(response = model_df[,response], model_df_imputed)
+  
   data_imputed[[response]] <- data[[response]]
   rm(imputed_df)
   
   # Since all variables are categorical, convert them to factors 
-  data_imputed_bal <- data_imputed
-  data_imputed_bal <- data_imputed_bal %>%
+  data_imputed <- data_imputed %>%
      mutate(across(everything(), as.factor))
   
 
-  # PARTITION DATA
+  # Data partitioning
   set.seed(123)
-  intrain <- createDataPartition(y=1:NROW(data_imputed_bal), p= 0.67, list = FALSE)
-  training <- data_imputed_bal[intrain,];  testing <- data_imputed_bal[-intrain,]
+  intrain <- createDataPartition(y=1:NROW(data_imputed), p= 0.67, list = FALSE)
+  training <- data_imputed[intrain,];  testing <- data_imputed[-intrain,]
   
   
   #------ Model building -----------
+  
+  # register clusters for parallel model fitting with the doparallel package
   registerDoParallel(6)
   getDoParWorkers()
   set.seed(100)
   
+  # specifying desired model settings
   trctrl <- trainControl(
-  method="cv",
-  number=5,
-  savePredictions="final",
-  classProbs=TRUE,
-  sampling = "up",
-  index=createResample(training[[response]], 5),
-  summaryFunction=twoClassSummary,
-  allowParallel = TRUE
+    method="cv",
+    number=10,
+    savePredictions="final",
+    classProbs=TRUE,
+    sampling = "up",
+    index=createResample(training[[response]], 10),
+    summaryFunction=twoClassSummary,
+    allowParallel = TRUE
+    
   )
   
+  # run the list of models concurrently
+  # ROC is used to tune and evaluate models
   formula <- as.formula(paste0(response, "~."))
-
   model_list <- caretList(
-    formula, data=training,
-    trControl=trctrl,
-    metric = "ROC",
-    methodList=c("glm", "lda", "knn", "nnet", "svmLinear", "svmRadial"),
-    continue_on_fail = FALSE
+      formula, data=training,
+      trControl=trctrl,
+      metric = "ROC",
+      methodList=c("glm", "lda", "knn", "nnet", "svmLinear", "svmRadial"),
+      continue_on_fail = FALSE
     )
 
+  # Create an Ensemble model from all the models
   ensemble <- caretEnsemble(model_list, 
                             metric = "ROC", 
                             trControl = trctrl)
@@ -98,11 +103,10 @@ modeling <- function(response)
 
 
 #------------
-metrics <- function(model_object, response="", test_data=dat$test) {
-  # response = "permanent_address"
-  # model_object <- log
-  # 
-  if(is.null(test_data)) test_data <- testing
+metrics <- function(model_object, response="", test_data=NULL) {
+  
+  
+  if(is.null(test_data)) test_data <- testing # assumes testing data in the global env
   
   # make predictions
   prediction <- predict(model_object, test_data) 
@@ -113,7 +117,7 @@ metrics <- function(model_object, response="", test_data=dat$test) {
   cmat <- confusionMatrix(prediction, target, mode = "prec_recall")
   ROC <- roc(target, predictor = prediction_A[,2])
   AUC_m<-round(ROC$auc, digits=4) 
-  misscal<- round(mean(prediction != target),digits = 2)
+  misscal<- round(mean(prediction != target),digits = 2) # misclassification
   
  # Returned outputs
  return(list(
@@ -130,29 +134,40 @@ metrics <- function(model_object, response="", test_data=dat$test) {
 #------- Compute performance metrics for the full models ---------------
 eval_table <- function(model_list,response, resp_label='---') 
 {
-  log.metric <- metrics(model_list$glm, response)
-  lda.metric <- metrics(model_list$lda, response)
-  knn.metric <- metrics(model_list$knn, response)
-  nnet.metric <- metrics(model_list$nnet, response)
-  svc.metric <- metrics(model_list$svmLinear, response)
-  svmR.metric <- metrics(model_list$svmRadial, response)
+  log.metric <- metrics(model_list$glm, response, model_list$test)
+  lda.metric <- metrics(model_list$lda, response, model_list$test)
+  knn.metric <- metrics(model_list$knn, response, model_list$test)
+  nnet.metric <- metrics(model_list$nnet, response, model_list$test)
+  svc.metric <- metrics(model_list$svmLinear, response, model_list$test)
+  svmR.metric <- metrics(model_list$svmRadial, response, model_list$test)
   
-  mod.sum <- data.frame(rbind(
-                            c("Logistic", log.metric$mcr, log.metric$accuracy, log.metric$sens, log.metric$spec, log.metric$fbeta, log.metric$auc),
-                            c("LDA",  lda.metric$mcr, lda.metric$accuracy, lda.metric$sens, lda.metric$spec, lda.metric$fbeta, lda.metric$auc),
-                            c("KNN", knn.metric$mcr, knn.metric$accuracy, knn.metric$sens, knn.metric$spec, knn.metric$fbeta, knn.metric$auc),
-                            c("Neural Network", nnet.metric$mcr, nnet.metric$accuracy, nnet.metric$sens, nnet.metric$spec, nnet.metric$fbeta, nnet.metric$auc),
-                            # c("Bagging", bag.metric$mcr, bag.metric$accuracy, bag.metric$sens, bag.metric$spec, bag.metric$fbeta),
-                            c("SVM Linear",  svc.metric$mcr, svc.metric$accuracy, svc.metric$sens, svc.metric$spec, svc.metric$fbeta, svc.metric$auc),
-                            c("SVM Radial", svmR.metric$mcr, svmR.metric$accuracy, svmR.metric$sens, svmR.metric$spec, svmR.metric$fbeta, svmR.metric$auc)))
+  metrics.summ <- data.frame(rbind(
+        c("Logistic", log.metric$mcr, log.metric$accuracy, 
+          log.metric$sens, log.metric$spec, log.metric$fbeta, log.metric$auc),
+        
+        c("LDA",  lda.metric$mcr, lda.metric$accuracy, lda.metric$sens,
+          lda.metric$spec, lda.metric$fbeta, lda.metric$auc),
+        
+        c("KNN", knn.metric$mcr, knn.metric$accuracy, knn.metric$sens,
+          knn.metric$spec, knn.metric$fbeta, knn.metric$auc),
+        
+        c("Neural Network",nnet.metric$mcr,nnet.metric$accuracy,nnet.metric$sens,
+          nnet.metric$spec, nnet.metric$fbeta, nnet.metric$auc),
+        
+        c("SVM Linear",  svc.metric$mcr, svc.metric$accuracy, svc.metric$sens,
+          svc.metric$spec, svc.metric$fbeta, svc.metric$auc),
+        
+        c("SVM Radial", svmR.metric$mcr, svmR.metric$accuracy, svmR.metric$sens,
+          svmR.metric$spec, svmR.metric$fbeta, svmR.metric$auc)
+        ))
   
-  names(mod.sum) <- c("Model", "Misclassification Rate", "Accuracy", 
-                      "Sensitivity", "Specificity", "fbeta", "AUC")
+  names(metrics.summ) <- c("Model", "Misclassification Rate", "Accuracy", 
+                           "Sensitivity", "Specificity", "fbeta", "AUC")
   
-  kable(mod.sum, align = "lcccccc", caption = paste("Evaluation metrics for", resp_label, " as a response variable") ) %>%
+  kable(metrics.summ, align = "lcccccc", caption = paste("Evaluation metrics for", resp_label, " as a response variable") ) %>%
     kable_paper("hover", full_width = F)%>% 
-         kable_styling(font_size = 12, latex_options = c("HOLD_position"))
-
+    kable_styling(font_size = 12, latex_options = c("HOLD_position"))
+  
 }
 
 

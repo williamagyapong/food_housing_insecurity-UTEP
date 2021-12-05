@@ -493,7 +493,7 @@ dat <- modeling("permanent_address")
 eval_table(dat$model_list, "permanent_address", "Permanent House Address")
 
 
-plot(dat$ensemble, main="Individual models versus Ensemble model performance")
+plot(dat$ensemble, main="Performance of individual models versus the Ensemble model")
 
 # par(mfrow=c(1,2))
 Var <- varImp(dat$model_list$svmRadial, scale = FALSE)
@@ -523,7 +523,7 @@ dat <- modeling("FI_q28")
 eval_table(dat$model_list, "FI_q28", "Food Insecurity 1")
 
 
-plot(dat$ensemble, main="Individual models versus Ensemble model performance")
+plot(dat$ensemble, main="Performance of individual models versus the Ensemble model")
 
 # par(mfrow=c(1,2))
 Var <- varImp(dat$model_list$svmRadial, scale = FALSE)
@@ -537,13 +537,13 @@ plot(Var, main ="Figure: Variable of Importance by the LDA model")
 
 #### Results for Food Insecurity Response 2
 
-```{r FI_q30_models, message=FALSE, warning=FALSE, echo= F}
+```{r message=FALSE, warning=FALSE, echo= F}
 dat <- modeling("FI_q30")
 
 eval_table(dat$model_list, "FI_q30", "Food Insecurity 2")
 
 
-plot(dat$ensemble, main="Individual models versus Ensemble model performance")
+plot(dat$ensemble, main="Performance of individual models versus the Ensemble model")
 
 # par(mfrow=c(1,2))
 Var <- varImp(dat$model_list$svmRadial, scale = FALSE)
@@ -551,7 +551,6 @@ plot(Var, main ="Figure: Variable of Importance by the SVM Radial model")
 
 Var <- varImp(dat$model_list$lda, scale = FALSE)
 plot(Var, main ="Figure: Variable of Importance by the LDA model")
-
 
 ```
 
@@ -564,7 +563,7 @@ dat <- modeling("FI_q31")
 eval_table(dat$model_list, "FI_q31", "Food Insecurity 3")
 
 
-plot(dat$ensemble, main="Individual models versus Ensemble model performance")
+plot(dat$ensemble, main="Performance of individual models versus the Ensemble model")
 
 # par(mfrow=c(1,2))
 Var <- varImp(dat$model_list$svmRadial, scale = FALSE)
