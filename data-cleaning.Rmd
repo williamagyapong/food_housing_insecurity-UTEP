@@ -56,21 +56,12 @@ knitr::opts_chunk$set(echo = F)
 
 # Load required packages
 library(dplyr)
-library(stringr)
-library(ggplot2)
-library(RColorBrewer)
-library(ggcorrplot) # for correlation plot
-library(ggthemes)
-library(patchwork)
-library(knitr)
-# library(kableExtra)
-library(scales) # for the percent function
 ```
 
 
 ```{r data-reading}
 file_path <- dirname(rstudioapi::getSourceEditorContext()$path)
-FIHI <- read.csv(paste0(file_path, '/datcsv.csv'))
+FIHI <- read.csv(paste0(file_path, .Platform$file.sep, "datcsv.csv"))
 
 
 #=========================================================
@@ -104,7 +95,7 @@ FIHI_new <- FIHI %>%
   # change column names to lowercase
   rename_with(tolower) %>%
   # Removing unwanted variables
-  select(-externalid, -satellite, -email, -datetime, -carddata,
+  dplyr::select(-externalid, -satellite, -email, -datetime, -carddata,
                         -starts_with(c("q5", "q8", "q18", "q21", "q29", "q24", "q36", "q37", "q38", "q39"))
          ) %>%
   # Strip off trailing strings to get clean variable names
@@ -296,190 +287,11 @@ names(FIHI_sub3) <- var_names
 # Save preprocessed file 
 # write.csv(FIHI_sub3, paste0(file_path, '/datcsv_clean.csv'))
 
-save(FIHI_sub2, FIHI_sub3, file=paste0(file_path, '/FIHI_clean.RData'))
-
-
-```
-
-# Exploratory Data Analysis
-
-## Summary Statistics
-```{r, eval=FALSE}
-# summary_stats <- as.data.frame(t(summary(FIHI_sub3[,-1])))
-# kable(summary_stats)
-
-pa_stats <- FIHI_sub3 %>%
-  select(permanent_address) %>%
-  group_by(permanent_address) %>%
-  summarise(freq = n())
-names(pa_stats) <- c("Levels", "Obervations")
-
-pa_stats2 <- FIHI_sub3 %>%
-  filter(permanent_address=="No") %>%
-  select(spent_night_elsewhere) %>%
-  group_by(spent_night_elsewhere) %>%
-  summarise(freq = n())
-names(pa_stats2) <- c("Levels", "Obervations")
-
-rbind(pa_stats, pa_stats2)
-```
-
-
-## Visualizing Missing Data 
-```{r}
-# install.packages("naniar")
-# install.packages("UpSetR")
-library(naniar)
-library(UpSetR)
-
-# explore the patterns
-gg_miss_upset(FIHI_sub3)
-
-# explore missingness in variables with gg_miss_var
-miss_var_summary(FIHI_sub3) %>% kable()
-
-gg_miss_var(FIHI_sub3) + ylab("Number of missing values")
-
-gg_miss_var(FIHI_sub3, show_pct = T) 
-```
-
-
-```{r plotting-functions}
-# Make data for plotting
-na_to_missing <- function(x) 
-{
-  return(ifelse(is.na(x), 'Missing', x ))
-}
-
-FIHI_sub4 <- FIHI_sub3[, -1] %>% 
-  mutate(across(everything(), na_to_missing))
-  
-
-# For creating bar graphs of the response variables
-mybarplot <- function(var, palette="Set2",
-                      xlab="", ylab="",title="",data='') 
-{
-  # palette=c("Set2","Set3","Accent","Set1","Paired","Dark2")
-  ylab = ifelse(ylab=="", "Number of Respondents", ylab)
-  
-  if(!(class(data) %in% c('data.frame','tbl','tbl_df'))) data <- FIHI_sub3
-
-   if(ncol(data) == 4)
-   {
-     # A plotting data was provided
-     plotdf <- data
-   } else {
-     # prepare data frame for plotting
-      plotdf <- data %>%
-      group_by({{ var }}) %>%
-      summarise(n=n()) %>%
-      mutate(pct = n/sum(n),
-             lbl = percent(pct)) 
-   }
-    
-  # create the plot
-  return(
-    ggplot(plotdf, aes({{ var }},n, fill={{ var }})) +
-    geom_bar(stat = "identity",position = "dodge")  +
-    geom_text(aes(label = n), size=3, position = position_stack(vjust = 0.5)) +
-    scale_fill_brewer(palette=palette) +
-    labs(x=xlab, y=ylab, title=title) +
-    theme_classic() +
-    theme(legend.position = "none")
-  )
-}
-# "Ever hungry but didn't eat?"
-# mybarplot(FI_q31)
-# mybarplot(spent_night_elsewhere, data = FIHI_sub3)
+save(FIHI_sub2, FIHI_sub3, file=paste0(file_path, .Platform$file.sep, 'FIHI_clean.RData'))
 
 ```
-
-
-## Distribution of Housing Insecurity Responses
 
 ```{r}
-
-# Permanent Address
-p1 <- mybarplot(permanent_address, 
-                xlab = "Had permanent address in the past 12 months?"
-                )
-
-# Spending night elsewhere
-plotdf <- FIHI_sub3 %>%
-  filter(permanent_address=='No') %>%
-  group_by(spent_night_elsewhere) %>%
-  summarise(n=n()) %>% 
-  mutate(pct = n/sum(n),
-         lbl = percent(pct))
-p2 <- mybarplot(spent_night_elsewhere, 
-                xlab = "How fequently did you spend the night elsewhere?",
-                data = plotdf
-                )
-plotdf %>% mutate(spent_night_elsewhere = ifelse(is.na(spent_night_elsewhere), 'Missing', spent_night_elsewhere))
-# Display plots side by side with the help of the patchwork package
-p1 + p2
-
+# knitr::kable(FIHI_sub3)
 ```
-
-## Distribution of Food Insecurity Responses
-```{r}
-
-# Q26: Food bought didn't last
-p1 <- mybarplot(FI_q26, xlab = "Food bought did not last")
-
-# Q27: Balanced diet
-p2 <- mybarplot(FI_q27, xlab = "Couldn't afford balanced meals")
-
-# Q28: 
-p3 <- mybarplot(FI_q28, xlab = "Ever cut the size of meals?")
-
-# Q3: 
-p4 <- mybarplot(FI_q30, xlab = "Ever ate less than you should?")
-
-# Q31
-p5 <- mybarplot(FI_q31, xlab = "Ever got hungry but didn't eat?")
-
-# Display plots side by side with the help of the patchwork package
-(p1 + p2)
-
-(p3 + p4)
-
-p5
-
-```
-
-
-##  Association between predictors and responses.
-
-
-```{r warning=F, message=F, echo=F, eval=F}
-plotdf <- FIHI_sub3 %>%
-  group_by(gender, permanent_address) %>%
-  summarise(n=n()) %>% 
-  mutate(pct = n/sum(n),
-         lbl = percent(pct))
-
-p1 <- ggplot(plotdf, aes(gender, pct, fill=permanent_address)) + 
-  geom_bar(stat = "identity",position = "fill") +
-  scale_y_continuous(breaks = seq(0,1,0.2), label=percent) +
-  geom_text(aes(label = lbl), size=3, position = position_stack(vjust = 0.5)) +
-  scale_fill_brewer(palette="Set2") + 
-  labs(x="Gender",y="Percent of respondents", fill="Permanent Address") +
-  theme_classic() +
-  theme(legend.position = "none")
-
-# display plots in a grid layout
-(p1 + p2) / (p3 + p4 + p5)
-```
-
-
-```{r}
-
-```
-
-
-# References{-}
-
-<div id="refs"></div>
-
 

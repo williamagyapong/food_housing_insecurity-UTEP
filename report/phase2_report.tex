@@ -165,11 +165,11 @@ According to a 2019 report by The Hope Center for college, Communities and Justi
 
 \section{Data Preprocessing}
 
-\subsection{ Data Description}
+\subsection{Data Description}
 
 \subsection{Data cleaning and naming of variables}
 
-In this section, we provide a brief description of the data for prediction and a method for renaming and collapsing the variables. The initial data from the survey comprises 12,536 observations with 104 columns. From the data, we observed enrollment and employment as the variables with the minimum number of missing values. In preparation of our data for modeling, we excluded the following questions from the our analysis: respondent ID, the age of the respondent, what pronouns do you use to describe yourself, how many persons depend on you, and where do you live. Table 1 shows the recoded names of the variables we considered in our analysis.
+In this section, we provide a brief description of the data for prediction and a method for renaming and collapsing the variables. The initial data from the survey comprises 12,536 observations with 104 columns. From the data, we observed enrollment and employment as the variables with the minimum number of missing values. In preparation of our data for modeling, we excluded the following questions from the our analysis: respondent ID, the age of the respondent, what pronouns do you use to describe yourself, where do you live, and variables associated with changes due to COVID-19. Table 1 shows the recoded names of the variables we considered in our analysis and their corresponding descriptions based on the survey questions.
 
 \begin{table}[H]
 
@@ -198,8 +198,8 @@ household\_head & Are you the head of the household (Q17)\\
 residence & Where do you live (Q19)\\
 permanent\_address & In the past 12 months, have you had a prmament adress (Q20)\\
 spent\_night\_elsewhere & How frequently did you spent the night somewhere due to lack of housing (Q22)\\
-know\_homelessness\_studt & Do you know UTE students who have experienced homelessness (Q23)\\
-federal\_aid & Have you received financial aid in the past 10 months (Q25)\\
+know\_homeless\_student & Do you know UTE students who have experienced homelessness (Q23)\\
+federal\_student\_aid & Have you received financial aid in the past 10 months (Q25)\\
 FI\_q26 & The food that I bought just didn't last. and I didn't have enough money to get more (Q26)\\
 FI\_q27 & I couldn't afford to eat balanced meal, how often (Q27)\\
 FI\_q28 & Did you ever cut the size of your meal (Q28)\\
@@ -215,7 +215,7 @@ debt\_changed & Since COVID-19, has there been any personal or household change 
 
 \subsection{Collapsing the variables}
 
-In other to obtain a feasible result, the following variables were collapsed due to insignificant proportion of respondent answering those questions. With regards to \textbf{Ethinicity}, we maintained Hispanic , Black/African American, White, Asian and collapsed American Indian, Native Hawaiian, mixed race and other into \textbf{other} . We decided not to keep a mixed race level because the total reduced to 88 after we assigned (Hispanic, white) to Hispanic, and (Hispanic, Black) to Black. \textbf{Gender} was reduced to 3 levels: female, male, and non-binary/non-conforming. With respect to \textbf{Income} we kept first 5 levels and 100000 or more (11)-\textgreater8, collapse (6,7)-\textgreater6, (8,9,10)-\textgreater7. For \textbf{Academic level}, we keep first 5, and collapse last 2 -\textgreater{} 6. For \textbf{College}, we maintain first 6 levels and colapse the remaining ones into other (level 7). For \textbf{Commute}, we keep car, Bus/public and other, and collapse car \& carpool (2,3) -\textgreater{} 9, collapse bike, trolley, walk (5,6,7) -\textgreater{} 10. Keep Not applicable (0). For, \textbf{Federal Aid}, Emergency loan was reduced from 316 to 50, so we added those to loans(3).
+In other to obtain a feasible result, the following variables were collapsed due to insignificant proportion of respondent answering those questions. With regards to \textbf{Ethinicity}, we maintained Hispanic , Black/African American, White/Caucassian, Asian and collapsed American Indian, Native Hawaiian, mixed race and other into \textbf{other} . We decided not to keep a mixed race level because the total reduced to 88 after we assigned (Hispanic, white) to Hispanic, and (Hispanic, Black) to Black. \textbf{Gender} was reduced to 3 levels: female, male, and non-binary/non-conforming. With respect to \textbf{Income} we kept first 5 levels and 100000 or more (11)-\textgreater8, collapse (6,7)-\textgreater6, (8,9,10)-\textgreater7. For \textbf{Academic level}, we keep first 5, and collapse last 2 -\textgreater{} 6. For \textbf{College}, we maintain first 6 levels and colapse the remaining ones into other (level 7). For \textbf{Commute}, we keep car, Bus/public and other, and collapse car \& carpool (2,3) -\textgreater{} 9, collapse bike, trolley, walk (5,6,7) -\textgreater{} 10. Keep Not applicable (0). For, \textbf{Federal Aid}, Emergency loan was reduced from 316 to 50, so we added those to loans(3).
 
 \section{Analysis Plan}
 
@@ -384,61 +384,61 @@ To aid easy deployment and implementation of our proposed model(s), we plan to d
 \hline
 Variable & Number\_Missing & Missing\_Rate\\
 \hline
-enrollment & 7087 & 56.53318\\
+enrollment & 0 & 0.0000000\\
 \hline
-employment & 7087 & 56.53318\\
+employment & 0 & 0.0000000\\
 \hline
-employment\_type & 9448 & 75.36694\\
+employment\_type & 2201 & 42.5314010\\
 \hline
-weekly\_work\_hrs & 9448 & 75.36694\\
+weekly\_work\_hrs & 2201 & 42.5314010\\
 \hline
-ethnicity & 7361 & 58.71889\\
+ethnicity & 0 & 0.0000000\\
 \hline
-gender & 7383 & 58.89438\\
+gender & 22 & 0.4251208\\
 \hline
-total\_income & 7361 & 58.71889\\
+total\_income & 0 & 0.0000000\\
 \hline
-academic\_level & 7361 & 58.71889\\
+academic\_level & 0 & 0.0000000\\
 \hline
-college/school & 7361 & 58.71889\\
+college/school & 0 & 0.0000000\\
 \hline
-mode\_transport & 7361 & 58.71889\\
+mode\_transport & 0 & 0.0000000\\
 \hline
-transport\_reliability & 7361 & 58.71889\\
+transport\_reliability & 0 & 0.0000000\\
 \hline
-living\_alone & 7361 & 58.71889\\
+living\_alone & 0 & 0.0000000\\
 \hline
-dependents & 7819 & 62.37237\\
+dependents & 460 & 8.8888889\\
 \hline
-household\_head & 7417 & 59.16560\\
+household\_head & 56 & 1.0821256\\
 \hline
-residence & 7441 & 59.35705\\
+residence & 80 & 1.5458937\\
 \hline
-permanent\_address & 7441 & 59.35705\\
+permanent\_address & 80 & 1.5458937\\
 \hline
-spent\_night\_elsewhere & 12282 & 97.97384\\
+spent\_night\_elsewhere & 4921 & 95.0917874\\
 \hline
-know\_homelessness\_studt & 7476 & 59.63625\\
+know\_homeless\_student & 115 & 2.2222222\\
 \hline
-federal\_aid & 7476 & 59.63625\\
+federal\_student\_aid & 115 & 2.2222222\\
 \hline
-FI\_q26 & 7518 & 59.97128\\
+FI\_q26 & 157 & 3.0338164\\
 \hline
-FI\_q27 & 7518 & 59.97128\\
+FI\_q27 & 157 & 3.0338164\\
 \hline
-FI\_q28 & 7518 & 59.97128\\
+FI\_q28 & 157 & 3.0338164\\
 \hline
-FI\_q30 & 7538 & 60.13082\\
+FI\_q30 & 177 & 3.4202899\\
 \hline
-FI\_q31 & 7538 & 60.13082\\
+FI\_q31 & 177 & 3.4202899\\
 \hline
-expenditures\_changed & 7599 & 60.61742\\
+expenditures\_changed & 238 & 4.5990338\\
 \hline
-income\_changed & 7599 & 60.61742\\
+income\_changed & 238 & 4.5990338\\
 \hline
-fed\_aid\_changed & 7599 & 60.61742\\
+fed\_aid\_changed & 238 & 4.5990338\\
 \hline
-debt\_changed & 7599 & 60.61742\\
+debt\_changed & 238 & 4.5990338\\
 \hline
 \end{tabu}
 \end{table}
@@ -597,63 +597,63 @@ Wikipedia. (2021). Support-vector machine. Retrieved October 15, 2021, from \url
 \hline
 variable & n\_miss & pct\_miss\\
 \hline
-spent\_night\_elsewhere & 12282 & 97.97384\\
+spent\_night\_elsewhere & 4921 & 95.0917874\\
 \hline
-employment\_type & 9448 & 75.36694\\
+employment\_type & 2201 & 42.5314010\\
 \hline
-weekly\_work\_hrs & 9448 & 75.36694\\
+weekly\_work\_hrs & 2201 & 42.5314010\\
 \hline
-dependents & 7819 & 62.37237\\
+dependents & 460 & 8.8888889\\
 \hline
-expenditures\_changed & 7599 & 60.61742\\
+expenditures\_changed & 238 & 4.5990338\\
 \hline
-income\_changed & 7599 & 60.61742\\
+income\_changed & 238 & 4.5990338\\
 \hline
-fed\_aid\_changed & 7599 & 60.61742\\
+fed\_aid\_changed & 238 & 4.5990338\\
 \hline
-debt\_changed & 7599 & 60.61742\\
+debt\_changed & 238 & 4.5990338\\
 \hline
-FI\_q30 & 7538 & 60.13082\\
+FI\_q30 & 177 & 3.4202899\\
 \hline
-FI\_q31 & 7538 & 60.13082\\
+FI\_q31 & 177 & 3.4202899\\
 \hline
-FI\_q26 & 7518 & 59.97128\\
+FI\_q26 & 157 & 3.0338164\\
 \hline
-FI\_q27 & 7518 & 59.97128\\
+FI\_q27 & 157 & 3.0338164\\
 \hline
-FI\_q28 & 7518 & 59.97128\\
+FI\_q28 & 157 & 3.0338164\\
 \hline
-know\_homelessness\_studt & 7476 & 59.63625\\
+know\_homeless\_student & 115 & 2.2222222\\
 \hline
-federal\_aid & 7476 & 59.63625\\
+federal\_student\_aid & 115 & 2.2222222\\
 \hline
-residence & 7441 & 59.35705\\
+residence & 80 & 1.5458937\\
 \hline
-permanent\_address & 7441 & 59.35705\\
+permanent\_address & 80 & 1.5458937\\
 \hline
-household\_head & 7417 & 59.16560\\
+household\_head & 56 & 1.0821256\\
 \hline
-gender & 7383 & 58.89438\\
+gender & 22 & 0.4251208\\
 \hline
-ethnicity & 7361 & 58.71889\\
+respondent\_id & 0 & 0.0000000\\
 \hline
-total\_income & 7361 & 58.71889\\
+enrollment & 0 & 0.0000000\\
 \hline
-academic\_level & 7361 & 58.71889\\
+employment & 0 & 0.0000000\\
 \hline
-college/school & 7361 & 58.71889\\
+ethnicity & 0 & 0.0000000\\
 \hline
-mode\_transport & 7361 & 58.71889\\
+total\_income & 0 & 0.0000000\\
 \hline
-transport\_reliability & 7361 & 58.71889\\
+academic\_level & 0 & 0.0000000\\
 \hline
-living\_alone & 7361 & 58.71889\\
+college/school & 0 & 0.0000000\\
 \hline
-enrollment & 7087 & 56.53318\\
+mode\_transport & 0 & 0.0000000\\
 \hline
-employment & 7087 & 56.53318\\
+transport\_reliability & 0 & 0.0000000\\
 \hline
-respondent\_id & 0 & 0.00000\\
+living\_alone & 0 & 0.0000000\\
 \hline
 \end{tabular}
 

@@ -1,90 +1,20 @@
----
-title: "Modeling Food and Housing Insecurity at UTEP - Phase 1"
-author:
-- George E. Quaye
-- John Koomson
-- Willliam O. Agyapong
-date: \center University of Texas, El Paso (UTEP)\center \center Department of Mathematical
-  Sciences \center
-output:
-  pdf_document:
-    toc: yes
-    toc_depth: '4'
-  bookdown::pdf_document2:
-    fig_caption: yes
-    keep_tex: no
-    latex_engine: pdflatex
-    number_sections: yes
-    toc: yes
-    toc_depth: 4
-  html_document:
-    fig_caption: yes
-    keep_tex: no
-    number_sections: yes
-    toc: yes
-    toc_depth: 4
-subtitle: Data Exploration
-affiliation: Department of Mathematical Sciences, University of Texas at El Paso
-header-includes:
-- \usepackage{float}
-- \usepackage{setspace}
-- \doublespacing
-- \usepackage{bm}
-- \usepackage{amsmath}
-- \usepackage{amssymb}
-- \usepackage{amsfonts}
-- \usepackage{amsthm}
-- \usepackage{fancyhdr}
-- \pagestyle{fancy}
-- \fancyhf{}
-- \rhead{George Quaye, Johnson Koomson, William Agyapong}
-- \lhead{Modeling - DS 6335}
-- \cfoot{\thepage}
-- \usepackage{algorithm}
-- \usepackage[noend]{algpseudocode}
-geometry: margin = 0.8in
-fontsize: 10pt
-bibliography: references.bib
-link-citations: yes
-linkcolor: blue
-csl: apa-6th-edition-no-ampersand.csl
-nocite: null
----
-\end{center}
----
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = F)
-
-# Load required packages
-library(dplyr)
-library(stringr)
-library(ggplot2)
-library(RColorBrewer)
-library(ggcorrplot) # for correlation plot
-library(ggthemes)
-library(patchwork)
-library(knitr)
-library(kableExtra)
-library(scales) # for the percent function
-```
 
 
 
-```{r load-data}
+
+
 # Importing preprocessed data
-load("FIHI_clean.RData")
 
 # Make new data for EDA
 eda_dat <- FIHI_sub3 %>%
   dplyr::select(-ends_with("_changed"), -respondent_id)
 
-```
+
 
 # Exploratory Data Analysis
 
 ## Summary Statistics
-```{r, summary-stats}
+
 
 # Tracking follow-up questions to fix incorrect missing data instances:
 # Problem: Respondents who gave a response not in favor of the follow-up 
@@ -171,29 +101,8 @@ kable(summ_stats, align = "llll", longtable=T, booktabs=T, linesep="",
                 stripe_index = get_stripe_index(nr_vec)
                 )
  
-```
 
 
-## Visualizing Missing Data 
-```{r}
-# install.packages("naniar")
-# install.packages("UpSetR")
-library(naniar)
-library(UpSetR)
-
-# explore the patterns
-gg_miss_upset(FIHI_sub3)
-
-# explore missingness in variables with gg_miss_var
-miss_var_summary(FIHI_sub3) %>% kable()
-
-gg_miss_var(FIHI_sub3) + ylab("Number of missing values")
-
-gg_miss_var(FIHI_sub3, show_pct = T) 
-```
-
-
-```{r plotting-functions}
 # # Make data for plotting
 # na_to_missing <- function(x) 
 # {
@@ -240,94 +149,4 @@ mybarplot <- function(var, palette="Set2",
 # "Ever hungry but didn't eat?"
 # mybarplot(FI_q31)
 # mybarplot(spent_night_elsewhere, data = FIHI_sub3)
-
-```
-
-
-## Distribution of Housing Insecurity Responses
-
-```{r}
-
-# Permanent Address
-p1 <- mybarplot(permanent_address, 
-                xlab = "Had permanent address in the past 12 months?"
-                )
-
-# Spending night elsewhere
-plotdf <- FIHI_sub3 %>%
-  filter(permanent_address=='No') %>%
-  group_by(spent_night_elsewhere) %>%
-  summarise(n=n()) %>% 
-  mutate(pct = n/sum(n),
-         lbl = percent(pct))
-p2 <- mybarplot(spent_night_elsewhere, 
-                xlab = "How fequently did you spend the night elsewhere?",
-                data = plotdf
-                )
-plotdf %>% mutate(spent_night_elsewhere = ifelse(is.na(spent_night_elsewhere), 'Missing', spent_night_elsewhere))
-# Display plots side by side with the help of the patchwork package
-p1 + p2
-
-```
-
-## Distribution of Food Insecurity Responses
-```{r}
-
-# Q26: Food bought didn't last
-p1 <- mybarplot(FI_q26, xlab = "Food bought did not last")
-
-# Q27: Balanced diet
-p2 <- mybarplot(FI_q27, xlab = "Couldn't afford balanced meals")
-
-# Q28: 
-p3 <- mybarplot(FI_q28, xlab = "Ever cut the size of meals?")
-
-# Q3: 
-p4 <- mybarplot(FI_q30, xlab = "Ever ate less than you should?")
-
-# Q31
-p5 <- mybarplot(FI_q31, xlab = "Ever got hungry but didn't eat?")
-
-# Display plots side by side with the help of the patchwork package
-(p1 + p2)
-
-(p3 + p4)
-
-p5
-
-```
-
-
-##  Association between predictors and responses.
-
-```{r warning=F, message=F, echo=F, eval=F}
-plotdf <- FIHI_sub3 %>%
-  group_by(gender, permanent_address) %>%
-  summarise(n=n()) %>% 
-  mutate(pct = n/sum(n),
-         lbl = percent(pct))
-
-p1 <- ggplot(plotdf, aes(gender, pct, fill=permanent_address)) + 
-  geom_bar(stat = "identity",position = "fill") +
-  scale_y_continuous(breaks = seq(0,1,0.2), label=percent) +
-  geom_text(aes(label = lbl), size=3, position = position_stack(vjust = 0.5)) +
-  scale_fill_brewer(palette="Set2") + 
-  labs(x="Gender",y="Percent of respondents", fill="Permanent Address") +
-  theme_classic() +
-  theme(legend.position = "none")
-
-# display plots in a grid layout
-(p1 + p2) / (p3 + p4 + p5)
-```
-
-
-```{r}
-
-```
-
-
-# References{-}
-
-<div id="refs"></div>
-
 

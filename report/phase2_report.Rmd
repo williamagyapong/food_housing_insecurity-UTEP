@@ -44,13 +44,13 @@ csl: ../apa-6th-edition-no-ampersand.csl
 ---
 
 ```{r setup, warning=F, message=F, include=FALSE, echo=FALSE}
-knitr::opts_chunk$set(echo = FALSE, warning=F, message=F, fig.pos = "!H", out.extra = "")
+knitr::opts_chunk$set(echo = F, warning=F, message=F, fig.pos = "!H", out.extra = "")
 
-# Loading required packages
-source('packages.r')
+# Load required packages and preprocessed data from the project root directory
 
-# Importing preprocessed data
-load('FIHI_clean.RData')
+source("../packages.R")
+
+load("../FIHI_clean.RData")
 
 ```
 
@@ -308,7 +308,6 @@ To aid easy deployment and implementation of our proposed model(s), we plan to d
 ```{r, echo=F,message=FALSE, warning=FALSE, echo= F}
 # PREPARATION AND CLEANING
 
-load("FIHI_clean.RData")
 data <- FIHI_sub2[,-1]
 ```
 
@@ -334,28 +333,9 @@ kable(missing_rate, align = "lcc", caption = "Table : Missing values table displ
 ```
 
 
-<!--## Summary Statistics -->
-```{r}
-# summary_stats <- as.data.frame(t(summary(FIHI_sub3[,-1])))
-# kable(summary_stats)
 
-# pa_tats <- FIHI_sub3 %>%
-#   select(permanent_address) %>%
-#   group_by(permanent_address) %>%
-#   summarise(freq = n())
-# names(pa_tats) <- c("Levels", "Obervations")
-# 
-# pa_tats2 <- FIHI_sub3 %>%
-#   filter(permanent_address=="No") %>%
-#   select(spent_night_elsewhere) %>%
-#   group_by(spent_night_elsewhere) %>%
-#   summarise(freq = n())
-# names(pa_tats2) <- c("Levels", "Obervations")
 
-# rbind(pa_tats, pa_tats2)
-```
-
-```{r plotting-functions}
+```{r plotting-functions, message=FALSE, warning=FALSE, echo= F}
 # Make data for plotting
 
 # For creating bar graphs of the response variables
@@ -478,6 +458,12 @@ The table and graphs above display the number of missing values with missing per
 
 ## Model Fitting  
 
+```{r message=FALSE, warning=FALSE, echo= F}
+# 
+source("modeling_functions.R")
+```
+
+
 Given our data set and its structure, the following supervised classification machine learning algorithm were employed to obtained a predictive model for each given response variable;
 
 * Logistic Regression
@@ -502,202 +488,23 @@ For the purpose of training and validation of each derived model ,and the estima
 
 Here, we modeled housing insecurity as a response based whether or not the respondent had a permanent address.
 
-```{r, warning=F, message=F, eval=FALSE}
+```{r message=FALSE, warning=FALSE, echo= F}
+dat <- modeling("permanent_address")
 
-data_pa<- data %>%
-  dplyr::select(-starts_with("FI_"), -ends_with("_changed"), -`college/school`) %>%
-  filter(permanent_address != "NA") 
-
-# dim(data_pa)
+eval_table(dat$model_list, "permanent_address", "Permanent House Address")
 
 
+plot(dat$ensemble, main="Individual models versus Ensemble model performance")
 
-set.seed(123)
-suppressPackageStartupMessages(library(mice))
-data_imputed <- mice(data_pa[,-15], printFlag = F)
-data_1 <- complete(data_imputed, 1)
-data1 <- as.data.frame(data_1)
-data_pad<-cbind("permanent_address"=data_pa$permanent_address,data1)
-rm(data_imputed, data_1, data1)
+# par(mfrow=c(1,2))
+Var <- varImp(dat$model_list$svmRadial, scale = FALSE)
+plot(Var, main ="Figure: Variable of Importance by the SVM Radial model")
 
+Var <- varImp(dat$model_list$lda, scale = FALSE)
+plot(Var, main ="Figure: Variable of Importance by the LDA model")
 
-# Treating imbalance classification
-
-
- data_pad_balance<-ovun.sample(permanent_address ~ ., data = data_pad, method = "both", p=0.5,                             N=NROW(data_pad), seed = 125)$data
- # dim(data_pad_balance)
-
-
-
-data_pad_balance <- data_pad_balance %>%
-   mutate(across(everything(), as.factor))
-
-
-# PARTITION DATA
-set.seed(123)
-intrain <- createDataPartition(y=1:NROW(data_pad_balance), p= 0.67, list = FALSE)
-training <- data_pad_balance[intrain,];  testing <- data_pad_balance[-intrain,]
-
-# dim(training) # training data
-# dim(testing)
-
-
-
-
-
-#------ Model building -----------
-# Create a wrapper function to abstract away the common aspects of model fitting
-formula<- permanent_address~.
-fit.model <- function(method, tunegrid="", data=NULL, formula=NULL) {
-  
-  data <- training
-  if(is.null(formula)) formula<- permanent_address~.
-  
-  # Train the model
-   train(
-           formula,
-           data = data,
-           method = method,
-           trControl = trainControl(method = "cv", 5),
-           preProcess = c("center","scale"),
-           tuneGrid = tunegrid)
-          
-}
-
-
-
-# Logistic Regression
-log <-train(formula,
-                 data=training,
-                 method="glm",
-                 family = binomial(link = "logit"),
-                trControl = trainControl(method = "cv", 5),
-                preProcess = c("center", "scale")) 
-
-
-
-# LDA
-lda <- train(formula,
-                 data=training,
-                 method="lda",
-                trControl = trainControl(method = "cv", 5),
-                preProcess = c("center", "scale"))
-
-
-
-
-#-------------- Elastic Net Models -------------------
-# fit a LASSO model
-lasso <- fit.model("glmnet", expand.grid(.alpha=1, .lambda=seq(0,0.1,0.01)))
-
-# Fit a Ridge regression model
-ridge <- fit.model("glmnet", expand.grid(.alpha=0, .lambda=seq(0,0.1,0.01)))
-
-
-
-
-# Bagging
-# bag <- fit.model("rf", data.frame(mtry=11))
-# bag <- train(formula,
-#                  data=training,
-#                  method="rf",
-#                 trControl = trainControl(method = "cv", 5),
-#                 preProcess = c("center", "scale"),
-#                 tuneGrid = data.frame(mtry=11),
-#                 ntree = 1000) 
-
-
-
-
-#-------------- 
-
-# Support Vector Machine with linear kernel
-set.seed(125)
-trctrl <- trainControl(method = "cv", number=5)
-svc <- train(formula, data = training, method = "svmLinear",
-                    trControl=trctrl, prob.model=T,
-                    tuneLength = 10)
-
-
-
-
-# Support Vector Machine with radial kernel
-set.seed(125)
-trctrl <- trainControl(method = "cv", number=5)
-svmR <- train(formula , data = training, method = "svmRadial",
-                    trControl=trctrl, prob.model=T,
-                    tuneLength = 10)
-
-
-
-## Making predictions 
-
-
-# Create a custom confusion matrix with performance metrics
-metrics <- function(model_object, response="", test_data=NULL) {
-  # response = "permanent_address"
-  # model_object <- log
-  # 
-  if(is.null(test_data)) test_data <- testing
-  
-  # make predictions
-  prediction <- predict(model_object, test_data) 
-  
-  target <- test_data[, response]
-  
-  cmat <- confusionMatrix(prediction, target, mode = "prec_recall")
-  
-  misscal<- round(mean(prediction != target),digits = 2)
-  
- # Returned outputs
- return(list(
-   accuracy = (1-misscal),
-   mcr = misscal,
-   sens = round(cmat$byClass[1],2),
-   spec = round(cmat$byClass[2],2),
-   fbeta = round(cmat$byClass[7],2)
- ))
-  
-}
-
-metric_log <- metrics(lasso, response = "permanent_address")
-#------- Compute performance metrics for the full models ---------------
-log.metric <- metrics(log, response = "permanent_address")
-lda.metric <- metrics(lda, response = "permanent_address")
-# knn.metric <- metrics(knn)
-lasso.metric <- metrics(lasso, response = "permanent_address")
-ridge.metric <- metrics(ridge, response = "permanent_address")
-# bag.metric <- metrics(bag, response = "permanent_address")
-# rf.metric <- metrics(rf)
-svc.metric <- metrics(svc, response = "permanent_address")
-# svmP.metric <- metrics(svmP)
-svmR.metric <- metrics(svmR, response = "permanent_address")
-
-mod.sum <- data.frame(rbind(
-                          c("Logistic", log.metric$mcr, log.metric$accuracy, log.metric$sens, log.metric$spec, log.metric$fbeta),
-                          c("LDA",  lda.metric$mcr, lda.metric$accuracy, lda.metric$sens, lda.metric$spec, lda.metric$fbeta),
-                          c("LASSO", lasso.metric$mcr, lasso.metric$accuracy, lasso.metric$sens, lasso.metric$spec, lasso.metric$fbeta),
-                          c("Ridge", ridge.metric$mcr, ridge.metric$accuracy, ridge.metric$sens, ridge.metric$spec, ridge.metric$fbeta),
-                          # c("Bagging", bag.metric$mcr, bag.metric$accuracy, bag.metric$sens, bag.metric$spec, bag.metric$fbeta),
-                          c("SVC",  svc.metric$mcr, svc.metric$accuracy, svc.metric$sens, svc.metric$spec, svc.metric$fbeta),
-                          c("SVM (Radial Kernel)", svmR.metric$mcr, svmR.metric$accuracy, svmR.metric$sens, svmR.metric$spec, svmR.metric$fbeta)))
-
-names(mod.sum) <- c("Model", "Misclassification Rate", "Accuracy", "Sensitivity", "Specificity", "fbeta")
-
-kable(mod.sum, align = "lccccc", caption = "Table : Evaluation metrics for Housing Insecurity with Permanent Address as a response") %>%
-  kable_paper("hover", full_width = F)%>% 
-       kable_styling(font_size = 12, latex_options = c("HOLD_position"))
-
-
-
-
-Var <- varImp(svmR, scale = FALSE)
-plot(Var, main ="Figure: Variable of Importance")
-
-######
 
 ```
-
 
 ### Modeling Food Insecurity
 
@@ -711,580 +518,61 @@ In this section, we report results for modeling food insecurity in terms respons
 
 #### Results for Food Insecurity Response 1
 
-```{r, warning=F, message=F, eval=FALSE}
-data_pa<- data %>%
-  rename(college_school = `college/school`) %>%
-  dplyr::select(-c(permanent_address,spent_night_elsewhere, FI_q26, FI_q27,FI_q30, FI_q31), -ends_with("_changed")) %>%
-  filter(data$FI_q28 != "NA") 
+```{r message=FALSE, warning=FALSE, echo= F}
+dat <- modeling("FI_q28")
 
-#Missing  value imputation
-set.seed(123)
-suppressPackageStartupMessages(library(mice))
-data_imputed <- mice(data_pa[,-which(names(data_pa)=='FI_q28')], printFlag = F)
-data_1 <- complete(data_imputed, 1)
-data1 <- as.data.frame(data_1)
-data_pad<-cbind("FI_q28"=data_pa$FI_q28,data1)
-rm(data_imputed, data_1, data1)
-
-# Treating imbalance classification
-data_pad_balance<-ovun.sample(FI_q28 ~ ., data = data_pad, method = "both", p=0.5,                             N=NROW(data_pad), seed = 125)$data
-
-## Converting predictors to category
-data_pad_balance <- data_pad_balance %>%
-   mutate(across(everything(), as.factor))
+eval_table(dat$model_list, "FI_q28", "Food Insecurity 1")
 
 
-## Partitioning data set
+plot(dat$ensemble, main="Individual models versus Ensemble model performance")
 
-# PARTITION DATA
+# par(mfrow=c(1,2))
+Var <- varImp(dat$model_list$svmRadial, scale = FALSE)
+plot(Var, main ="Figure: Variable of Importance by the SVM Radial model")
 
-intrain <- createDataPartition(y=1:NROW(data_pad_balance), p= 0.67, list = FALSE)
-training <- data_pad_balance[intrain,];  testing <- data_pad_balance[-intrain,]
-
-# dim(training) # training data
-# dim(testing)
-
-#------ Model building -----------
-# Create a wrapper function to abstract away the common aspects of model fitting
-formula<- FI_q28~.
-fit.model <- function(method, tunegrid="", data=NULL, formula=NULL) {
-  
-  data <- training
-  if(is.null(formula)) formula<- FI_q28~.
-  
-  # Train the model
-   train(
-           formula,
-           data = data,
-           method = method,
-           trControl = trainControl(method = "cv", 5),
-           preProcess = c("center","scale"),
-           tuneGrid = tunegrid)
-          
-}
-
-
-# Logistic Regression
-log <-train(formula,
-                 data=training,
-                 method="glm",
-                 family = binomial(link = "logit"),
-                trControl = trainControl(method = "cv", 5),
-                preProcess = c("center", "scale")) 
-
-
-
-# LDA
-lda <- train(formula,
-                 data=training,
-                 method="lda",
-                trControl = trainControl(method = "cv", 5),
-                preProcess = c("center", "scale"))
-
-
-
-#-------------- Elastic Net Models -------------------
-# fit a LASSO model
-lasso <- fit.model("glmnet", expand.grid(.alpha=1, .lambda=seq(0,0.1,0.01)))
-
-# Fit a Ridge regression model
-ridge <- fit.model("glmnet", expand.grid(.alpha=0, .lambda=seq(0,0.1,0.01)))
-
-
-# Bagging
-# bag <- fit.model("rf", data.frame(mtry=11))
-# bag <- train(formula,
-#                  data=training,
-#                  method="rf",
-#                 trControl = trainControl(method = "cv", 5),
-#                 preProcess = c("center", "scale"),
-#                 tuneGrid = data.frame(mtry=11),
-#                 ntree = 1000) 
-
-
-
-
-# Random Forest
-# rf <- fit.model("rf", data.frame(mtry=1:10))
-# rf <- train(formula,
-#                  data=training,
-#                  method="rf",
-#                 trControl = trainControl(method = "cv", 5),
-#                 preProcess = c("center", "scale"),
-#                 tuneGrid = data.frame(mtry=1:10),
-#                 ntree = 1000) 
-
-
-
-
-#-------------- 
-
-# Support Vector Machine with linear kernel
-
-trctrl <- trainControl(method = "cv", number=5)
-svc <- train(formula, data = training, method = "svmLinear",
-                    trControl=trctrl, prob.model=T,
-                    tuneLength = 10)
-
-
-
-# Support Vector Machine with radial kernel
-trctrl <- trainControl(method = "cv", number=5)
-svmR <- train(formula , data = training, method = "svmRadial",
-                    trControl=trctrl, prob.model=T,
-                    tuneLength = 10)
-
-
-
-
-# Create a custom confusion matrix with performance metrics
-metrics <- function(model_object, response="", test_data=NULL) {
-  # response = "FI_q28"
-  # model_object <- log
-  # 
-  if(is.null(test_data)) test_data <- testing
-  
-  # make predictions
-  prediction <- predict(model_object, test_data) 
-  
-  target <- test_data[, response]
-  
-  cmat <- confusionMatrix(prediction, target, mode = "prec_recall")
-  
-  misscal<- round(mean(prediction != target),digits = 2)
-  
- # Returned outputs
- return(list(
-   accuracy = (1-misscal),
-   mcr = misscal,
-   sens = round(cmat$byClass[1],2),
-   spec = round(cmat$byClass[2],2),
-   fbeta = round(cmat$byClass[7],2)
- ))
-  
-}
-
-
-
-metric_log <- metrics(lasso, response = "FI_q28")
-#------- Compute performance metrics for the full models ---------------
-log.metric <- metrics(log, response = "FI_q28")
-lda.metric <- metrics(lda, response = "FI_q28")
-# knn.metric <- metrics(knn)
-lasso.metric <- metrics(lasso, response = "FI_q28")
-ridge.metric <- metrics(ridge, response = "FI_q28")
-# bag.metric <- metrics(bag, response = "FI_q28")
-# rf.metric <- metrics(rf)
-svc.metric <- metrics(svc, response = "FI_q28")
-# svmP.metric <- metrics(svmP)
-svmR.metric <- metrics(svmR, response = "FI_q28")
-
-mod.sum <- data.frame(rbind(
-                          c("Logistic", log.metric$mcr, log.metric$accuracy, log.metric$sens, log.metric$spec, log.metric$fbeta),
-                          c("LDA",  lda.metric$mcr, lda.metric$accuracy, lda.metric$sens, lda.metric$spec, lda.metric$fbeta),
-                          c("LASSO", lasso.metric$mcr, lasso.metric$accuracy, lasso.metric$sens, lasso.metric$spec, lasso.metric$fbeta),
-                          c("Ridge", ridge.metric$mcr, ridge.metric$accuracy, ridge.metric$sens, ridge.metric$spec, ridge.metric$fbeta),
-                          # c("Bagging", bag.metric$mcr, bag.metric$accuracy, bag.metric$sens, bag.metric$spec, bag.metric$fbeta),
-                          c("SVC",  svc.metric$mcr, svc.metric$accuracy, svc.metric$sens, svc.metric$spec, svc.metric$fbeta),
-                          c("SVM (Radial Kernel)", svmR.metric$mcr, svmR.metric$accuracy, svmR.metric$sens, svmR.metric$spec, svmR.metric$fbeta)))
-
-names(mod.sum) <- c("Model", "Misclassification Rate", "Accuracy", "Sensitivity", "Specificity", "fbeta")
-
-kable(mod.sum, align = "lccccc", caption = "Table : Evaluation metrics for  food insecurity 1 as a response") %>%
-  kable_paper("hover", full_width = F)%>% 
-       kable_styling(font_size = 12, latex_options = c("HOLD_position"))
-
-
-Var <- varImp(svmR, scale = FALSE)
-plot(Var, main = "Figure: Variable of Importance")
-
+Var <- varImp(dat$model_list$lda, scale = FALSE)
+plot(Var, main ="Figure: Variable of Importance by the LDA model")
 
 
 ```
-
 
 #### Results for Food Insecurity Response 2
 
-```{r, warning=F, message=F, eval=FALSE}
+```{r message=FALSE, warning=FALSE, echo= F}
+dat <- modeling("FI_q30")
 
-data_pa<- data %>%
-  rename(college_school = `college/school`) %>%
-  dplyr::select(-c(permanent_address,spent_night_elsewhere, FI_q26, FI_q27, FI_q28,FI_q31), -ends_with("_changed")) %>%
-  filter(FI_q30 != "NA") 
-
-# dim(data_pa)
+eval_table(dat$model_list, "FI_q30", "Food Insecurity 2")
 
 
+plot(dat$ensemble, main="Individual models versus Ensemble model performance")
 
-## missing value treatment
+# par(mfrow=c(1,2))
+Var <- varImp(dat$model_list$svmRadial, scale = FALSE)
+plot(Var, main ="Figure: Variable of Importance by the SVM Radial model")
 
-#Missing  value imputation
-set.seed(123)
-suppressPackageStartupMessages(library(mice))
-data_imputed <- mice(data_pa[,-which(names(data_pa)=='FI_q30')], printFlag = F)
-data_1 <- complete(data_imputed, 1)
-data1 <- as.data.frame(data_1)
-data_pad<-cbind("FI_q30"=data_pa$FI_q30,data1)
-rm(data_imputed, data_1, data1)
+Var <- varImp(dat$model_list$lda, scale = FALSE)
+plot(Var, main ="Figure: Variable of Importance by the LDA model")
 
-
-# Treating imbalance classification
-
-# library(ROSE)
- data_pad_balance<-ovun.sample(FI_q30 ~ ., data = data_pad, method = "both", p=0.5,                             N=NROW(data_pad), seed = 125)$data
- # dim(data_pad_balance)
-
-
-## Converting predictors to category
-
-data_pad_balance <- data_pad_balance %>%
-   mutate(across(everything(), as.factor))
-
-
-## Partitioning data set
-
-# PARTITION DATA
-set.seed(123)
-intrain <- createDataPartition(y=1:NROW(data_pad_balance), p= 0.67, list = FALSE)
-training <- data_pad_balance[intrain,];  testing <- data_pad_balance[-intrain,]
-
-# dim(training) # training data
-# dim(testing)
-
-
-#------ Model building -----------
-# Create a wrapper function to abstract away the common aspects of model fitting
-formula<- FI_q30~.
-fit.model <- function(method, tunegrid="", data=NULL, formula=NULL) {
-  
-  data <- training
-  if(is.null(formula)) formula<- FI_q30~.
-  
-  # Train the model
-   train(
-           formula,
-           data = data,
-           method = method,
-           trControl = trainControl(method = "cv", 5),
-           preProcess = c("center","scale"),
-           tuneGrid = tunegrid)
-          
-}
-
-
-
-# Logistic Regression
-log <-train(formula,
-                 data=training,
-                 method="glm",
-                 family = binomial(link = "logit"),
-                trControl = trainControl(method = "cv", 5),
-                preProcess = c("center", "scale")) 
-
-# LDA
-lda <- train(formula,
-                 data=training,
-                 method="lda",
-                trControl = trainControl(method = "cv", 5),
-                preProcess = c("center", "scale"))
-
-
-
-
-
-#-------------- Elastic Net Models -------------------
-# fit a LASSO model
-lasso <- fit.model("glmnet", expand.grid(.alpha=1, .lambda=seq(0,0.1,0.01)))
-
-# Fit a Ridge regression model
-ridge <- fit.model("glmnet", expand.grid(.alpha=0, .lambda=seq(0,0.1,0.01)))
-
-
-# Bagging
-# bag <- fit.model("rf", data.frame(mtry=11))
-# bag <- train(formula,
-#                  data=training,
-#                  method="rf",
-#                 trControl = trainControl(method = "cv", 5),
-#                 preProcess = c("center", "scale"),
-#                 tuneGrid = data.frame(mtry=11),
-#                 ntree = 1000) 
-
-
-
-#-------------- 
-
-# Support Vector Machine with linear kernel
-set.seed(125)
-trctrl <- trainControl(method = "cv", number=5)
-svc <- train(formula, data = training, method = "svmLinear",
-                    trControl=trctrl, prob.model=T,
-                    tuneLength = 10)
-
-
-
-
-# Support Vector Machine with radial kernel
-set.seed(125)
-trctrl <- trainControl(method = "cv", number=5)
-svmR <- train(formula , data = training, method = "svmRadial",
-                    trControl=trctrl, prob.model=T,
-                    tuneLength = 10)
-
-
-
-## Making predictions 
-
-# Create a custom confusion matrix with performance metrics
-metrics <- function(model_object, response="", test_data=NULL) {
-  # response = "FI_q30"
-  # model_object <- log
-  # 
-  if(is.null(test_data)) test_data <- testing
-  
-  # make predictions
-  prediction <- predict(model_object, test_data) 
-  
-  target <- test_data[, response]
-  
-  cmat <- confusionMatrix(prediction, target, mode = "prec_recall")
-  
-  misscal<- round(mean(prediction != target),digits = 2)
-  
- # Returned outputs
- return(list(
-   accuracy = (1-misscal),
-   mcr = misscal,
-   sens = round(cmat$byClass[1],2),
-   spec = round(cmat$byClass[2],2),
-   fbeta = round(cmat$byClass[7],2)
- ))
-  
-}
-
-
-metric_log <- metrics(lasso, response = "FI_q30")
-#------- Compute performance metrics for the full models ---------------
-log.metric <- metrics(log, response = "FI_q30")
-lda.metric <- metrics(lda, response = "FI_q30")
-# knn.metric <- metrics(knn)
-lasso.metric <- metrics(lasso, response = "FI_q30")
-ridge.metric <- metrics(ridge, response = "FI_q30")
-# bag.metric <- metrics(bag, response = "FI_q30")
-# rf.metric <- metrics(rf)
-svc.metric <- metrics(svc, response = "FI_q30")
-# svmP.metric <- metrics(svmP)
-svmR.metric <- metrics(svmR, response = "FI_q30")
-
-mod.sum <- data.frame(rbind(
-                          c("Logistic", log.metric$mcr, log.metric$accuracy, log.metric$sens, log.metric$spec, log.metric$fbeta),
-                          c("LDA",  lda.metric$mcr, lda.metric$accuracy, lda.metric$sens, lda.metric$spec, lda.metric$fbeta),
-                          c("LASSO", lasso.metric$mcr, lasso.metric$accuracy, lasso.metric$sens, lasso.metric$spec, lasso.metric$fbeta),
-                          c("Ridge", ridge.metric$mcr, ridge.metric$accuracy, ridge.metric$sens, ridge.metric$spec, ridge.metric$fbeta),
-                          # c("Bagging", bag.metric$mcr, bag.metric$accuracy, bag.metric$sens, bag.metric$spec, bag.metric$fbeta),
-                          c("SVC",  svc.metric$mcr, svc.metric$accuracy, svc.metric$sens, svc.metric$spec, svc.metric$fbeta),
-                          c("SVM (Radial Kernel)", svmR.metric$mcr, svmR.metric$accuracy, svmR.metric$sens, svmR.metric$spec, svmR.metric$fbeta)))
-
-names(mod.sum) <- c("Model", "Misclassification Rate", "Accuracy", "Sensitivity", "Specificity", "fbeta")
-
-kable(mod.sum, align = "lccccc", caption = "Table : Evaluation metrics for  food insecurity 2 as a response") %>%
-  kable_paper("hover", full_width = F)%>% 
-       kable_styling(font_size = 12, latex_options = c("HOLD_position"))
-
-
-
-
-Var <- varImp(svmR, scale = FALSE)
-plot(Var, main = "Figure: Variable of Importance")
 
 ```
 
-
 #### Results for Food Insecurity Response 3
 
-```{r, warning=F, message=F, eval=FALSE}
+```{r message=FALSE, warning=FALSE, echo= F}
 
-data_pa<- data %>%
-  rename(college_school = `college/school`) %>%
-  dplyr::select(-c(permanent_address,spent_night_elsewhere, FI_q26,FI_q28,FI_q27,FI_q30), -ends_with("_changed")) %>%
-  filter(FI_q31 != "NA") 
+dat <- modeling("FI_q31")
 
-# dim(data_pa)
+eval_table(dat$model_list, "FI_q31", "Food Insecurity 3")
 
 
-## missing value treatment
+plot(dat$ensemble, main="Individual models versus Ensemble model performance")
 
-#Missing  value imputation
-set.seed(123)
-suppressPackageStartupMessages(library(mice))
-data_imputed <- mice(data_pa[,-18], printFlag = F)
-data_1 <- complete(data_imputed, 1)
-data1 <- as.data.frame(data_1)
-data_pad<-cbind("FI_q31"=data_pa$FI_q31,data1)
-rm(data_imputed, data_1, data1)
+# par(mfrow=c(1,2))
+Var <- varImp(dat$model_list$svmRadial, scale = FALSE)
+plot(Var, main ="Figure: Variable of Importance by the SVM Radial model")
 
-
-# Treating imbalance classification
-
-#library(ROSE)
- data_pad_balance<-ovun.sample(FI_q31 ~ ., data = data_pad, method = "both", p=0.5,                             N=NROW(data_pad), seed = 125)$data
- dim(data_pad_balance)
-
-
-## Converting predictors to category
-
-data_pad_balance <- data_pad_balance %>%
-   mutate(across(everything(), as.factor))
-
-
-## Partitioning data set
-
-# PARTITION DATA
-
-intrain <- createDataPartition(y=1:NROW(data_pad_balance), p= 0.67, list = FALSE)
-training <- data_pad_balance[intrain,];  testing <- data_pad_balance[-intrain,]
-
-# dim(training) # training data
-# dim(testing)
-
-
-
-## Model fitting 
-
-
-#------ Model building -----------
-# Create a wrapper function to abstract away the common aspects of model fitting
-formula<- FI_q31~.
-fit.model <- function(method, tunegrid="", data=NULL, formula=NULL) {
-  
-  data <- training
-  if(is.null(formula)) formula<- FI_q31~.
-  
-  # Train the model
-   train(
-           formula,
-           data = data,
-           method = method,
-           trControl = trainControl(method = "cv", 5),
-           preProcess = c("center","scale"),
-           tuneGrid = tunegrid)
-          
-}
-
-# Logistic Regression
-log <-train(formula,
-                 data=training,
-                 method="glm",
-                 family = binomial(link = "logit"),
-                trControl = trainControl(method = "cv", 5),
-                preProcess = c("center", "scale")) 
-
-# LDA
-lda <- train(formula,
-                 data=training,
-                 method="lda",
-                trControl = trainControl(method = "cv", 5),
-                preProcess = c("center", "scale"))
-
-
-#-------------- Elastic Net Models -------------------
-# fit a LASSO model
-lasso <- fit.model("glmnet", expand.grid(.alpha=1, .lambda=seq(0,0.1,0.01)))
-
-# Fit a Ridge regression model
-ridge <- fit.model("glmnet", expand.grid(.alpha=0, .lambda=seq(0,0.1,0.01)))
-
-
-# Bagging
-# bag <- fit.model("rf", data.frame(mtry=11))
-# bag <- train(formula,
-#                  data=training,
-#                  method="rf",
-#                 trControl = trainControl(method = "cv", 5),
-#                 preProcess = c("center", "scale"),
-#                 tuneGrid = data.frame(mtry=11),
-#                 ntree = 1000) 
-
-#-------------- 
-
-# Support Vector Machine with linear kernel
-
-trctrl <- trainControl(method = "cv", number=5)
-svc <- train(formula, data = training, method = "svmLinear",
-                    trControl=trctrl, prob.model=T,
-                    tuneLength = 10)
-
-
-# Support Vector Machine with radial kernel
-trctrl <- trainControl(method = "cv", number=5)
-svmR <- train(formula , data = training, method = "svmRadial",
-                    trControl=trctrl, prob.model=T,
-                    tuneLength = 10)
-
-
-
-## Making predictions 
-
-# Create a custom confusion matrix with performance metrics
-metrics <- function(model_object, response="", test_data=NULL) {
-  # response = "FI_q31"
-  # model_object <- log
-  # 
-  if(is.null(test_data)) test_data <- testing
-  
-  # make predictions
-  prediction <- predict(model_object, test_data) 
-  
-  target <- test_data[, response]
-  
-  cmat <- confusionMatrix(prediction, target, mode = "prec_recall")
-  
-  misscal<- round(mean(prediction != target),digits = 2)
-  
- # Returned outputs
- return(list(
-   accuracy = (1-misscal),
-   mcr = misscal,
-   sens = round(cmat$byClass[1],2),
-   spec = round(cmat$byClass[2],2),
-   fbeta = round(cmat$byClass[7],2)
- ))
-  
-}
-
-
-metric_log <- metrics(lasso, response = "FI_q31")
-#------- Compute performance metrics for the full models ---------------
-log.metric <- metrics(log, response = "FI_q31")
-lda.metric <- metrics(lda, response = "FI_q31")
-# knn.metric <- metrics(knn)
-lasso.metric <- metrics(lasso, response = "FI_q31")
-ridge.metric <- metrics(ridge, response = "FI_q31")
-# bag.metric <- metrics(bag, response = "FI_q31")
-# rf.metric <- metrics(rf)
-svc.metric <- metrics(svc, response = "FI_q31")
-# svmP.metric <- metrics(svmP)
-svmR.metric <- metrics(svmR, response = "FI_q31")
-
-mod.sum <- data.frame(rbind(
-                          c("Logistic", log.metric$mcr, log.metric$accuracy, log.metric$sens, log.metric$spec, log.metric$fbeta),
-                          c("LDA",  lda.metric$mcr, lda.metric$accuracy, lda.metric$sens, lda.metric$spec, lda.metric$fbeta),
-                          c("LASSO", lasso.metric$mcr, lasso.metric$accuracy, lasso.metric$sens, lasso.metric$spec, lasso.metric$fbeta),
-                          c("Ridge", ridge.metric$mcr, ridge.metric$accuracy, ridge.metric$sens, ridge.metric$spec, ridge.metric$fbeta),
-                          # c("Bagging", bag.metric$mcr, bag.metric$accuracy, bag.metric$sens, bag.metric$spec, bag.metric$fbeta),
-                          c("SVC",  svc.metric$mcr, svc.metric$accuracy, svc.metric$sens, svc.metric$spec, svc.metric$fbeta),
-                          c("SVM (Radial Kernel)", svmR.metric$mcr, svmR.metric$accuracy, svmR.metric$sens, svmR.metric$spec, svmR.metric$fbeta)))
-
-names(mod.sum) <- c("Model", "Misclassification Rate", "Accuracy", "Sensitivity", "Specificity", "fbeta")
-
-kable(mod.sum, align = "lccccc", caption = "Table : Evaluation metrics for  food insecurity 3 as a response") %>%
-  kable_paper("hover", full_width = F)%>% 
-       kable_styling(font_size = 12, latex_options = c("HOLD_position"))
-
-
-Var <- varImp(svmR, scale = FALSE)
-plot(Var, main =
-       "Variable of Importance")
+Var <- varImp(dat$model_list$lda, scale = FALSE)
+plot(Var, main ="Figure: Variable of Importance by the LDA model")
 
 
 ```

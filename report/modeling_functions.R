@@ -1,24 +1,12 @@
----
-title: "Predictive modelling"
-author: "George, John & William"
-date: "11/17/2021"
-output: pdf_document
----
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
 
 # Load required packages and preprocessed data from the project root directory
 
 source("../packages.R")
 
 load("../FIHI_clean.RData")
-```
 
+##-------------------- Data Preparation and cleaning ---------------------
 
-
-## Data Preparation and cleaning 
-```{r}
 FIHI_sub2 <- FIHI_sub2 %>%
   mutate( permanent_address = factor(permanent_address, levels = 1:2, 
                       labels = c("Yes", "No")),
@@ -28,11 +16,6 @@ FIHI_sub2 <- FIHI_sub2 %>%
                       labels = c("Yes", "No")),
           FI_q31= factor(FI_q31, levels = 1:2, 
                       labels = c("Yes", "No")))
-
-```
-
-
-```{r, echo=F,message=FALSE, warning=FALSE, echo= F}
 
 # An omnibus function for modeling responses
 # 
@@ -70,14 +53,6 @@ modeling <- function(response)
   data_imputed[[response]] <- data[[response]]
   rm(imputed_df)
   
-  # Treating imbalance classification
-  formula <- as.formula(paste0(response, "~."))
-  
-   ## currently disabled due to an error of 'data_imputed' not found.
-   # data_imputed_bal<-ovun.sample(formula,
-   #                               data = data_imputed, method = "both", p=0.5,
-   #                               N=NROW(data_imputed), seed = 125)$data
-
   # Since all variables are categorical, convert them to factors 
   data_imputed_bal <- data_imputed
   data_imputed_bal <- data_imputed_bal %>%
@@ -105,6 +80,8 @@ modeling <- function(response)
   summaryFunction=twoClassSummary,
   allowParallel = TRUE
   )
+  
+  formula <- as.formula(paste0(response, "~."))
 
   model_list <- caretList(
     formula, data=training,
@@ -123,18 +100,8 @@ modeling <- function(response)
   return(list(train=training, test=testing, model_list=model_list, ensemble= ensemble))
 }
 
-# dd <- model(response = "FI_q31")
-# dd2 <- model(response = "permanent_address")
-# 
-# dd$results
-# 
-# dd2$results
 
-# dat <- modeling("FI_q31")
-
-```
-
-```{r}
+#------------
 metrics <- function(model_object, response="", test_data=dat$test) {
   # response = "permanent_address"
   # model_object <- log
@@ -163,10 +130,7 @@ metrics <- function(model_object, response="", test_data=dat$test) {
  ))
 }
 
-```
 
-
-```{r}
 #------- Compute performance metrics for the full models ---------------
 eval_table <- function(model_list,response, resp_label='---') 
 {
@@ -195,56 +159,7 @@ eval_table <- function(model_list,response, resp_label='---')
 
 }
 
-# display table
-# eval_table(dat$model_list, "FI_q31", "Food Insecurity 3")
-```
 
-## Comparing Models
-```{r}
-# ensemble_1 <- caretEnsemble(dat$model_list, 
-#                             metric = "ROC", 
-#                             trControl = trctrl)
-# 
-# plot(ensemble_1)
-```
-
-## Variable of importance obtained from the best model
-
-```{r}
-# Var <- varImp(dat$model_list$svmR, scale = FALSE)
-# plot(Var, main ="Figure: Variable of Importance")
-```
-
-
-```{r}
-# var_best <- as.data.frame(Var$importance) %>%
-#   filter(Yes > 0.52) %>%
-#   arrange(desc(Yes)) %>%
-#   dplyr::select(Yes) %>%
-#   rename(Importance = Yes)
-# 
-# plot(var_best)
-```
-
-
-# Housing Insecurity
-```{r}
-dat <- modeling("permanent_address")
-
-eval_table(dat$model_list, "permanent_address", "Permanent House Address")
-
-
-plot(dat$ensemble, main="Individual models versus Ensemble model performance")
-
-par(mfrow=c(1,2))
-Var <- varImp(dat$model_list$svmRadial, scale = FALSE)
-plot(Var, main ="Figure: Variable of Importance by the SVM Radial model")
-
-Var <- varImp(dat$model_list$lda, scale = FALSE)
-plot(Var, main ="Figure: Variable of Importance by the LDA model")
-
-dev.off()
-```
 
 
 

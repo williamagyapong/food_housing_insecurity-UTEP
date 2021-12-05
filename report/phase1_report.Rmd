@@ -46,11 +46,15 @@ csl: ../apa-6th-edition-no-ampersand.csl
 ```{r setup, warning=F, message=F, include=FALSE, echo=FALSE}
 knitr::opts_chunk$set(echo = FALSE, warning=F, message=F, fig.pos = "!H", out.extra = "")
 
-# Loading required packages
-source('packages.r')
+```
 
-# Importing preprocessed data
-load('FIHI_clean.RData')
+```{r, echo=F, message=FALSE, warning=FALSE}
+ 
+# Load required packages and preprocessed data from the project root directory
+
+source("../packages.R")
+
+load("../FIHI_clean.RData")
 
 ```
 
