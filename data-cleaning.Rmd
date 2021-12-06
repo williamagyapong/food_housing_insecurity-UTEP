@@ -291,7 +291,14 @@ save(FIHI_sub2, FIHI_sub3, file=paste0(file_path, .Platform$file.sep, 'FIHI_clea
 
 ```
 
+
+Assessing the nature of missing data
 ```{r}
-# knitr::kable(FIHI_sub3)
+library(naniar)
+
+mcar_test(FIHI_sub2[-1])
 ```
+
+
+
 

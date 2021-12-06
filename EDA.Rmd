@@ -327,8 +327,29 @@ p1 <- ggplot(plotdf, aes(gender, pct, fill=permanent_address)) +
 ```
 
 
-# References{-}
 
-<div id="refs"></div>
+# Data Science Best Practices Adopted
+
+
+We sought to improve upon our initial work from the first phase of the project by incorporating three key practices in terms of data science ethics and  processes that we have learned from the Data Science Collaboration course and beyond. The three practices we focused on include programming most aspects of the project, ensuring reproducibility of our entire work, and improvements to the communication of our results. It is interesting to note that due to the strong shared belief of all members of the group to always uphold best practices right from the beginning of any data science project they set forth to emback on, you would find out that most of the  practices we talk about here, especially the programming and reproducibility, carry over directly from phase I of the project. The next subsections discuss each one of these practices in details.
+
+
+## Programming or Process Automation
+
+We like to put on record that R codes were written to handle all aspects of data cleaning 
+
+Data Cleaning: 
+
+* Identifying and fixing errors and / or anomalies in the data
+
+One area of the data cleaning that we found very challenging had to do with the issue of multiple responses for some of the variables. Superficially, this seemed like no issue at all but it did gave us a run for our money, probably because of the approach we took, which we found to be the most viable though. The original data set had 
+
+
+
+## Reproducibility
+
+## Communicaton 
+
+
 
 
