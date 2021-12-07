@@ -500,29 +500,52 @@ For the purpose of training and validation of each derived model ,and the estima
 \hypertarget{modeling-housing-insecurity}{%
 \subsubsection{Modeling Housing Insecurity}\label{modeling-housing-insecurity}}
 
-Here, we modeled housing insecurity as a response based whether or not the respondent had a permanent address.
+Here, we modeled housing insecurity as a response based on whether or not the respondent had a permanent address.
 
-\begin{verbatim}
-FALSE # weights:  58
-FALSE initial  value 4621.442850 
-FALSE iter  10 value 3920.070326
-FALSE iter  20 value 3720.587370
-FALSE iter  30 value 3659.748758
-FALSE iter  40 value 3645.793912
-FALSE iter  50 value 3623.157932
-FALSE iter  60 value 3595.718380
-FALSE iter  70 value 3591.447080
-FALSE iter  80 value 3584.402518
-FALSE iter  90 value 3581.237100
-FALSE iter 100 value 3580.877421
-FALSE final  value 3580.877421 
-FALSE stopped after 100 iterations
-\end{verbatim}
+\begin{table}[H]
+
+\caption{\label{tab:unnamed-chunk-9}Evaluation metrics for Permanent House Address  as a response variable}
+\centering
+\fontsize{12}{14}\selectfont
+\begin{tabular}[t]{lcccccc}
+\toprule
+Model & Misclassification Rate & Accuracy & Sensitivity & Specificity & fbeta & AUC\\
+\midrule
+Logistic & 0.23 & 0.77 & 0.78 & 0.58 & 0.86 & 0.7203\\
+LDA & 0.22 & 0.78 & 0.79 & 0.59 & 0.87 & 0.7223\\
+KNN & 0.35 & 0.65 & 0.65 & 0.63 & 0.78 & 0.6802\\
+MARS & 0.23 & 0.77 & 0.78 & 0.53 & 0.87 & 0.7045\\
+SVM Linear & 0.24 & 0.76 & 0.77 & 0.54 & 0.86 & 0.7133\\
+SVM Radial & 0.17 & 0.83 & 0.85 & 0.47 & 0.91 & 0.7271\\
+\bottomrule
+\end{tabular}
+\end{table}
 
 \includegraphics{phase2_report_files/figure-latex/unnamed-chunk-9-1}
-\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-9-2}
 
 \includegraphics{phase2_report_files/figure-latex/unnamed-chunk-10-1}
+
+\begin{table}[H]
+
+\caption{\label{tab:unnamed-chunk-11}Evaluation metrics for Spent Night Elsewhere  as a response variable}
+\centering
+\fontsize{12}{14}\selectfont
+\begin{tabular}[t]{lcccccc}
+\toprule
+Model & Misclassification Rate & Accuracy & Sensitivity & Specificity & fbeta & AUC\\
+\midrule
+Logistic & 0.51 & 0.49 & 0.41 & 0.56 & 0.42 & 0.5102\\
+KNN & 0.48 & 0.52 & 0.43 & 0.6 & 0.45 & 0.5\\
+MARS & 0.46 & 0.54 & 0.3 & 0.73 & 0.37 & 0.5153\\
+SVM Linear & 0.57 & 0.43 & 0.46 & 0.4 & 0.42 & 0.4706\\
+SVM Radial & 0.49 & 0.51 & 0.54 & 0.49 & 0.5 & 0.5559\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-11-1}
+
+\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-12-1}
 
 \hypertarget{modeling-food-insecurity}{%
 \subsubsection{Modeling Food Insecurity}\label{modeling-food-insecurity}}
@@ -547,17 +570,90 @@ Though Food Insecurity I and II originally had three levels (Often true, Sometim
 \hypertarget{results-for-food-insecurity-response-i}{%
 \paragraph{Results for Food Insecurity Response I}\label{results-for-food-insecurity-response-i}}
 
+\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-14-1}
+
 \hypertarget{results-for-food-insecurity-response-ii}{%
 \paragraph{Results for Food Insecurity Response II}\label{results-for-food-insecurity-response-ii}}
+
+\begin{table}[H]
+
+\caption{\label{tab:unnamed-chunk-15}Evaluation metrics for Food Insecurity II  as a response variable}
+\centering
+\fontsize{12}{14}\selectfont
+\begin{tabular}[t]{lcccccc}
+\toprule
+Model & Misclassification Rate & Accuracy & Sensitivity & Specificity & fbeta & AUC\\
+\midrule
+Logistic & 0.34 & 0.66 & 0.64 & 0.67 & 0.66 & 0.7124\\
+LDA & 0.35 & 0.65 & 0.64 & 0.66 & 0.66 & 0.7124\\
+KNN & 0.37 & 0.63 & 0.57 & 0.69 & 0.62 & 0.6727\\
+MARS & 0.35 & 0.65 & 0.65 & 0.64 & 0.65 & 0.7042\\
+SVM Linear & 0.34 & 0.66 & 0.63 & 0.68 & 0.65 & 0.7101\\
+SVM Radial & 0.35 & 0.65 & 0.63 & 0.67 & 0.65 & 0.711\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-15-1}
+
+\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-16-1}
 
 \hypertarget{results-for-food-insecurity-response-iii}{%
 \paragraph{Results for Food Insecurity Response III}\label{results-for-food-insecurity-response-iii}}
 
+\begin{table}[H]
+
+\caption{\label{tab:unnamed-chunk-17}Evaluation metrics for Food Insecurity III  as a response variable}
+\centering
+\fontsize{12}{14}\selectfont
+\begin{tabular}[t]{lcccccc}
+\toprule
+Model & Misclassification Rate & Accuracy & Sensitivity & Specificity & fbeta & AUC\\
+\midrule
+Logistic & 0.35 & 0.65 & 0.59 & 0.68 & 0.55 & 0.6998\\
+LDA & 0.34 & 0.66 & 0.61 & 0.68 & 0.56 & 0.7006\\
+KNN & 0.38 & 0.62 & 0.56 & 0.65 & 0.51 & 0.645\\
+MARS & 0.34 & 0.66 & 0.57 & 0.71 & 0.55 & 0.6963\\
+SVM Linear & 0.35 & 0.65 & 0.59 & 0.68 & 0.55 & 0.6982\\
+SVM Radial & 0.34 & 0.66 & 0.59 & 0.7 & 0.55 & 0.7037\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-17-1}
+
+\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-18-1}
+
 \hypertarget{results-for-food-insecurity-response-iv}{%
 \paragraph{Results for Food Insecurity Response IV}\label{results-for-food-insecurity-response-iv}}
 
+\begin{table}[H]
+
+\caption{\label{tab:unnamed-chunk-19}Evaluation metrics for Food Insecurity IV  as a response variable}
+\centering
+\fontsize{12}{14}\selectfont
+\begin{tabular}[t]{lcccccc}
+\toprule
+Model & Misclassification Rate & Accuracy & Sensitivity & Specificity & fbeta & AUC\\
+\midrule
+Logistic & 0.33 & 0.67 & 0.63 & 0.69 & 0.57 & 0.7194\\
+LDA & 0.34 & 0.66 & 0.62 & 0.68 & 0.56 & 0.7181\\
+KNN & 0.37 & 0.63 & 0.57 & 0.66 & 0.51 & 0.6519\\
+MARS & 0.33 & 0.67 & 0.61 & 0.7 & 0.56 & 0.7105\\
+SVM Linear & 0.33 & 0.67 & 0.62 & 0.69 & 0.56 & 0.7099\\
+SVM Radial & 0.32 & 0.68 & 0.65 & 0.69 & 0.58 & 0.7191\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-19-1}
+
+\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-20-1}
+
 \hypertarget{results-for-food-insecurity-response-v}{%
 \paragraph{Results for Food Insecurity Response V}\label{results-for-food-insecurity-response-v}}
+
+\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-22-1}
 
 \hypertarget{discussion}{%
 \section{Discussion}\label{discussion}}
@@ -625,7 +721,7 @@ Wikipedia. (2021). Support-vector machine. Retrieved October 15, 2021, from \url
 \hypertarget{visualizing-missing-data}{%
 \subsection{Visualizing Missing Data}\label{visualizing-missing-data}}
 
-\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-17-1}
+\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-23-1}
 
 \begin{tabular}{l|r|r}
 \hline
@@ -691,8 +787,8 @@ living\_alone & 0 & 0.0000000\\
 \hline
 \end{tabular}
 
-\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-17-2}
-\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-17-3}
+\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-23-2}
+\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-23-3}
 
 \hypertarget{codes}{%
 \subsection{Codes}\label{codes}}

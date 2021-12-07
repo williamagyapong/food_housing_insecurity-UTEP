@@ -137,7 +137,7 @@ modeling <- function(response, models=NULL, kfolds=5)
 
 
 #------------
-metrics <- function(model_object, response="", test_data=dat$test) {
+metrics <- function(model_object, response="", test_data) {
   
   
   # if(is.null(test_data)) test_data <- testing # assumes testing data in the global env
@@ -166,14 +166,14 @@ metrics <- function(model_object, response="", test_data=dat$test) {
 
 
 #------- Compute performance metrics for the full models ---------------
-eval_table <- function(model_list,response, resp_label='---') 
+eval_table <- function(model_list,response, test_data, resp_label='---') 
 {
-  log.metric <- metrics(model_list$glm, response)
-  lda.metric <- metrics(model_list$lda, response)
-  knn.metric <- metrics(model_list$knn, response)
-  mars.metric <- metrics(model_list$earth, response)
-  svc.metric <- metrics(model_list$svmLinear, response)
-  svmR.metric <- metrics(model_list$svmRadial, response)
+  log.metric <- metrics(model_list$glm, response, test_data)
+  lda.metric <- metrics(model_list$lda, response, test_data)
+  knn.metric <- metrics(model_list$knn, response, test_data)
+  mars.metric <- metrics(model_list$earth, response, test_data)
+  svc.metric <- metrics(model_list$svmLinear, response, test_data)
+  svmR.metric <- metrics(model_list$svmRadial, response, test_data)
   
   metrics.summ <- data.frame(rbind(
         c("Logistic", log.metric$mcr, log.metric$accuracy, 
