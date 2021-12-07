@@ -425,6 +425,7 @@ p4 <- mybarplot(FI_q30, xlab = "Ever ate less than you should?")
 p5 <- mybarplot(FI_q31, xlab = "Ever got hungry but didn't eat?")
 ```
 
+
 ```{r}
 p1 
 ```
@@ -458,25 +459,25 @@ The table and graphs above display the number of missing values with missing per
 
 ## Model Fitting  
 
-Given our data set and its structure, the following supervised classification machine learning algorithm were employed to obtained a predictive model for each given response variable;
+Given our data set and its structure, the following supervised classification machine learning algorithms were employed to obtained a predictive model for each given response variable;
 
 * Logistic Regression
 
-* Linear Discriminant Analysis
+* Linear Discriminant Analysis (LDA)
 
-* Least Absolute Shrinkage and Selection Operator
+* K-Nearest Neighbors (KNN)
 
-* Bagging
+* Neural Network
 
-* Support Vector Machines with Linear Kernel
+* Support Vector Machines with Linear Kernel (SVM Linear)
 
-* Support Vector Machines with Radial Basis Kernel 
+* Support Vector Machines with Radial Basis Kernel  (SVM Radial)
 
 
 
 ### Partitioning data set
 
-For the purpose of training and validation of each derived model ,and the estimating of the performance metrics, the entire data set was partitioned into training and testing in a ratio of 2/3 and 1/3 respectively.
+For the purpose of training and validation of each derived model ,and the estimation of the performance metrics, the entire data set was partitioned into training and testing in a ratio of 2/3 and 1/3 respectively.
 
 ### Modeling Housing Insecurity
 
@@ -487,21 +488,90 @@ Here, we modeled housing insecurity as a response based whether or not the respo
 source("modeling_functions.R")
 ```
 
+
 ```{r message=FALSE, warning=FALSE, echo= F}
-dat <- modeling("permanent_address")
+
+# dat <- modeling("permanent_address")
 
 eval_table(dat$model_list, "permanent_address", "Permanent House Address")
 
+# draw plots to visually compare modes
+# dotplot(resamples(dat$model_list))
 
 plot(dat$ensemble, main="Performance of individual models versus the Ensemble model")
 
-# par(mfrow=c(1,2))
-Var <- varImp(dat$model_list$svmRadial, scale = FALSE)
-plot(Var, main ="Figure: Variable of Importance by the SVM Radial model")
 
-Var <- varImp(dat$model_list$lda, scale = FALSE)
-plot(Var, main ="Figure: Variable of Importance by the LDA model")
+# plot(varImp(dat$model_list$earth, scale = FALSE), main ="Figure: Variable Importance by the LDA model")
 
+```
+
+
+```{r}
+
+rank_pred_by_ensemb(dat$ensemble, 20) + rank_pred(dat$model_list$glm, 20)
+
+```
+
+
+```{r message=FALSE, warning=FALSE, echo= F}
+dat <- modeling("spent_night_elsewhere", c("earth","glm","knn","svmLinear","svmRadial"))
+
+# Display a table of performance metrics
+# eval_table(dat$model_list, "spent_night_elsewhere", "Spent Night Elsewhere")
+model_list <- dat$model_list
+response <- "spent_night_elsewhere"
+resp_label <- "Spent Night Elsewhere"
+log.metric <- metrics(model_list$glm, response)
+# lda.metric <- metrics(model_list$lda, response)
+knn.metric <- metrics(model_list$knn, response)
+mars.metric <- metrics(model_list$earth, response)
+svc.metric <- metrics(model_list$svmLinear, response)
+svmR.metric <- metrics(model_list$svmRadial, response)
+  
+metrics.summ <- data.frame(rbind(
+      c("Logistic", log.metric$mcr, log.metric$accuracy, 
+        log.metric$sens, log.metric$spec, log.metric$fbeta, log.metric$auc),
+      
+      # c("LDA",  lda.metric$mcr, lda.metric$accuracy, lda.metric$sens,
+      #   lda.metric$spec, lda.metric$fbeta, lda.metric$auc),
+      
+      c("KNN", knn.metric$mcr, knn.metric$accuracy, knn.metric$sens,
+        knn.metric$spec, knn.metric$fbeta, knn.metric$auc),
+      
+      c("MARS",mars.metric$mcr,mars.metric$accuracy,mars.metric$sens,
+          mars.metric$spec, mars.metric$fbeta, mars.metric$auc),
+      
+      c("SVM Linear",  svc.metric$mcr, svc.metric$accuracy, svc.metric$sens,
+        svc.metric$spec, svc.metric$fbeta, svc.metric$auc),
+      
+      c("SVM Radial", svmR.metric$mcr, svmR.metric$accuracy, svmR.metric$sens,
+        svmR.metric$spec, svmR.metric$fbeta, svmR.metric$auc)
+      ))
+
+names(metrics.summ) <- c("Model", "Misclassification Rate", "Accuracy", 
+                         "Sensitivity", "Specificity", "fbeta", "AUC")
+
+kable(metrics.summ, align = "lcccccc", booktabs=T, linesep="",
+      caption = paste("Evaluation metrics for", resp_label, " as a response variable") ) %>%
+  kable_paper("hover", full_width = F)%>% 
+  kable_styling(font_size = 12, latex_options = c("HOLD_position"))
+
+
+# draw plots to visually compare modes
+# dotplot(resamples(dat$model_list))
+
+plot(dat$ensemble, main="Performance of individual models versus the Ensemble model")
+
+# plot(varImp(dat$model_list$svmRadial, scale = FALSE), main ="Figure: Variable of Importance by the SVM Radial model")
+
+```
+
+```{r}
+rank_pred(dat$model_list$svmRadial, 20, "MARS")
+# rank_pred_by_ensemb(dat$ensemble, 20)
+
+# The ensemble model performed poorly, so we used to MARS model and the SVM Radial models to
+# search for the significant predictors/determinants of housing insecurity.
 
 ```
 
@@ -509,72 +579,129 @@ plot(Var, main ="Figure: Variable of Importance by the LDA model")
 
 In this section, we report results for modeling food insecurity in terms response variables based on survey questions as described below:
 
-* Food Insecurity 1:  In the last 12 months, since (today's date), did you ever cut the size of your meals or skip meals because there was not enough money for food?
+* **Food Insecurity I**: "The food that I bought just didn't last, and I didn't have money to get more." Was that often, sometimes, or never true for you in the last 12 months?  
 
-* Food Insecurity 2:  In the last 12 months, did you ever eat less than you felt you should because there was not enough money for food?
+* **Food Insecurity II**: "I couldn't afford to eat balanced meals." Was that often, sometimes, or never true for you in the last 12 months?
 
-* Food Insecurity 3: In the past 12 months, were you ever hungry but didn't eat because there wasn't enough money for food?
+* **Food Insecurity III**: In the last 12 months, since (today's date), did you ever cut the size of your meals or skip meals because there was not enough money for food? 
 
-#### Results for Food Insecurity Response 1
+* **Food Insecurity IV**: In the last 12 months, did you ever eat less than you felt you should because there was not enough money for food?
 
-```{r message=FALSE, warning=FALSE, echo= F, eval=FALSE}
-dat <- modeling("FI_q28")
+* **Food Insecurity V**: In the past 12 months, were you ever hungry but didn't eat because there wasn't enough money for food?
 
-eval_table(dat$model_list, "FI_q28", "Food Insecurity 1")
+Though Food Insecurity I and II originally had three levels (Often true, Sometimes true, and Never true), we modeled them as dichotomous responses where the "Often true" and "Sometimes true" levels were put in a "Yes" group as a sign of food insecurity, while the "Never true" level was classified as a "No" group for respondents not at the risk of food insecurity.
+
+
+#### Results for Food Insecurity Response I
+
+```{r message=FALSE, warning=FALSE, echo= F, eval=F}
+dat <- modeling("FI_q26")
+
+eval_table(dat$model_list, "FI_q26", "Food Insecurity I")
 
 
 plot(dat$ensemble, main="Performance of individual models versus the Ensemble model")
+# draw plots to visually compare modes
+# dotplot(resamples(dat$model_list))
 
-# par(mfrow=c(1,2))
-Var <- varImp(dat$model_list$svmRadial, scale = FALSE)
-plot(Var, main ="Figure: Variable of Importance by the SVM Radial model")
+```
 
-Var <- varImp(dat$model_list$lda, scale = FALSE)
-plot(Var, main ="Figure: Variable of Importance by the LDA model")
+```{r}
+
+rank_pred_by_ensemb(dat$ensemble, 20) + rank_pred(dat$model_list$glm, 20)
+
+```
+
+#### Results for Food Insecurity Response II
+
+```{r message=FALSE, warning=FALSE, echo= F}
+dat <- modeling("FI_q27")
+
+eval_table(dat$model_list, "FI_q27", "Food Insecurity II")
+
+# draw plots to visually compare modes
+# dotplot(resamples(dat$model_list))
+plot(dat$ensemble, main="Performance of individual models versus the Ensemble model")
+
+
+# plot(varImp(dat$model_list$lda, scale = FALSE), main ="Figure: Variable of Importance by the LDA model")
 
 
 ```
 
-#### Results for Food Insecurity Response 2
+
+```{r}
+
+rank_pred_by_ensemb(dat$ensemble, 20) + rank_pred(dat$model_list$earth)
+
+```
+
+#### Results for Food Insecurity Response III
+
+```{r message=FALSE, warning=FALSE, echo= F}
+dat <- modeling("FI_q28")
+
+eval_table(dat$model_list, "FI_q28", "Food Insecurity III")
+
+# draw plots to visually compare modes
+# dotplot(resamples(dat$model_list))
+plot(dat$ensemble, main="Performance of individual models versus the Ensemble model")
+
+# Var <- varImp(dat$model_list$svmRadial, scale = FALSE)
+# plot(Var, main ="Figure: Variable of Importance by the SVM Radial model")
+
+
+
+```
+
+```{r}
+
+rank_pred_by_ensemb(dat$ensemble, 20) + rank_pred(dat$model_list$glm, 20)
+
+```
+
+#### Results for Food Insecurity Response IV
 
 ```{r message=FALSE, warning=FALSE, echo= F}
 dat <- modeling("FI_q30")
 
-eval_table(dat$model_list, "FI_q30", "Food Insecurity 2")
+eval_table(dat$model_list, "FI_q30", "Food Insecurity IV")
 
+# draw plots to visually compare modes
+# dotplot(resamples(dat$model_list))
 
 plot(dat$ensemble, main="Performance of individual models versus the Ensemble model")
 
-# par(mfrow=c(1,2))
-Var <- varImp(dat$model_list$svmRadial, scale = FALSE)
-plot(Var, main ="Figure: Variable of Importance by the SVM Radial model")
+```
 
-Var <- varImp(dat$model_list$lda, scale = FALSE)
-plot(Var, main ="Figure: Variable of Importance by the LDA model")
+```{r}
+
+rank_pred_by_ensemb(dat$ensemble, 20) + rank_pred(dat$model_list$glm, 20)
 
 ```
 
-#### Results for Food Insecurity Response 3
+#### Results for Food Insecurity Response V
 
-```{r message=FALSE, warning=FALSE, echo= F}
+```{r message=FALSE, warning=FALSE, echo= F, eval=F}
 
 dat <- modeling("FI_q31")
 
-eval_table(dat$model_list, "FI_q31", "Food Insecurity 3")
+eval_table(dat$model_list, "FI_q31", "Food Insecurity V")
 
-
+# draw plots to visually compare modes
+# dotplot(resamples(dat$model_list), metric = c("ROC", "Sens", "Spec"))
 plot(dat$ensemble, main="Performance of individual models versus the Ensemble model")
-
-# par(mfrow=c(1,2))
-Var <- varImp(dat$model_list$svmRadial, scale = FALSE)
-plot(Var, main ="Figure: Variable of Importance by the SVM Radial model")
-
-Var <- varImp(dat$model_list$lda, scale = FALSE)
-plot(Var, main ="Figure: Variable of Importance by the LDA model")
 
 
 ```
 
+```{r}
+
+rank_pred_by_ensemb(dat$ensemble, 20)
+
+rank_pred(dat$model_list$glm, 20)
+
+```
 
 # Discussion
 

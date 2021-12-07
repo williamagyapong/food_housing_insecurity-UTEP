@@ -1,3 +1,11 @@
+# File: modeling_functions.R
+# Purpose: Provides user-defined functions for convenient model building
+# and reporting of results.
+# Authors: William, John & George
+# Last Updated: 12/07/2021 
+# 
+#
+#--------------------------------------------------------------------------
 
 # Load required packages and preprocessed data from the project root directory
 
@@ -7,19 +15,37 @@ load("../FIHI_clean.RData")
 
 ##-------------------- Data Preparation and cleaning ---------------------
 
-FIHI_sub2 <- FIHI_sub2 %>%
-  mutate( permanent_address = factor(permanent_address, levels = 1:2, 
-                      labels = c("Yes", "No")),
-          FI_q28= factor(FI_q28, levels = 1:2, 
-                      labels = c("Yes", "No")),
-          FI_q30= factor(FI_q30, levels = 1:2, 
-                      labels = c("Yes", "No")),
-          FI_q31= factor(FI_q31, levels = 1:2, 
-                      labels = c("Yes", "No")))
+# For modeling purposes, we recoded 3 class levels into 2 levels
 
+FIHI_sub2 <- FIHI_sub2 %>%
+  mutate(spent_night_elsewhere = ifelse(spent_night_elsewhere !=1, 1, 2),
+         FI_q26 = ifelse(FI_q26 !=1, 1, 2),
+         FI_q27 = ifelse(FI_q27 !=1, 1, 2)
+         ) %>%
+  mutate( permanent_address = factor(permanent_address, 
+                                     levels = 1:2, 
+                                     labels = c("Yes", "No")),
+          spent_night_elsewhere = factor(spent_night_elsewhere, 
+                                     levels = 1:2, 
+                                     labels = c("Yes", "No")),
+          FI_q26= factor(FI_q26, levels = 1:2, labels = c("Yes", "No")),
+          FI_q27= factor(FI_q27, levels = 1:2, labels = c("Yes", "No")),
+          FI_q28= factor(FI_q28, levels = 1:2, labels = c("Yes", "No")),
+          FI_q30= factor(FI_q30, levels = 1:2, labels = c("Yes", "No")),
+          FI_q31= factor(FI_q31, levels = 1:2, labels = c("Yes", "No"))
+          )
+
+  # spent_night_elsewhere = factor(spent_night_elsewhere, 
+  #                                levels = 1:3, 
+  #                                labels = c("Rarely", "Sometimes", "Often")),
+  # FI_q26 = factor(FI_q26, levels = 1:3, 
+  #                 labels = c("Never true", "Sometimes true", "Often true")),
+  # FI_q27 = factor(FI_q27, levels = 1:3, 
+  #                 labels = c("Never true", "Sometimes true", "Often true"))
+  
 # An omnibus function for modeling responses
 # 
-modeling <- function(response) 
+modeling <- function(response, models=NULL, kfolds=5) 
 {
  
   # Assign data from the global environment 
@@ -71,42 +97,50 @@ modeling <- function(response)
   # specifying desired model settings
   trctrl <- trainControl(
     method="cv",
-    number=10,
+    number=kfolds,
     savePredictions="final",
     classProbs=TRUE,
     sampling = "up",
-    index=createResample(training[[response]], 10),
-    summaryFunction=twoClassSummary,
-    allowParallel = TRUE
-    
+    index=createResample(training[[response]], kfolds),
+    summaryFunction=twoClassSummary 
+    ,allowParallel = TRUE
   )
   
   # run the list of models concurrently
   # ROC is used to tune and evaluate models
-  formula <- as.formula(paste0(response, "~."))
+  formula <- as.formula(paste(response, "~."))
+  if(is.null(models)) {
+    # list of default models 
+    # Multivariate Adaptive Regression Splines (MARS) is named earth
+    models <- c("earth","glm", "lda", "knn", "svmLinear", "svmRadial")
+  }
+  
   model_list <- caretList(
       formula, data=training,
       trControl=trctrl,
       metric = "ROC",
-      methodList=c("glm", "lda", "knn", "nnet", "svmLinear", "svmRadial"),
+      methodList=models,
       continue_on_fail = FALSE
     )
+  
+  # bagging leads to NA's in ROC
+  # svmRadial causes issues with the inconsistent resampling for the ensemble
 
   # Create an Ensemble model from all the models
-  ensemble <- caretEnsemble(model_list, 
-                            metric = "ROC", 
+  ensemble <- caretEnsemble(model_list,
+                            metric = "ROC",
                             trControl = trctrl)
-
+  # ensemble = ""
 
   return(list(train=training, test=testing, model_list=model_list, ensemble= ensemble))
 }
 
 
 #------------
-metrics <- function(model_object, response="", test_data=NULL) {
+metrics <- function(model_object, response="", test_data=dat$test) {
   
   
-  if(is.null(test_data)) test_data <- testing # assumes testing data in the global env
+  # if(is.null(test_data)) test_data <- testing # assumes testing data in the global env
   
   # make predictions
   prediction <- predict(model_object, test_data) 
@@ -134,12 +168,12 @@ metrics <- function(model_object, response="", test_data=NULL) {
 #------- Compute performance metrics for the full models ---------------
 eval_table <- function(model_list,response, resp_label='---') 
 {
-  log.metric <- metrics(model_list$glm, response, model_list$test)
-  lda.metric <- metrics(model_list$lda, response, model_list$test)
-  knn.metric <- metrics(model_list$knn, response, model_list$test)
-  nnet.metric <- metrics(model_list$nnet, response, model_list$test)
-  svc.metric <- metrics(model_list$svmLinear, response, model_list$test)
-  svmR.metric <- metrics(model_list$svmRadial, response, model_list$test)
+  log.metric <- metrics(model_list$glm, response)
+  lda.metric <- metrics(model_list$lda, response)
+  knn.metric <- metrics(model_list$knn, response)
+  mars.metric <- metrics(model_list$earth, response)
+  svc.metric <- metrics(model_list$svmLinear, response)
+  svmR.metric <- metrics(model_list$svmRadial, response)
   
   metrics.summ <- data.frame(rbind(
         c("Logistic", log.metric$mcr, log.metric$accuracy, 
@@ -151,8 +185,8 @@ eval_table <- function(model_list,response, resp_label='---')
         c("KNN", knn.metric$mcr, knn.metric$accuracy, knn.metric$sens,
           knn.metric$spec, knn.metric$fbeta, knn.metric$auc),
         
-        c("Neural Network",nnet.metric$mcr,nnet.metric$accuracy,nnet.metric$sens,
-          nnet.metric$spec, nnet.metric$fbeta, nnet.metric$auc),
+        c("MARS",mars.metric$mcr,mars.metric$accuracy,mars.metric$sens,
+          mars.metric$spec, mars.metric$fbeta, mars.metric$auc),
         
         c("SVM Linear",  svc.metric$mcr, svc.metric$accuracy, svc.metric$sens,
           svc.metric$spec, svc.metric$fbeta, svc.metric$auc),
@@ -164,11 +198,58 @@ eval_table <- function(model_list,response, resp_label='---')
   names(metrics.summ) <- c("Model", "Misclassification Rate", "Accuracy", 
                            "Sensitivity", "Specificity", "fbeta", "AUC")
   
-  kable(metrics.summ, align = "lcccccc", caption = paste("Evaluation metrics for", resp_label, " as a response variable") ) %>%
+  kable(metrics.summ, align = "lcccccc", booktabs=T, linesep="",
+        caption = paste("Evaluation metrics for", resp_label, " as a response variable") ) %>%
     kable_paper("hover", full_width = F)%>% 
     kable_styling(font_size = 12, latex_options = c("HOLD_position"))
   
 }
+
+
+# Ranking Predictors
+rank_pred <- function(model, first_n="all", mod_label="Logistic Regression") 
+{
+  first_n <- ifelse(first_n=="all", "n()", first_n)
+  varImp(model, scale = F)$importance %>% 
+    as.data.frame() %>%
+    rownames_to_column() %>%
+    arrange(Overall) %>%
+    top_n(first_n) %>%
+    mutate(rowname = forcats::fct_inorder(rowname )) %>%
+    ggplot()+
+    geom_col(aes(x = rowname, y = Overall), fill="gray") +
+    labs(x="Variables", y="Importance",
+         title = paste("Variable Importance by the", mod_label, "Model")) +
+    coord_flip() +
+    theme_classic()
+}
+
+## Rank predictors with an ensemble model
+rank_pred_by_ensemb <- function(ensemble, first_n="all") 
+{
+  # ensemble <- dat$ensemble
+  first_n <- ifelse(first_n=="all", "n()", first_n)
+  varImp(ensemble, scale=F) %>% 
+    as.data.frame() %>%
+    rownames_to_column() %>%
+    dplyr::select(rowname, overall) %>%
+    arrange((overall)) %>%
+    mutate(rowname = forcats::fct_inorder(rowname )) %>%
+    top_n(first_n) %>%
+    ggplot()+
+    geom_col(aes(x = rowname, y = overall), fill="gray") +
+    labs(x="Variables", y="Importance",
+         title = "Variable Importance by the Ensemble Model") +
+    coord_flip() +
+    theme_classic()
+}
+
+
+# rank_pred(dat$model_list$glm)
+# rank_pred_by_ensemb(dat$ensemble, 20)
+
+# See available algorithms in caret
+# modelnames <- paste(names(getModelInfo()), collapse=',  ')
 
 
 

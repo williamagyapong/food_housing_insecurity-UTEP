@@ -296,7 +296,7 @@ Assessing the nature of missing data
 ```{r}
 library(naniar)
 
-mcar_test(FIHI_sub2[-1])
+mcar_test(FIHI_sub3[-1])
 ```
 
 

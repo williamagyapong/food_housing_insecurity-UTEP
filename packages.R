@@ -27,10 +27,10 @@ if(!("pacman" %in% installed.packages())) install.packages("pacman")
 # naniar: missing data visualization
 # UpSetR: 
 
-packages <- c("e1071","dplyr", "ggplot2", "RColorBrewer","patchwork",
-              "knitr", "kableExtra", "scales", "mice", "cvAUC",
-              "verification", "caret", "pROC", "rpart", "caretEnsemble", 
-              "naniar", "UpSetR", "doParallel")
+packages <- c("e1071", "tibble", "dplyr", "ggplot2", "RColorBrewer","patchwork",
+              "knitr", "kableExtra", "scales", "mice", "cvAUC", "verification", 
+              "caret", "pROC", "caretEnsemble", "naniar", "UpSetR", "doParallel"
+              )
 
 pacman::p_load(char = packages, install = TRUE)
 

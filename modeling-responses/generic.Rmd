@@ -71,7 +71,7 @@ modeling <- function(response)
   rm(imputed_df)
   
   # Treating imbalance classification
-  formula <- as.formula(paste0(response, "~."))
+  formula <- as.formula(paste(response, " ~."))
   
    ## currently disabled due to an error of 'data_imputed' not found.
    # data_imputed_bal<-ovun.sample(formula,
@@ -91,13 +91,13 @@ modeling <- function(response)
   
   
   #------ Model building -----------
-  registerDoParallel(7)
-  getDoParWorkers()
+  # registerDoParallel(6)
+  # getDoParWorkers()
   set.seed(100)
   
   trctrl <- trainControl(
   method="cv",
-  number=5,
+  number=10,
   savePredictions="final",
   classProbs=TRUE,
   sampling = "up",
@@ -110,11 +110,11 @@ modeling <- function(response)
     formula, data=training,
     trControl=trctrl,
     metric = "ROC",
-    methodList=c("glm", "lda", "knn", "nnet", "svmLinear", "svmRadial"),
+    methodList=c("glm", "lda", "nnet", "svmLinear", "svmRadial"),
     continue_on_fail = FALSE
     )
-
-  ensemble <- caretEnsemble(model_list, 
+# ("glm", "lda", "knn", "nnet", "svmLinear", "svmRadial")
+  ensemble <- caretEnsemble(model_list[-5], 
                             metric = "ROC", 
                             trControl = trctrl)
 
@@ -133,6 +133,7 @@ modeling <- function(response)
 # dat <- modeling("FI_q31")
 
 ```
+
 
 ```{r}
 metrics <- function(model_object, response="", test_data=dat$test) {
