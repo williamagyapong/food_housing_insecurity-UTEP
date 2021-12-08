@@ -9,41 +9,11 @@
 
 # Load required packages and preprocessed data from the project root directory
 
-source("../packages.R")
+# source("../packages.R")
 
-load("../FIHI_clean.RData")
+# load("../FIHI_clean.RData")
 
-##-------------------- Data Preparation and cleaning ---------------------
-
-# For modeling purposes, we recoded 3 class levels into 2 levels
-
-FIHI_sub2 <- FIHI_sub2 %>%
-  mutate(spent_night_elsewhere = ifelse(spent_night_elsewhere !=1, 1, 2),
-         FI_q26 = ifelse(FI_q26 !=1, 1, 2),
-         FI_q27 = ifelse(FI_q27 !=1, 1, 2)
-         ) %>%
-  mutate( permanent_address = factor(permanent_address, 
-                                     levels = 1:2, 
-                                     labels = c("Yes", "No")),
-          spent_night_elsewhere = factor(spent_night_elsewhere, 
-                                     levels = 1:2, 
-                                     labels = c("Yes", "No")),
-          FI_q26= factor(FI_q26, levels = 1:2, labels = c("Yes", "No")),
-          FI_q27= factor(FI_q27, levels = 1:2, labels = c("Yes", "No")),
-          FI_q28= factor(FI_q28, levels = 1:2, labels = c("Yes", "No")),
-          FI_q30= factor(FI_q30, levels = 1:2, labels = c("Yes", "No")),
-          FI_q31= factor(FI_q31, levels = 1:2, labels = c("Yes", "No"))
-          )
-
-  # spent_night_elsewhere = factor(spent_night_elsewhere, 
-  #                                levels = 1:3, 
-  #                                labels = c("Rarely", "Sometimes", "Often")),
-  # FI_q26 = factor(FI_q26, levels = 1:3, 
-  #                 labels = c("Never true", "Sometimes true", "Often true")),
-  # FI_q27 = factor(FI_q27, levels = 1:3, 
-  #                 labels = c("Never true", "Sometimes true", "Often true"))
-  
-# An omnibus function for modeling responses
+# A function for training models
 # 
 modeling <- function(response, models=NULL, kfolds=5) 
 {
@@ -101,7 +71,7 @@ modeling <- function(response, models=NULL, kfolds=5)
     savePredictions="final",
     classProbs=TRUE,
     sampling = "up",
-    index=createResample(training[[response]], kfolds),
+    index=createResample(training[[response]],kfolds),
     summaryFunction=twoClassSummary 
     ,allowParallel = TRUE
   )
@@ -113,6 +83,8 @@ modeling <- function(response, models=NULL, kfolds=5)
     # list of default models 
     # Multivariate Adaptive Regression Splines (MARS) is named earth
     models <- c("earth","glm", "lda", "knn", "svmLinear", "svmRadial")
+    # For whatever reason unknown to us, bagging leads to NA's in ROC values
+    # LDA doesn't work for the spent_night_elsewhere response
   }
   
   model_list <- caretList(
@@ -123,16 +95,17 @@ modeling <- function(response, models=NULL, kfolds=5)
       continue_on_fail = FALSE
     )
   
-  # bagging leads to NA's in ROC
-  # svmRadial causes issues with the inconsistent resampling for the ensemble
-
-  # Create an Ensemble model from all the models
+  
+  #--- Create an Ensemble model from all the models ----
+  # This ensemble code sometimes leads to this error for some of the responses:
+  # "Error in check_bestpreds_resamples(modelLibrary) : Component models do not 
+  # have the same re-sampling strategies"
   ensemble <- caretEnsemble(model_list,
                             metric = "ROC",
                             trControl = trctrl)
   # ensemble = ""
 
-  return(list(train=training, test=testing, model_list=model_list, ensemble= ensemble))
+  return(list(test=testing, model_list=model_list, ensemble= ensemble))
 }
 
 
@@ -198,10 +171,10 @@ eval_table <- function(model_list,response, test_data, resp_label='---')
   names(metrics.summ) <- c("Model", "Misclassification Rate", "Accuracy", 
                            "Sensitivity", "Specificity", "fbeta", "AUC")
   
-  kable(metrics.summ, align = "lcccccc", booktabs=T, linesep="",
+  return(kable(metrics.summ, align = "lcccccc", booktabs=T, linesep="",
         caption = paste("Evaluation metrics for", resp_label, " as a response variable") ) %>%
     kable_paper("hover", full_width = F)%>% 
-    kable_styling(font_size = 12, latex_options = c("HOLD_position"))
+    kable_styling(font_size = 12, latex_options = c("HOLD_position")))
   
 }
 

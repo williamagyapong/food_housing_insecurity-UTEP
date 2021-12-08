@@ -1,71 +1,14 @@
----
-title: "Modeling Food and Housing Insecurity at UTEP - Phase 1"
-subtitle: "Data Preprocessing and Exploration"
-author: 
- - "George E. Quaye"
- - "John Koomson"
- - "Willliam O. Agyapong"
-  
-affiliation: "Department of Mathematical Sciences, University of Texas at El Paso"
-date: \center University of Texas, El Paso (UTEP)\center
-       \center Department of Mathematical Sciences \center
-output:
-  html_document:
-    fig_caption: yes
-    keep_tex: no
-    number_sections: yes
-    toc: yes
-    toc_depth: 4
-  bookdown::pdf_document2:
-    fig_caption: yes
-    keep_tex: yes
-    latex_engine: pdflatex
-    number_sections: yes
-    toc: yes
-    toc_depth: 4
-header-includes:
-  - \usepackage{float}
-  - \usepackage{setspace}
-  - \doublespacing
-  - \usepackage{bm}
-  - \usepackage{amsmath}
-  - \usepackage{amssymb}
-  - \usepackage{amsfonts}
-  - \usepackage{amsthm}
-  - \usepackage{fancyhdr}
-  - \pagestyle{fancy}
-  - \fancyhf{}
-  - \rhead{George Quaye, Johnson Koomson, William Agyapong}
-  - \lhead{Modeling - DS 6335}
-  - \cfoot{\thepage}
-  - \usepackage{algorithm}
-  - \usepackage[noend]{algpseudocode}
-geometry: margin = 0.8in
-fontsize: 10pt
-bibliography: references.bib
-link-citations: yes
-linkcolor: blue
-csl: apa-6th-edition-no-ampersand.csl
-nocite: |
----
-\end{center}
----
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = F)
 
 # Load required packages
 library(dplyr)
-```
 
-
-```{r data-reading}
+# Importing the original survey data
 file_path <- dirname(rstudioapi::getSourceEditorContext()$path)
 FIHI <- read.csv(paste0(file_path, .Platform$file.sep, "datcsv.csv"))
 
 
 #=========================================================
-# Helper functions
+# User-defined Helper functions
 #========================================================
 
 na_to_zero <- function(x) 
@@ -85,18 +28,17 @@ zero_to_na <- function(x)
   return(ifelse(x == 0, NA, x ))
 }
 
-```
 
-
-
-```{r data-preprocessing}
+#------------------ Data Cleaning/Preprocessing -------------------
 
 FIHI_new <- FIHI %>% 
   # change column names to lowercase
   rename_with(tolower) %>%
   # Removing unwanted variables
   dplyr::select(-externalid, -satellite, -email, -datetime, -carddata,
-                        -starts_with(c("q5", "q8", "q18", "q21", "q29", "q24", "q36", "q37", "q38", "q39"))
+                -starts_with(c("q5", "q8", "q18", "q21", "q29", "q24", 
+                               "q36", "q37", "q38", "q39")
+                             )
          ) %>%
   # Strip off trailing strings to get clean variable names
   rename_with(~gsub('\\..*', '', .x))  
@@ -157,7 +99,7 @@ FIHI_sub <- FIHI_new_ %>%
 
 ##---------- Removing respondents with 0 or extremely few responses ---------
 
-# Found 7087 zero responses, 160 2 responses, and 114 4 responses
+# Found 7087 zero responses, 160 two responses, and 114 four responses
 # We decided to get rid of these
 FIHI_sub <- FIHI_sub %>%
   mutate(count = rowSums(!is.na(select(., -respondentid)))) %>%
@@ -276,28 +218,61 @@ FIHI_sub3 <- FIHI_sub2 %>%
                       labels = c("Decreased", "About the same", "Increased")),
     )
 
+##------------- Cleaning data further for modeling  ---------------------
+FIHI_sub2 <- FIHI_sub2 %>%
+  mutate(q6 = factor(q6, levels = c(1,3,4,6,8),  labels = 1:5),
+         q9 = factor(q9, levels = c(1:5,12,13,11), labels = 1:8),
+         q12 = factor(q12, levels = c(1,9,4,10,8,11),  labels = 1:6),
+         q15 = factor(q15, levels = c(4, 1:3), labels = 1:4),
+         q25 = factor(q25, levels = c(1:3,5,8,7,6 ), labels = 1:7)
+  )
+
+# For modeling purposes, we recoded response variables with 3 class levels into 2 levels 
+FIHI_sub2 <- FIHI_sub2 %>%
+  mutate(q22 = ifelse(q22 !=1, 1, 2),
+         q26 = ifelse(q26 !=1, 1, 2),
+         q27 = ifelse(q27 !=1, 1, 2)
+         ) %>%
+  mutate(q20 = factor(q20, levels = 1:2, labels = c("Yes", "No")),
+         q22 = factor(q22, levels = 1:2, labels = c("Yes", "No")),
+         q26= factor(q26, levels = 1:2, labels = c("Yes", "No")),
+         q27= factor(q27, levels = 1:2, labels = c("Yes", "No")),
+         q28= factor(q28, levels = 1:2, labels = c("Yes", "No")),
+         q30= factor(q30, levels = 1:2, labels = c("Yes", "No")),
+         q31= factor(q31, levels = 1:2, labels = c("Yes", "No"))
+          )
+
 ##------------- Rename the remaining variables ---------------------
-var_names <- c("respondent_id", "enrollment", "employment", "employment_type", "weekly_work_hrs", "ethnicity", "gender", "total_income", "academic_level", "college/school", "mode_transport", "transport_reliability", "living_alone", "dependents", "household_head", "residence", "permanent_address", "spent_night_elsewhere", "know_homeless_student", "federal_student_aid", "FI_q26", "FI_q27", "FI_q28", "FI_q30", "FI_q31", "expenditures_changed", "income_changed", "fed_aid_changed", "debt_changed")
+var_names <- c("respondent_id", "enrollment", "employment", "employment_type",
+               "weekly_work_hrs", "ethnicity", "gender", "total_income",
+               "academic_level", "college/school", "mode_transport", 
+               "transport_reliability", "living_alone", "dependents", 
+               "household_head", "residence", "permanent_address", 
+               "spent_night_elsewhere", "know_homeless_student", 
+               "federal_student_aid", "FI_q26", "FI_q27", "FI_q28", "FI_q30", 
+               "FI_q31", "expenditures_changed", "income_changed", 
+               "fed_aid_changed", "debt_changed")
 
 names(FIHI_sub2) <- var_names
 names(FIHI_sub3) <- var_names
 
 
-
-# Save preprocessed file 
+# Save preprocessed data 
 # write.csv(FIHI_sub3, paste0(file_path, '/datcsv_clean.csv'))
 
-save(FIHI_sub2, FIHI_sub3, file=paste0(file_path, .Platform$file.sep, 'FIHI_clean.RData'))
+save(FIHI_sub2, FIHI_sub3, 
+     file=paste0(file_path, .Platform$file.sep, 'FIHI_clean.RData')
+     )
 
-```
+
+# clean up the environment and console
+rm(list = ls())
+cat("\014") # ctrl+L
+
+# Clear loaded package
 
 
-Assessing the nature of missing data
-```{r}
-library(naniar)
-
-mcar_test(FIHI_sub3[-1])
-```
+#------------- END OF FILE ----------------------------------------
 
 
 

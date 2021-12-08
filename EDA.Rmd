@@ -77,7 +77,7 @@ load("FIHI_clean.RData")
 
 # Make new data for EDA
 eda_dat <- FIHI_sub3 %>%
-  dplyr::select(-ends_with("_changed"), -respondent_id)
+  dplyr::select(-respondent_id)
 
 ```
 
@@ -327,7 +327,7 @@ p1 <- ggplot(plotdf, aes(gender, pct, fill=permanent_address)) +
 ```
 
 
-
+<!--
 # Data Science Best Practices Adopted
 
 
@@ -348,7 +348,17 @@ One area of the data cleaning that we found very challenging had to do with the 
 
 ## Reproducibility
 
-## Communicaton 
+- Github for version control
+- Rmarkdown
+- R package manager
+
+## Communication
+
+- Flipping the paradigm
+- 
+
+-->
+
 
 
 

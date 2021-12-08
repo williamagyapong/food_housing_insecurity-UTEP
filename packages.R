@@ -26,28 +26,17 @@ if(!("pacman" %in% installed.packages())) install.packages("pacman")
 # pROC: for creating ROC curves
 # naniar: missing data visualization
 # UpSetR: 
+# earth: for fitting Multivariate Adaptive Splines (MARS) models 
+# depends on: Formula, plotmo, plotrix, TeachingDemos
+
 
 packages <- c("e1071", "tibble", "dplyr", "ggplot2", "RColorBrewer","patchwork",
               "knitr", "kableExtra", "scales", "mice", "cvAUC", "verification", 
-              "caret", "pROC", "caretEnsemble", "naniar", "UpSetR", "doParallel"
+              "caret", "earth","TeachingDemos", "pROC", "caretEnsemble", "naniar", 
+              "UpSetR", "doParallel"
               )
 
 pacman::p_load(char = packages, install = TRUE)
 
 rm(packages)
 
-# library(e1071)
-# library(tidyverse)
-# library(kernlab)
-# library(cvAUC)
-# library(verification)
-# library(caret)
-# require(pROC)
-#library(caretEnsemble)
-# library(randomForest)
-# suppressPackageStartupMessages(library(mice))
-# library(ROSE) # for treating class imbalances
-
-# Generating missing data maps and summaries
-# library(naniar) 
-# library(UpSetR)

@@ -38,7 +38,7 @@
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
 \IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
 \hypersetup{
-  pdftitle={Modeling Food and Housing Insecurity at UTEP - Phase 1},
+  pdftitle={Modeling Food and Housing Insecurity at UTEP},
   pdfauthor={George E. Quaye; John Koomson; Willliam O. Agyapong},
   colorlinks=true,
   linkcolor=blue,
@@ -86,7 +86,7 @@
 \pagestyle{fancy}
 \fancyhf{}
 \rhead{George Quaye, John Koomson, William Agyapong}
-\lhead{Report - DS 6335}
+\lhead{Phase II Report - DS 6335}
 \cfoot{\thepage}
 \usepackage{algorithm}
 \usepackage[noend]{algpseudocode}
@@ -105,14 +105,14 @@
 \usepackage{makecell}
 \usepackage{xcolor}
 
-\title{Modeling Food and Housing Insecurity at UTEP - Phase 1}
+\title{Modeling Food and Housing Insecurity at UTEP}
 \usepackage{etoolbox}
 \makeatletter
 \providecommand{\subtitle}[1]{% add subtitle to \maketitle
   \apptocmd{\@title}{\par {\large #1 \par}}{}{}
 }
 \makeatother
-\subtitle{Report}
+\subtitle{Phase II Report}
 \author{George E. Quaye \and John Koomson \and Willliam O. Agyapong}
 \date{\center University of Texas, El Paso (UTEP)\center \center Department of Mathematical Sciences \center}
 
@@ -373,91 +373,164 @@ To aid easy deployment and implementation of our proposed model(s), we plan to d
 \hypertarget{exploratory-data-analysis}{%
 \subsection{Exploratory Data Analysis}\label{exploratory-data-analysis}}
 
-\hypertarget{inspecting-missing-values}{%
-\subsubsection{Inspecting missing values}\label{inspecting-missing-values}}
+\hypertarget{summary-statistics}{%
+\subsubsection{Summary Statistics}\label{summary-statistics}}
 
-\begin{table}[H]
+Table 2 shows how the various variables used throughout the analysis are distributed across their respective levels, after data cleaning, accounting for double counting in multiple response instances, and collapsing levels where we considered appropriate. Missing values are denoted by \textbf{NA}, so variables with the additional \textbf{NA} level are those with missing observations.
 
-\caption{\label{tab:unnamed-chunk-2}Table : Missing values table displaying percentages}
-\centering
-\begin{tabu} to \linewidth {>{\raggedright}X>{\centering}X>{\centering}X}
-\hline
-Variable & Number\_Missing & Missing\_Rate\\
-\hline
-enrollment & 0 & 0.0000000\\
-\hline
-employment & 0 & 0.0000000\\
-\hline
-employment\_type & 2201 & 42.5314010\\
-\hline
-weekly\_work\_hrs & 2201 & 42.5314010\\
-\hline
-ethnicity & 0 & 0.0000000\\
-\hline
-gender & 22 & 0.4251208\\
-\hline
-total\_income & 0 & 0.0000000\\
-\hline
-academic\_level & 0 & 0.0000000\\
-\hline
-college/school & 0 & 0.0000000\\
-\hline
-mode\_transport & 0 & 0.0000000\\
-\hline
-transport\_reliability & 0 & 0.0000000\\
-\hline
-living\_alone & 0 & 0.0000000\\
-\hline
-dependents & 460 & 8.8888889\\
-\hline
-household\_head & 56 & 1.0821256\\
-\hline
-residence & 80 & 1.5458937\\
-\hline
-permanent\_address & 80 & 1.5458937\\
-\hline
-spent\_night\_elsewhere & 4921 & 95.0917874\\
-\hline
-know\_homeless\_student & 115 & 2.2222222\\
-\hline
-federal\_student\_aid & 115 & 2.2222222\\
-\hline
-FI\_q26 & 157 & 3.0338164\\
-\hline
-FI\_q27 & 157 & 3.0338164\\
-\hline
-FI\_q28 & 157 & 3.0338164\\
-\hline
-FI\_q30 & 177 & 3.4202899\\
-\hline
-FI\_q31 & 177 & 3.4202899\\
-\hline
-expenditures\_changed & 238 & 4.5990338\\
-\hline
-income\_changed & 238 & 4.5990338\\
-\hline
-fed\_aid\_changed & 238 & 4.5990338\\
-\hline
-debt\_changed & 238 & 4.5990338\\
-\hline
-\end{tabu}
-\end{table}
+\begingroup\fontsize{9}{11}\selectfont
+
+\begin{longtable}[t]{llccc}
+\caption{\label{tab:summary-stats} A summary of variables of interest}\\
+\toprule
+Variable Name & Levels & Coded As & Obervations & Percentage\\
+\midrule
+\endfirsthead
+\caption[]{\label{tab:summary-stats} A summary of variables of interest \textit{(continued)}}\\
+\toprule
+Variable Name & Levels & Coded As & Obervations & Percentage\\
+\midrule
+\endhead
+
+\endfoot
+\bottomrule
+\endlastfoot
+\cellcolor{gray!6}{enrollment} & \cellcolor{gray!6}{Full Time} & \cellcolor{gray!6}{1} & \cellcolor{gray!6}{4325} & \cellcolor{gray!6}{83.57\%}\\
+\cellcolor{gray!6}{} & \cellcolor{gray!6}{Part Time} & \cellcolor{gray!6}{2} & \cellcolor{gray!6}{850} & \cellcolor{gray!6}{16.43\%}\\
+employment & Full Time & 1 & 968 & 18.71\%\\
+ & Part Time & 2 & 2006 & 38.76\%\\
+ & No & 3 & 2201 & 42.53\%\\
+\cellcolor{gray!6}{employment\_type} & \cellcolor{gray!6}{On-Campus} & \cellcolor{gray!6}{1} & \cellcolor{gray!6}{491} & \cellcolor{gray!6}{16.51\%}\\
+\cellcolor{gray!6}{} & \cellcolor{gray!6}{Off-Campus} & \cellcolor{gray!6}{2} & \cellcolor{gray!6}{2483} & \cellcolor{gray!6}{83.49\%}\\
+weekly\_work\_hrs & 19 hours or less & 1 & 1337 & 44.96\%\\
+ & More than 19 hours & 2 & 1637 & 55.04\%\\
+\cellcolor{gray!6}{ethnicity} & \cellcolor{gray!6}{Hispanic} & \cellcolor{gray!6}{1} & \cellcolor{gray!6}{4462} & \cellcolor{gray!6}{86.22\%}\\
+\cellcolor{gray!6}{} & \cellcolor{gray!6}{Asian} & \cellcolor{gray!6}{2} & \cellcolor{gray!6}{115} & \cellcolor{gray!6}{2.22\%}\\
+\cellcolor{gray!6}{} & \cellcolor{gray!6}{Black/African American} & \cellcolor{gray!6}{3} & \cellcolor{gray!6}{135} & \cellcolor{gray!6}{2.61\%}\\
+\cellcolor{gray!6}{} & \cellcolor{gray!6}{White/Caucasian} & \cellcolor{gray!6}{4} & \cellcolor{gray!6}{291} & \cellcolor{gray!6}{5.62\%}\\
+\cellcolor{gray!6}{} & \cellcolor{gray!6}{Other} & \cellcolor{gray!6}{5} & \cellcolor{gray!6}{172} & \cellcolor{gray!6}{3.32\%}\\
+gender & Female & 1 & 3508 & 67.79\%\\
+ & Male & 2 & 1583 & 30.59\%\\
+ & Non-binary/Non-conforming & 3 & 62 & 1.20\%\\
+ & NA &  & 22 & 0.43\%\\
+\cellcolor{gray!6}{total\_income} & \cellcolor{gray!6}{< 10,000} & \cellcolor{gray!6}{1} & \cellcolor{gray!6}{851} & \cellcolor{gray!6}{16.44\%}\\
+\cellcolor{gray!6}{} & \cellcolor{gray!6}{10,000-19,999} & \cellcolor{gray!6}{2} & \cellcolor{gray!6}{862} & \cellcolor{gray!6}{16.66\%}\\
+\cellcolor{gray!6}{} & \cellcolor{gray!6}{20,000-29,999} & \cellcolor{gray!6}{3} & \cellcolor{gray!6}{806} & \cellcolor{gray!6}{15.57\%}\\
+\cellcolor{gray!6}{} & \cellcolor{gray!6}{30,000-39,000} & \cellcolor{gray!6}{4} & \cellcolor{gray!6}{649} & \cellcolor{gray!6}{12.54\%}\\
+\cellcolor{gray!6}{} & \cellcolor{gray!6}{40,000-49,999} & \cellcolor{gray!6}{5} & \cellcolor{gray!6}{538} & \cellcolor{gray!6}{10.40\%}\\
+\cellcolor{gray!6}{} & \cellcolor{gray!6}{50,000-69,999} & \cellcolor{gray!6}{6} & \cellcolor{gray!6}{651} & \cellcolor{gray!6}{12.58\%}\\
+\cellcolor{gray!6}{} & \cellcolor{gray!6}{70,000-99,999} & \cellcolor{gray!6}{7} & \cellcolor{gray!6}{494} & \cellcolor{gray!6}{9.55\%}\\
+\cellcolor{gray!6}{} & \cellcolor{gray!6}{>=100,000} & \cellcolor{gray!6}{8} & \cellcolor{gray!6}{324} & \cellcolor{gray!6}{6.26\%}\\
+academic\_level & Freshman & 1 & 709 & 13.70\%\\
+ & Sophomore & 2 & 739 & 14.28\%\\
+ & Junior & 3 & 1275 & 24.64\%\\
+ & Senior & 4 & 1628 & 31.46\%\\
+ & Masters & 5 & 559 & 10.80\%\\
+ & Doctoral/Professional & 6 & 265 & 5.12\%\\
+\cellcolor{gray!6}{college/school} & \cellcolor{gray!6}{Business} & \cellcolor{gray!6}{1} & \cellcolor{gray!6}{573} & \cellcolor{gray!6}{11.07\%}\\
+\cellcolor{gray!6}{} & \cellcolor{gray!6}{Education} & \cellcolor{gray!6}{2} & \cellcolor{gray!6}{484} & \cellcolor{gray!6}{9.35\%}\\
+\cellcolor{gray!6}{} & \cellcolor{gray!6}{Engineering} & \cellcolor{gray!6}{3} & \cellcolor{gray!6}{838} & \cellcolor{gray!6}{16.19\%}\\
+\cellcolor{gray!6}{} & \cellcolor{gray!6}{Health Sciences} & \cellcolor{gray!6}{4} & \cellcolor{gray!6}{577} & \cellcolor{gray!6}{11.15\%}\\
+\cellcolor{gray!6}{} & \cellcolor{gray!6}{Liberal Arts} & \cellcolor{gray!6}{5} & \cellcolor{gray!6}{1274} & \cellcolor{gray!6}{24.62\%}\\
+\cellcolor{gray!6}{} & \cellcolor{gray!6}{Science} & \cellcolor{gray!6}{6} & \cellcolor{gray!6}{822} & \cellcolor{gray!6}{15.88\%}\\
+\cellcolor{gray!6}{} & \cellcolor{gray!6}{Nursing} & \cellcolor{gray!6}{7} & \cellcolor{gray!6}{423} & \cellcolor{gray!6}{8.17\%}\\
+\cellcolor{gray!6}{} & \cellcolor{gray!6}{Pharmacy} & \cellcolor{gray!6}{8} & \cellcolor{gray!6}{41} & \cellcolor{gray!6}{0.79\%}\\
+\cellcolor{gray!6}{} & \cellcolor{gray!6}{Other} & \cellcolor{gray!6}{9} & \cellcolor{gray!6}{55} & \cellcolor{gray!6}{1.06\%}\\
+\cellcolor{gray!6}{} & \cellcolor{gray!6}{More than one} & \cellcolor{gray!6}{10} & \cellcolor{gray!6}{88} & \cellcolor{gray!6}{1.70\%}\\
+mode\_transport & Car (alone) & 1 & 3359 & 64.91\%\\
+ & Car (someone drives) \& Carpool & 2 & 805 & 15.56\%\\
+ & Bus/Public transport & 3 & 398 & 7.69\%\\
+ & Bike, Trolley, or Walk & 4 & 179 & 3.46\%\\
+ & Other & 5 & 125 & 2.42\%\\
+ & Not applicable & 6 & 309 & 5.97\%\\
+\cellcolor{gray!6}{transport\_reliability} & \cellcolor{gray!6}{Not reliable at all} & \cellcolor{gray!6}{1} & \cellcolor{gray!6}{92} & \cellcolor{gray!6}{1.89\%}\\
+\cellcolor{gray!6}{} & \cellcolor{gray!6}{Somewhat reliable} & \cellcolor{gray!6}{2} & \cellcolor{gray!6}{429} & \cellcolor{gray!6}{8.82\%}\\
+\cellcolor{gray!6}{} & \cellcolor{gray!6}{Fairly reliable} & \cellcolor{gray!6}{3} & \cellcolor{gray!6}{1628} & \cellcolor{gray!6}{33.46\%}\\
+\cellcolor{gray!6}{} & \cellcolor{gray!6}{Very reliable} & \cellcolor{gray!6}{4} & \cellcolor{gray!6}{2717} & \cellcolor{gray!6}{55.84\%}\\
+living\_alone & Yes & 1 & 441 & 8.52\%\\
+ & No & 2 & 4734 & 91.48\%\\
+\cellcolor{gray!6}{dependents} & \cellcolor{gray!6}{0} & \cellcolor{gray!6}{1} & \cellcolor{gray!6}{3802} & \cellcolor{gray!6}{73.47\%}\\
+\cellcolor{gray!6}{} & \cellcolor{gray!6}{1} & \cellcolor{gray!6}{2} & \cellcolor{gray!6}{367} & \cellcolor{gray!6}{7.09\%}\\
+\cellcolor{gray!6}{} & \cellcolor{gray!6}{2 - 3} & \cellcolor{gray!6}{3} & \cellcolor{gray!6}{448} & \cellcolor{gray!6}{8.66\%}\\
+\cellcolor{gray!6}{} & \cellcolor{gray!6}{4 or more} & \cellcolor{gray!6}{4} & \cellcolor{gray!6}{98} & \cellcolor{gray!6}{1.89\%}\\
+\cellcolor{gray!6}{} & \cellcolor{gray!6}{NA} & \cellcolor{gray!6}{} & \cellcolor{gray!6}{460} & \cellcolor{gray!6}{8.89\%}\\
+household\_head & Yes & 1 & 1155 & 22.32\%\\
+ & No & 2 & 3964 & 76.60\%\\
+ & NA &  & 56 & 1.08\%\\
+\cellcolor{gray!6}{residence} & \cellcolor{gray!6}{On-Campus} & \cellcolor{gray!6}{1} & \cellcolor{gray!6}{133} & \cellcolor{gray!6}{2.57\%}\\
+\cellcolor{gray!6}{} & \cellcolor{gray!6}{Off-Campus with family} & \cellcolor{gray!6}{2} & \cellcolor{gray!6}{4093} & \cellcolor{gray!6}{79.09\%}\\
+\cellcolor{gray!6}{} & \cellcolor{gray!6}{Off-Campus not with family} & \cellcolor{gray!6}{3} & \cellcolor{gray!6}{821} & \cellcolor{gray!6}{15.86\%}\\
+\cellcolor{gray!6}{} & \cellcolor{gray!6}{Other} & \cellcolor{gray!6}{4} & \cellcolor{gray!6}{48} & \cellcolor{gray!6}{0.93\%}\\
+\cellcolor{gray!6}{} & \cellcolor{gray!6}{NA} & \cellcolor{gray!6}{} & \cellcolor{gray!6}{80} & \cellcolor{gray!6}{\vphantom{1} 1.55\%}\\
+permanent\_address & Yes & 1 & 4830 & 93.33\%\\
+ & No & 2 & 265 & 5.12\%\\
+ & NA &  & 80 & 1.55\%\\
+\cellcolor{gray!6}{spent\_night\_elsewhere} & \cellcolor{gray!6}{Rarely} & \cellcolor{gray!6}{1} & \cellcolor{gray!6}{138} & \cellcolor{gray!6}{52.08\%}\\
+\cellcolor{gray!6}{} & \cellcolor{gray!6}{Sometimes} & \cellcolor{gray!6}{2} & \cellcolor{gray!6}{83} & \cellcolor{gray!6}{31.32\%}\\
+\cellcolor{gray!6}{} & \cellcolor{gray!6}{Often} & \cellcolor{gray!6}{3} & \cellcolor{gray!6}{33} & \cellcolor{gray!6}{12.45\%}\\
+\cellcolor{gray!6}{} & \cellcolor{gray!6}{NA} & \cellcolor{gray!6}{} & \cellcolor{gray!6}{11} & \cellcolor{gray!6}{4.15\%}\\
+know\_homeless\_student & Yes & 1 & 965 & 18.65\%\\
+ & No & 2 & 4095 & 79.13\%\\
+ & NA &  & 115 & \vphantom{1} 2.22\%\\
+\cellcolor{gray!6}{federal\_student\_aid} & \cellcolor{gray!6}{Grants} & \cellcolor{gray!6}{1} & \cellcolor{gray!6}{1293} & \cellcolor{gray!6}{24.99\%}\\
+\cellcolor{gray!6}{} & \cellcolor{gray!6}{Work Study} & \cellcolor{gray!6}{2} & \cellcolor{gray!6}{256} & \cellcolor{gray!6}{4.95\%}\\
+\cellcolor{gray!6}{} & \cellcolor{gray!6}{Loans} & \cellcolor{gray!6}{3} & \cellcolor{gray!6}{581} & \cellcolor{gray!6}{11.23\%}\\
+\cellcolor{gray!6}{} & \cellcolor{gray!6}{Scholarship} & \cellcolor{gray!6}{4} & \cellcolor{gray!6}{237} & \cellcolor{gray!6}{4.58\%}\\
+\cellcolor{gray!6}{} & \cellcolor{gray!6}{Multiple Aids} & \cellcolor{gray!6}{5} & \cellcolor{gray!6}{1652} & \cellcolor{gray!6}{31.92\%}\\
+\cellcolor{gray!6}{} & \cellcolor{gray!6}{Other} & \cellcolor{gray!6}{6} & \cellcolor{gray!6}{992} & \cellcolor{gray!6}{19.17\%}\\
+\cellcolor{gray!6}{} & \cellcolor{gray!6}{None} & \cellcolor{gray!6}{7} & \cellcolor{gray!6}{49} & \cellcolor{gray!6}{0.95\%}\\
+\cellcolor{gray!6}{} & \cellcolor{gray!6}{NA} & \cellcolor{gray!6}{} & \cellcolor{gray!6}{115} & \cellcolor{gray!6}{2.22\%}\\
+FI\_q26 & Never true & 1 & 2886 & 55.77\%\\
+ & Sometimes true & 2 & 1705 & 32.95\%\\
+ & Often true & 3 & 427 & 8.25\%\\
+ & NA &  & 157 & \vphantom{2} 3.03\%\\
+\cellcolor{gray!6}{FI\_q27} & \cellcolor{gray!6}{Never true} & \cellcolor{gray!6}{1} & \cellcolor{gray!6}{2579} & \cellcolor{gray!6}{49.84\%}\\
+\cellcolor{gray!6}{} & \cellcolor{gray!6}{Sometimes true} & \cellcolor{gray!6}{2} & \cellcolor{gray!6}{1744} & \cellcolor{gray!6}{33.70\%}\\
+\cellcolor{gray!6}{} & \cellcolor{gray!6}{Often true} & \cellcolor{gray!6}{3} & \cellcolor{gray!6}{695} & \cellcolor{gray!6}{13.43\%}\\
+\cellcolor{gray!6}{} & \cellcolor{gray!6}{NA} & \cellcolor{gray!6}{} & \cellcolor{gray!6}{157} & \cellcolor{gray!6}{\vphantom{1} 3.03\%}\\
+FI\_q28 & Yes & 1 & 1684 & 32.54\%\\
+ & No & 2 & 3334 & 64.43\%\\
+ & NA &  & 157 & 3.03\%\\
+\cellcolor{gray!6}{FI\_q30} & \cellcolor{gray!6}{Yes} & \cellcolor{gray!6}{1} & \cellcolor{gray!6}{1676} & \cellcolor{gray!6}{32.39\%}\\
+\cellcolor{gray!6}{} & \cellcolor{gray!6}{No} & \cellcolor{gray!6}{2} & \cellcolor{gray!6}{3322} & \cellcolor{gray!6}{64.19\%}\\
+\cellcolor{gray!6}{} & \cellcolor{gray!6}{NA} & \cellcolor{gray!6}{} & \cellcolor{gray!6}{177} & \cellcolor{gray!6}{\vphantom{1} 3.42\%}\\
+FI\_q31 & Yes & 1 & 1268 & 24.50\%\\
+ & No & 2 & 3730 & 72.08\%\\
+ & NA &  & 177 & 3.42\%\\
+\cellcolor{gray!6}{expenditures\_changed} & \cellcolor{gray!6}{Decreased} & \cellcolor{gray!6}{1} & \cellcolor{gray!6}{1323} & \cellcolor{gray!6}{25.57\%}\\
+\cellcolor{gray!6}{} & \cellcolor{gray!6}{About the same} & \cellcolor{gray!6}{2} & \cellcolor{gray!6}{2201} & \cellcolor{gray!6}{42.53\%}\\
+\cellcolor{gray!6}{} & \cellcolor{gray!6}{Increased} & \cellcolor{gray!6}{3} & \cellcolor{gray!6}{1413} & \cellcolor{gray!6}{27.30\%}\\
+\cellcolor{gray!6}{} & \cellcolor{gray!6}{NA} & \cellcolor{gray!6}{} & \cellcolor{gray!6}{238} & \cellcolor{gray!6}{\vphantom{3} 4.60\%}\\
+income\_changed & Decreased & 1 & 2702 & 52.21\%\\
+ & About the same & 2 & 2046 & 39.54\%\\
+ & Increased & 3 & 189 & 3.65\%\\
+ & NA &  & 238 & \vphantom{2} 4.60\%\\
+\cellcolor{gray!6}{fed\_aid\_changed} & \cellcolor{gray!6}{Decreased} & \cellcolor{gray!6}{1} & \cellcolor{gray!6}{1175} & \cellcolor{gray!6}{22.71\%}\\
+\cellcolor{gray!6}{} & \cellcolor{gray!6}{About the same} & \cellcolor{gray!6}{2} & \cellcolor{gray!6}{3388} & \cellcolor{gray!6}{65.47\%}\\
+\cellcolor{gray!6}{} & \cellcolor{gray!6}{Increased} & \cellcolor{gray!6}{3} & \cellcolor{gray!6}{374} & \cellcolor{gray!6}{7.23\%}\\
+\cellcolor{gray!6}{} & \cellcolor{gray!6}{NA} & \cellcolor{gray!6}{} & \cellcolor{gray!6}{238} & \cellcolor{gray!6}{\vphantom{1} 4.60\%}\\
+debt\_changed & Decreased & 1 & 289 & 5.58\%\\
+ & About the same & 2 & 2441 & 47.17\%\\
+ & Increased & 3 & 2207 & 42.65\%\\
+ & NA &  & 238 & 4.60\%\\*
+\end{longtable}
+\endgroup{}
 
 \hypertarget{distribution-of-housing-insecurity-responses}{%
 \subsubsection{Distribution of Housing Insecurity Responses}\label{distribution-of-housing-insecurity-responses}}
 
-\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-3-1}
+\begin{center}\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-3-1} \end{center}
 
 \hypertarget{distribution-of-food-insecurity-responses}{%
 \subsubsection{Distribution of Food Insecurity Responses}\label{distribution-of-food-insecurity-responses}}
 
-\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-5-1}
+\begin{center}\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-5-1} \end{center}
 
-\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-6-1}
+\begin{center}\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-6-1} \end{center}
 
-\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-7-1}
+\begin{center}\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-7-1} \end{center}
 
-\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-8-1}
+\begin{center}\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-8-1} \end{center}
 
 The table and graphs above display the number of missing values with missing percentages as well as the distribution of the potential response variables. From the results, the following observations were made:
 
@@ -472,8 +545,8 @@ The table and graphs above display the number of missing values with missing per
   The selected responses variables exhibited highly imbalanced classification. The imbalanced classification was treated with both sampling methods under the ROSE package.
 \end{itemize}
 
-\hypertarget{model-fitting}{%
-\subsection{Model Fitting}\label{model-fitting}}
+\hypertarget{model-building}{%
+\subsection{Model Building}\label{model-building}}
 
 Given our data set and its structure, the following supervised classification machine learning algorithms were employed to obtained a predictive model for each given response variable;
 
@@ -485,7 +558,7 @@ Given our data set and its structure, the following supervised classification ma
 \item
   K-Nearest Neighbors (KNN)
 \item
-  Neural Network
+  Multivariate Adaptive Regression Splines (MARS)
 \item
   Support Vector Machines with Linear Kernel (SVM Linear)
 \item
@@ -500,7 +573,10 @@ For the purpose of training and validation of each derived model ,and the estima
 \hypertarget{modeling-housing-insecurity}{%
 \subsubsection{Modeling Housing Insecurity}\label{modeling-housing-insecurity}}
 
-Here, we modeled housing insecurity as a response based on whether or not the respondent had a permanent address.
+Here, we modeled housing insecurity as a response based on whether or not a respondent had a permanent address as well as whether or not a respondent spent the night elsewhere given that they did not have a permanent address in the past six months to the survey period.
+
+\hypertarget{results-for-permanent-address}{%
+\paragraph{Results for Permanent Address}\label{results-for-permanent-address}}
 
 \begin{table}[H]
 
@@ -511,41 +587,44 @@ Here, we modeled housing insecurity as a response based on whether or not the re
 \toprule
 Model & Misclassification Rate & Accuracy & Sensitivity & Specificity & fbeta & AUC\\
 \midrule
-Logistic & 0.23 & 0.77 & 0.78 & 0.58 & 0.86 & 0.7203\\
-LDA & 0.22 & 0.78 & 0.79 & 0.59 & 0.87 & 0.7223\\
-KNN & 0.35 & 0.65 & 0.65 & 0.63 & 0.78 & 0.6802\\
-MARS & 0.23 & 0.77 & 0.78 & 0.53 & 0.87 & 0.7045\\
-SVM Linear & 0.24 & 0.76 & 0.77 & 0.54 & 0.86 & 0.7133\\
-SVM Radial & 0.17 & 0.83 & 0.85 & 0.47 & 0.91 & 0.7271\\
+Logistic & 0.24 & 0.76 & 0.77 & 0.53 & 0.86 & 0.7058\\
+LDA & 0.22 & 0.78 & 0.79 & 0.55 & 0.87 & 0.7149\\
+KNN & 0.37 & 0.63 & 0.64 & 0.58 & 0.77 & 0.637\\
+MARS & 0.2 & 0.8 & 0.82 & 0.48 & 0.89 & 0.7206\\
+SVM Linear & 0.22 & 0.78 & 0.79 & 0.51 & 0.87 & 0.7151\\
+SVM Radial & 0.17 & 0.83 & 0.85 & 0.45 & 0.91 & 0.7011\\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-9-1}
+\begin{center}\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-10-1} \end{center}
 
-\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-10-1}
+\begin{center}\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-11-1} \end{center}
+
+\hypertarget{results-for-spending-the-night-elsewhere}{%
+\paragraph{Results for Spending the night elsewhere}\label{results-for-spending-the-night-elsewhere}}
 
 \begin{table}[H]
 
-\caption{\label{tab:unnamed-chunk-11}Evaluation metrics for Spent Night Elsewhere  as a response variable}
+\caption{\label{tab:unnamed-chunk-12}Evaluation metrics for Spent Night Elsewhere  as a response variable}
 \centering
 \fontsize{12}{14}\selectfont
 \begin{tabular}[t]{lcccccc}
 \toprule
 Model & Misclassification Rate & Accuracy & Sensitivity & Specificity & fbeta & AUC\\
 \midrule
-Logistic & 0.51 & 0.49 & 0.41 & 0.56 & 0.42 & 0.5102\\
-KNN & 0.48 & 0.52 & 0.43 & 0.6 & 0.45 & 0.5\\
-MARS & 0.46 & 0.54 & 0.3 & 0.73 & 0.37 & 0.5153\\
-SVM Linear & 0.57 & 0.43 & 0.46 & 0.4 & 0.42 & 0.4706\\
-SVM Radial & 0.49 & 0.51 & 0.54 & 0.49 & 0.5 & 0.5559\\
+Logistic & 0.54 & 0.46 & 0.35 & 0.56 & 0.37 & 0.5216\\
+KNN & 0.46 & 0.54 & 0.49 & 0.58 & 0.49 & 0.5294\\
+MARS & 0.45 & 0.55 & 0.65 & 0.47 & 0.56 & 0.5952\\
+SVM Linear & 0.54 & 0.46 & 0.51 & 0.42 & 0.46 & 0.5012\\
+SVM Radial & 0.51 & 0.49 & 0.54 & 0.44 & 0.49 & 0.5498\\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-11-1}
+\begin{center}\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-13-1} \end{center}
 
-\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-12-1}
+\begin{center}\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-14-1} \end{center}
 
 \hypertarget{modeling-food-insecurity}{%
 \subsubsection{Modeling Food Insecurity}\label{modeling-food-insecurity}}
@@ -570,90 +649,90 @@ Though Food Insecurity I and II originally had three levels (Often true, Sometim
 \hypertarget{results-for-food-insecurity-response-i}{%
 \paragraph{Results for Food Insecurity Response I}\label{results-for-food-insecurity-response-i}}
 
-\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-14-1}
+\begin{table}[H]
+
+\caption{\label{tab:unnamed-chunk-15}Evaluation metrics for Food Insecurity I  as a response variable}
+\centering
+\fontsize{12}{14}\selectfont
+\begin{tabular}[t]{lcccccc}
+\toprule
+Model & Misclassification Rate & Accuracy & Sensitivity & Specificity & fbeta & AUC\\
+\midrule
+Logistic & 0.33 & 0.67 & 0.66 & 0.67 & 0.64 & 0.7342\\
+LDA & 0.34 & 0.66 & 0.65 & 0.67 & 0.63 & 0.7335\\
+KNN & 0.37 & 0.63 & 0.58 & 0.68 & 0.58 & 0.6747\\
+MARS & 0.34 & 0.66 & 0.66 & 0.66 & 0.64 & 0.7319\\
+SVM Linear & 0.34 & 0.66 & 0.66 & 0.66 & 0.63 & 0.7314\\
+SVM Radial & 0.33 & 0.67 & 0.66 & 0.67 & 0.64 & 0.7322\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{center}\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-16-1} \end{center}
+
+\begin{center}\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-17-1} \end{center}
 
 \hypertarget{results-for-food-insecurity-response-ii}{%
 \paragraph{Results for Food Insecurity Response II}\label{results-for-food-insecurity-response-ii}}
 
 \begin{table}[H]
 
-\caption{\label{tab:unnamed-chunk-15}Evaluation metrics for Food Insecurity II  as a response variable}
+\caption{\label{tab:unnamed-chunk-18}Evaluation metrics for Food Insecurity II  as a response variable}
 \centering
 \fontsize{12}{14}\selectfont
 \begin{tabular}[t]{lcccccc}
 \toprule
 Model & Misclassification Rate & Accuracy & Sensitivity & Specificity & fbeta & AUC\\
 \midrule
-Logistic & 0.34 & 0.66 & 0.64 & 0.67 & 0.66 & 0.7124\\
-LDA & 0.35 & 0.65 & 0.64 & 0.66 & 0.66 & 0.7124\\
-KNN & 0.37 & 0.63 & 0.57 & 0.69 & 0.62 & 0.6727\\
-MARS & 0.35 & 0.65 & 0.65 & 0.64 & 0.65 & 0.7042\\
-SVM Linear & 0.34 & 0.66 & 0.63 & 0.68 & 0.65 & 0.7101\\
-SVM Radial & 0.35 & 0.65 & 0.63 & 0.67 & 0.65 & 0.711\\
+Logistic & 0.34 & 0.66 & 0.64 & 0.67 & 0.66 & 0.7123\\
+LDA & 0.34 & 0.66 & 0.65 & 0.67 & 0.66 & 0.7132\\
+KNN & 0.37 & 0.63 & 0.56 & 0.7 & 0.61 & 0.6689\\
+MARS & 0.35 & 0.65 & 0.64 & 0.65 & 0.65 & 0.7078\\
+SVM Linear & 0.35 & 0.65 & 0.64 & 0.67 & 0.65 & 0.7116\\
+SVM Radial & 0.35 & 0.65 & 0.63 & 0.67 & 0.65 & 0.7113\\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-15-1}
+\begin{center}\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-19-1} \end{center}
 
-\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-16-1}
+\begin{center}\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-20-1} \end{center}
 
 \hypertarget{results-for-food-insecurity-response-iii}{%
 \paragraph{Results for Food Insecurity Response III}\label{results-for-food-insecurity-response-iii}}
 
 \begin{table}[H]
 
-\caption{\label{tab:unnamed-chunk-17}Evaluation metrics for Food Insecurity III  as a response variable}
+\caption{\label{tab:unnamed-chunk-21}Evaluation metrics for Food Insecurity III  as a response variable}
 \centering
 \fontsize{12}{14}\selectfont
 \begin{tabular}[t]{lcccccc}
 \toprule
 Model & Misclassification Rate & Accuracy & Sensitivity & Specificity & fbeta & AUC\\
 \midrule
-Logistic & 0.35 & 0.65 & 0.59 & 0.68 & 0.55 & 0.6998\\
-LDA & 0.34 & 0.66 & 0.61 & 0.68 & 0.56 & 0.7006\\
-KNN & 0.38 & 0.62 & 0.56 & 0.65 & 0.51 & 0.645\\
-MARS & 0.34 & 0.66 & 0.57 & 0.71 & 0.55 & 0.6963\\
-SVM Linear & 0.35 & 0.65 & 0.59 & 0.68 & 0.55 & 0.6982\\
-SVM Radial & 0.34 & 0.66 & 0.59 & 0.7 & 0.55 & 0.7037\\
+Logistic & 0.35 & 0.65 & 0.59 & 0.68 & 0.55 & 0.7004\\
+LDA & 0.34 & 0.66 & 0.62 & 0.69 & 0.57 & 0.7017\\
+KNN & 0.38 & 0.62 & 0.54 & 0.67 & 0.51 & 0.6515\\
+MARS & 0.35 & 0.65 & 0.59 & 0.68 & 0.55 & 0.6975\\
+SVM Linear & 0.34 & 0.66 & 0.6 & 0.69 & 0.56 & 0.7006\\
+SVM Radial & 0.33 & 0.67 & 0.59 & 0.71 & 0.56 & 0.7033\\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-17-1}
+\begin{center}\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-22-1} \end{center}
 
-\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-18-1}
+\begin{center}\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-23-1} \end{center}
 
 \hypertarget{results-for-food-insecurity-response-iv}{%
 \paragraph{Results for Food Insecurity Response IV}\label{results-for-food-insecurity-response-iv}}
 
-\begin{table}[H]
-
-\caption{\label{tab:unnamed-chunk-19}Evaluation metrics for Food Insecurity IV  as a response variable}
-\centering
-\fontsize{12}{14}\selectfont
-\begin{tabular}[t]{lcccccc}
-\toprule
-Model & Misclassification Rate & Accuracy & Sensitivity & Specificity & fbeta & AUC\\
-\midrule
-Logistic & 0.33 & 0.67 & 0.63 & 0.69 & 0.57 & 0.7194\\
-LDA & 0.34 & 0.66 & 0.62 & 0.68 & 0.56 & 0.7181\\
-KNN & 0.37 & 0.63 & 0.57 & 0.66 & 0.51 & 0.6519\\
-MARS & 0.33 & 0.67 & 0.61 & 0.7 & 0.56 & 0.7105\\
-SVM Linear & 0.33 & 0.67 & 0.62 & 0.69 & 0.56 & 0.7099\\
-SVM Radial & 0.32 & 0.68 & 0.65 & 0.69 & 0.58 & 0.7191\\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-19-1}
-
-\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-20-1}
-
 \hypertarget{results-for-food-insecurity-response-v}{%
 \paragraph{Results for Food Insecurity Response V}\label{results-for-food-insecurity-response-v}}
 
-\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-22-1}
+\begin{center}\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-26-1} \end{center}
+
+\begin{center}\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-27-1} \end{center}
 
 \hypertarget{discussion}{%
 \section{Discussion}\label{discussion}}
@@ -721,7 +800,7 @@ Wikipedia. (2021). Support-vector machine. Retrieved October 15, 2021, from \url
 \hypertarget{visualizing-missing-data}{%
 \subsection{Visualizing Missing Data}\label{visualizing-missing-data}}
 
-\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-23-1}
+\begin{center}\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-28-1} \end{center}
 
 \begin{tabular}{l|r|r}
 \hline
@@ -787,12 +866,15 @@ living\_alone & 0 & 0.0000000\\
 \hline
 \end{tabular}
 
-\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-23-2}
-\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-23-3}
+\begin{center}\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-28-2} \end{center}
+
+\begin{center}\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-28-3} \end{center}
 
 \hypertarget{codes}{%
 \subsection{Codes}\label{codes}}
 
 Codes for the analysis is available upon request.
+
+\newpage{}
 
 \end{document}

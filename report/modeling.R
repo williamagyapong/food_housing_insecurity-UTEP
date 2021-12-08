@@ -5,9 +5,11 @@
 # 
 #
 # Load Packages, functions, and datasets---------------------------------------
-
+source("../packages.R")
 source("modeling_functions.R")
 
+# Import already cleaned data
+load("../FIHI_clean.RData")
 
 #------------- Train Models ------------------------
 
@@ -36,5 +38,4 @@ save(sne_models, pa_models, FI_q26_models, FI_q27_models,
      )
 
 # load("trained_models.RData")
-
 
