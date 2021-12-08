@@ -30,10 +30,10 @@ if(!("pacman" %in% installed.packages())) install.packages("pacman")
 # depends on: Formula, plotmo, plotrix, TeachingDemos
 
 
-packages <- c("e1071", "tibble", "dplyr", "ggplot2", "RColorBrewer","patchwork",
+packages <- c("tibble", "dplyr", "ggplot2", "RColorBrewer","patchwork",
               "knitr", "kableExtra", "scales", "mice", "cvAUC", "verification", 
-              "caret", "earth","TeachingDemos", "pROC", "caretEnsemble", "naniar", 
-              "UpSetR", "doParallel"
+              "caret","e1071", "randomForest", "earth","TeachingDemos", "pROC", 
+              "caretEnsemble", "naniar", "UpSetR", "doParallel"
               )
 
 pacman::p_load(char = packages, install = TRUE)

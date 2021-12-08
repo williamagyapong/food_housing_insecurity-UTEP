@@ -50,7 +50,8 @@ knitr::opts_chunk$set(echo = F, warning=F, message=F, fig.pos = "!H",
 
 
 # Load required packages and preprocessed data from the project root directory
-
+dir_path <-  dirname(rstudioapi::getSourceEditorContext()$path)
+setwd(dir_path) # set the current working directory to this path
 source("../packages.R")
 
 load("../FIHI_clean.RData")
@@ -583,7 +584,7 @@ For the purpose of training and validation of each derived model ,and the estima
 
 ### Modeling Housing Insecurity
 
-Here, we modeled housing insecurity as a response based on whether or not a respondent had a permanent address as well as whether or not a respondent spent the night elsewhere given that they did not have a permanent address in the past six months to the survey period.
+Here, we modeled housing insecurity as a response based on whether or not a respondent had a permanent address (permanent_address) as well as whether or not a respondent spent the night elsewhere given that they did not have a permanent address in the past six months to the survey period (spent_night_elsewhere).
 
 ```{r load_mod_functions, message=FALSE, warning=FALSE, echo= F}
 # 
@@ -596,22 +597,21 @@ load("trained_models.RData") # import already trained models
 
 ```{r message=FALSE, warning=FALSE, echo= F}
 
-# dat <- modeling("permanent_address")
+# pa_models <- modeling("permanent_address")
 
 eval_table(pa_models$model_list, "permanent_address",
            pa_models$test,
            "Permanent House Address")
 
-# draw plots to visually compare modes
-# dotplot(resamples(dat$model_list))
 ```
 
 
 ```{r message=FALSE, warning=FALSE, echo= F}
+
 plot(pa_models$ensemble, main="Performance of individual models versus the Ensemble model")
 
 
-# plot(varImp(dat$model_list$earth, scale = FALSE), main ="Figure: Variable Importance by the LDA model")
+# plot(varImp(pa_models$model_list$earth, scale = FALSE), main ="Figure: Variable Importance by the MARS model")
 
 ```
 
@@ -627,10 +627,10 @@ rank_pred_by_ensemb(pa_models$ensemble, 20)
 #### Results for Spending the night elsewhere
 
 ```{r message=FALSE, warning=FALSE, echo= F}
-# dat <- modeling("spent_night_elsewhere", c("earth","glm","knn","svmLinear","svmRadial"))
+# sne_models <- modeling("spent_night_elsewhere", c("earth","glm","knn","svmLinear","svmRadial"))
 
 # Display a table of performance metrics
-# eval_table(dat$model_list, "spent_night_elsewhere", "Spent Night Elsewhere")
+# eval_table(sne_models$model_list, "spent_night_elsewhere",sne_models$test, "Spent Night Elsewhere")
 model_list <- sne_models$model_list
 response <- "spent_night_elsewhere"
 resp_label <- "Spent Night Elsewhere"
@@ -673,9 +673,8 @@ kable(metrics.summ, align = "lcccccc", booktabs=T, linesep="",
 
 ```{r message=FALSE, warning=FALSE, echo= F}
 # draw plots to visually compare modes
-# dotplot(resamples(dat$model_list))
 plot(sne_models$ensemble, main="Performance of individual models versus the Ensemble model")
-# plot(varImp(dat$model_list$svmRadial, scale = FALSE), main ="Figure: Variable of Importance by the SVM Radial model")
+# plot(varImp(sne_models$model_list$svmRadial, scale = FALSE), main ="Figure: Variable of Importance by the SVM Radial model")
 ```
 
 
@@ -683,7 +682,7 @@ plot(sne_models$ensemble, main="Performance of individual models versus the Ense
 # rank_pred(sne_models$model_list$svmRadial)
 plot(varImp(sne_models$model_list$svmRadial, scale=F),
      main="Variable Importance by the SVM Radial Model")
-# rank_pred_by_ensemb(dat$ensemble, 20)
+# rank_pred_by_ensemb(sne_models$ensemble, 20)
 
 # The ensemble model performed poorly, so we used the MARS model and the SVM Radial models to
 # search for the significant predictors/determinants of housing insecurity.
@@ -695,15 +694,15 @@ plot(varImp(sne_models$model_list$svmRadial, scale=F),
 
 In this section, we report results for modeling food insecurity in terms response variables based on survey questions as described below:
 
-* **Food Insecurity I**: "The food that I bought just didn't last, and I didn't have money to get more." Was that often, sometimes, or never true for you in the last 12 months?  
+* **Food Insecurity I**: "The food that I bought just didn't last, and I didn't have money to get more." Was that often, sometimes, or never true for you in the last 12 months? (FI_q26).
 
-* **Food Insecurity II**: "I couldn't afford to eat balanced meals." Was that often, sometimes, or never true for you in the last 12 months?
+* **Food Insecurity II**: "I couldn't afford to eat balanced meals." Was that often, sometimes, or never true for you in the last 12 months? (FI_q27).
 
-* **Food Insecurity III**: In the last 12 months, since (today's date), did you ever cut the size of your meals or skip meals because there was not enough money for food? 
+* **Food Insecurity III**: In the last 12 months, since (today's date), did you ever cut the size of your meals or skip meals because there was not enough money for food? (FI_q28).
 
-* **Food Insecurity IV**: In the last 12 months, did you ever eat less than you felt you should because there was not enough money for food?
+<!-- * **Food Insecurity IV**: In the last 12 months, did you ever eat less than you felt you should because there was not enough money for food? -->
 
-* **Food Insecurity V**: In the past 12 months, were you ever hungry but didn't eat because there wasn't enough money for food?
+* **Food Insecurity IV**: In the past 12 months, were you ever hungry but didn't eat because there wasn't enough money for food? (FI_q31).
 
 Though Food Insecurity I and II originally had three levels (Often true, Sometimes true, and Never true), we modeled them as dichotomous responses where the "Often true" and "Sometimes true" levels were put in a "Yes" group as a sign of food insecurity, while the "Never true" level was classified as a "No" group for respondents not at the risk of food insecurity.
 
@@ -711,7 +710,7 @@ Though Food Insecurity I and II originally had three levels (Often true, Sometim
 #### Results for Food Insecurity Response I
 
 ```{r message=FALSE, warning=FALSE, echo= F}
-# dat <- modeling("FI_q26")
+# FI_q26_models <- modeling("FI_q26")
 
 eval_table(FI_q26_models$model_list,"FI_q26",FI_q26_models$test,"Food Insecurity I")
 
@@ -720,21 +719,21 @@ eval_table(FI_q26_models$model_list,"FI_q26",FI_q26_models$test,"Food Insecurity
 
 ```{r message=FALSE, warning=FALSE, echo= F}
 plot(FI_q26_models$ensemble, main="Performance of individual models versus the Ensemble model")
-# draw plots to visually compare modes
-# dotplot(resamples(dat$model_list))
+
 ```
 
 
 
 ```{r message=FALSE, warning=FALSE, echo= F}
-# rank_pred_by_ensemb(dat$ensemble, 20) + 
+# create plots to visually compare modes
+# rank_pred_by_ensemb(FI_q26_models$ensemble, 20) 
   rank_pred(FI_q26_models$model_list$glm, 20)
 ```
 
 #### Results for Food Insecurity Response II
 
 ```{r message=FALSE, warning=FALSE, echo= F}
-# dat <- modeling("FI_q27")
+# FI_q27_models <- modeling("FI_q27")
 
 eval_table(FI_q27_models$model_list,"FI_q27",FI_q27_models$test, "Food Insecurity II")
 ```
@@ -742,23 +741,22 @@ eval_table(FI_q27_models$model_list,"FI_q27",FI_q27_models$test, "Food Insecurit
 
 ```{r message=FALSE, warning=FALSE, echo= F}
 # draw plots to visually compare modes
-# dotplot(resamples(dat$model_list))
 plot(FI_q27_models$ensemble, main="Performance of individual models versus the Ensemble model")
 
-# plot(varImp(dat$model_list$lda, scale = FALSE), main ="Figure: Variable of Importance by the LDA model")
+# plot(varImp(FI_q27_models$model_list$lda, scale = FALSE), main ="Figure: Variable of Importance by the LDA model")
 ```
 
 
 
 ```{r message=FALSE, warning=FALSE, echo= F}
-# rank_pred_by_ensemb(dat$ensemble, 20) + 
+# rank_pred_by_ensemb(FI_q27_models$ensemble, 20) + 
   rank_pred(FI_q27_models$model_list$earth, mod_label = "MARS")
 ```
 
 #### Results for Food Insecurity Response III
 
 ```{r message=FALSE, warning=FALSE, echo= F}
-# dat <- modeling("FI_q28")
+# FI_q28_models <- modeling("FI_q28")
 
 eval_table(FI_q28_models$model_list, "FI_q28",FI_q28_models$test, "Food Insecurity III")
 ```
@@ -766,10 +764,9 @@ eval_table(FI_q28_models$model_list, "FI_q28",FI_q28_models$test, "Food Insecuri
 
 ```{r message=FALSE, warning=FALSE, echo= F}
 # draw plots to visually compare modes
-# dotplot(resamples(dat$model_list))
 plot(FI_q28_models$ensemble, main="Performance of individual models versus the Ensemble model")
 
-# Var <- varImp(dat$model_list$svmRadial, scale = FALSE)
+# Var <- varImp(FI_q26_models$model_list$svmRadial, scale = FALSE)
 # plot(Var, main ="Figure: Variable of Importance by the SVM Radial model")
 ```
 
@@ -779,10 +776,10 @@ rank_pred_by_ensemb(FI_q28_models$ensemble, 20)
 ```
 
 
-#### Results for Food Insecurity Response IV
+<!-- #### Results for Food Insecurity Response IV -->
 
 ```{r message=FALSE, warning=FALSE, echo= F, eval=F}
-# dat <- modeling("FI_q30")
+# FI_q30_models <- modeling("FI_q30")
 
 eval_table(FI_q30_models$model_list, "FI_q30",FI_q30_models$test, "Food Insecurity IV")
 
@@ -795,11 +792,11 @@ rank_pred_by_ensemb(FI_q30_models$ensemble, 20)
 ```
 
 
-#### Results for Food Insecurity Response V
+#### Results for Food Insecurity Response IV
 
 ```{r message=FALSE, warning=FALSE, echo= F, eval=F}
 
-# dat <- modeling("FI_q31")
+# FI_q31_models <- modeling("FI_q31")
 
 eval_table(FI_q31_models$model_list, "FI_q31",FI_q31_models$test, "Food Insecurity V")
 ```

@@ -60,7 +60,7 @@ modeling <- function(response, models=NULL, kfolds=5)
   #------ Model building -----------
   
   # register clusters for parallel model fitting with the doparallel package
-  registerDoParallel(6)
+  registerDoParallel(cores = detectCores())
   getDoParWorkers()
   set.seed(100)
   
@@ -99,7 +99,8 @@ modeling <- function(response, models=NULL, kfolds=5)
   #--- Create an Ensemble model from all the models ----
   # This ensemble code sometimes leads to this error for some of the responses:
   # "Error in check_bestpreds_resamples(modelLibrary) : Component models do not 
-  # have the same re-sampling strategies"
+  # have the same re-sampling strategies".
+  # Some investigations revealed svmRadial to be the cause.
   ensemble <- caretEnsemble(model_list,
                             metric = "ROC",
                             trControl = trctrl)

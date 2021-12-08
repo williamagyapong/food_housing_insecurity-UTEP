@@ -3,8 +3,8 @@
 library(dplyr)
 
 # Importing the original survey data
-file_path <- dirname(rstudioapi::getSourceEditorContext()$path)
-FIHI <- read.csv(paste0(file_path, .Platform$file.sep, "datcsv.csv"))
+dir_path <- dirname(rstudioapi::getSourceEditorContext()$path)
+FIHI <- read.csv(paste0(dir_path, .Platform$file.sep, "datcsv.csv"))
 
 
 #=========================================================
@@ -219,6 +219,7 @@ FIHI_sub3 <- FIHI_sub2 %>%
     )
 
 ##------------- Cleaning data further for modeling  ---------------------
+# Make distorted levels after collapsing consecutive.
 FIHI_sub2 <- FIHI_sub2 %>%
   mutate(q6 = factor(q6, levels = c(1,3,4,6,8),  labels = 1:5),
          q9 = factor(q9, levels = c(1:5,12,13,11), labels = 1:8),
