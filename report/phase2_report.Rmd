@@ -590,14 +590,14 @@ Here, we modeled housing insecurity as a response based on whether or not a resp
 # 
 source("modeling_functions.R") 
 
-load("trained_models.RData") # import already trained models
+#load("trained_models.RData") # import already trained models
 ```
 
 #### Results for Permanent Address
+\newline 
 
 ```{r message=FALSE, warning=FALSE, echo= F}
-
-# pa_models <- modeling("permanent_address")
+pa_models <- modeling("permanent_address")
 
 eval_table(pa_models$model_list, "permanent_address",
            pa_models$test,
@@ -605,6 +605,8 @@ eval_table(pa_models$model_list, "permanent_address",
 
 ```
 
+Based on the table values our best initial models are SVM Radial and the MARS (earth) model from the permanent housing address response.
+\
 
 ```{r message=FALSE, warning=FALSE, echo= F}
 
@@ -614,20 +616,27 @@ plot(pa_models$ensemble, main="Performance of individual models versus the Ensem
 # plot(varImp(pa_models$model_list$earth, scale = FALSE), main ="Figure: Variable Importance by the MARS model")
 
 ```
+\
+The ensemble model came up with the MARS (earth) model as the best performing model given its line of reference. Therefore, we confidently conclude that the MARS model which appeared at both our necessary and sufficient measure for selection criteria is the model predictive model for modeling the housing insecurity permanent address.
+\
 
-
+```{r message=FALSE, warning=FALSE, echo= F}
+plot(varImp(pa_models$model_list$svmRadial, main ="Performance of the  SVM Model"))
+```
 
 ```{r message=FALSE, warning=FALSE, echo= F}
 rank_pred_by_ensemb(pa_models$ensemble, 20)
-# rank_pred(pa_models$model_list$earth, 20) # MARS is the best according to the ROC
+#rank_pred(pa_models$model_list$glm, 20, "MARS") # MARS is the best according to the ROC
 
 ```
-
+\
+Our initial preferred model based on the evaluation metrics been SVM Radial would have total income, residence, transport reliability, household head, and living alone are the top five variables that accurately predicts the housing insecurity, with employment, federal aid, gender, and dependents been least of importance. However our final model by the ensemble method which is the MARS model also had same variables of most importance as that of the SVM radial. However this MARS model plot further classifies the important variable residence2 , transport reliability and college_school2 as subgroups of importance.
+\
 
 #### Results for Spending the night elsewhere
-
+\newline
 ```{r message=FALSE, warning=FALSE, echo= F}
-# sne_models <- modeling("spent_night_elsewhere", c("earth","glm","knn","svmLinear","svmRadial"))
+ sne_models <- modeling("spent_night_elsewhere", c("earth","glm","knn","svmLinear","svmRadial"))
 
 # Display a table of performance metrics
 # eval_table(sne_models$model_list, "spent_night_elsewhere",sne_models$test, "Spent Night Elsewhere")
@@ -669,26 +678,36 @@ kable(metrics.summ, align = "lcccccc", booktabs=T, linesep="",
   kable_paper("hover", full_width = F)%>% 
   kable_styling(font_size = 12, latex_options = c("HOLD_position"))
 ```
-
+\
+Taking spending the night elsewhere, our initial best model is the MARS (earth) model given the table values, that is MARS model has the least misclassification, higher accuracy, higher fbeta, and higher AUC. However we add SVM radial to our best model since its comes next to the MARS model for example that AUC and fbeta.
+\
 
 ```{r message=FALSE, warning=FALSE, echo= F}
 # draw plots to visually compare modes
 plot(sne_models$ensemble, main="Performance of individual models versus the Ensemble model")
 # plot(varImp(sne_models$model_list$svmRadial, scale = FALSE), main ="Figure: Variable of Importance by the SVM Radial model")
 ```
+\
+According to the ensemble modeling, the SVM Radial is the best given the reference line. Hence the SVM Radial becomes our best model given spending the night elsewhere as the response variable.
+\
 
+```{r, message=FALSE, warning=FALSE, echo= F}
+ rank_pred_by_ensemb(sne_models$ensemble, 20)
+```
 
 ```{r message=FALSE, warning=FALSE, echo= F}
 # rank_pred(sne_models$model_list$svmRadial)
-plot(varImp(sne_models$model_list$svmRadial, scale=F),
-     main="Variable Importance by the SVM Radial Model")
+plot(varImp(sne_models$model_list$earth, scale=F),
+     main="Variable Importance by the SVM Radial Model with subgroups")
 # rank_pred_by_ensemb(sne_models$ensemble, 20)
 
 # The ensemble model performed poorly, so we used the MARS model and the SVM Radial models to
 # search for the significant predictors/determinants of housing insecurity.
 
 ```
-
+\
+According to our variable of an important plot from the best model (SVM radial), the top 5 variables that determine housing insecurity are transport reliability, college, known homeless students, academic level, and household head. Also know homeless student2, residence2, transport reliability 4, college school6 and ethnicity2 are the subgroups of importance. 
+\
 
 ### Modeling Food Insecurity
 
@@ -708,36 +727,55 @@ Though Food Insecurity I and II originally had three levels (Often true, Sometim
 
 
 #### Results for Food Insecurity Response I
+\newline
 
 ```{r message=FALSE, warning=FALSE, echo= F}
-# FI_q26_models <- modeling("FI_q26")
+FI_q26_models <- modeling("FI_q26")
 
 eval_table(FI_q26_models$model_list,"FI_q26",FI_q26_models$test,"Food Insecurity I")
 
 ```
 
+Based on the table values and the evaluation metric criteria, with the exception of knn model , all the others are preferred as our initial best models.
+\
 
 ```{r message=FALSE, warning=FALSE, echo= F}
 plot(FI_q26_models$ensemble, main="Performance of individual models versus the Ensemble model")
 
 ```
+\
+From the ensemble model, both glm and LDA are considered the best model for predicting food insecurity response 1, however, we decide on logistics regression as our best model.
+\
 
-
+```{r message=FALSE, warning=FALSE, echo= F}
+rank_pred_by_ensemb(FI_q26_models$ensemble, 20)
+```
+\
+Using glm as our best model the variable of importance or factor that predict food insecurity 1 as response are total income, transport reliability, know homeless student, household head and dependents. 
+\
 
 ```{r message=FALSE, warning=FALSE, echo= F}
 # create plots to visually compare modes
 # rank_pred_by_ensemb(FI_q26_models$ensemble, 20) 
-  rank_pred(FI_q26_models$model_list$glm, 20)
+rank_pred(FI_q26_models$model_list$glm, 20)
+
+
 ```
+\
+Given the plot above, the top 5 subgroups are total income8, know homeless student 2, total income 7, residence2, and ethnicity3.
+\
 
 #### Results for Food Insecurity Response II
+\newline
 
 ```{r message=FALSE, warning=FALSE, echo= F}
-# FI_q27_models <- modeling("FI_q27")
+ FI_q27_models <- modeling("FI_q27")
 
 eval_table(FI_q27_models$model_list,"FI_q27",FI_q27_models$test, "Food Insecurity II")
 ```
-
+\
+Modeling food insecurity 2 as response, the best initial models are all models apart from the knn model.
+\
 
 ```{r message=FALSE, warning=FALSE, echo= F}
 # draw plots to visually compare modes
@@ -745,22 +783,37 @@ plot(FI_q27_models$ensemble, main="Performance of individual models versus the E
 
 # plot(varImp(FI_q27_models$model_list$lda, scale = FALSE), main ="Figure: Variable of Importance by the LDA model")
 ```
-
-
+\
+The best model from the ensemble model is the LDA, however, the SVM Radial can as well the best model given that it is closer to the line of reference as indicated from the plot above.
+\
 
 ```{r message=FALSE, warning=FALSE, echo= F}
-# rank_pred_by_ensemb(FI_q27_models$ensemble, 20) + 
-  rank_pred(FI_q27_models$model_list$earth, mod_label = "MARS")
+rank_pred_by_ensemb(FI_q27_models$ensemble, 20) 
 ```
+\
+The plot above indicates that treating food insecurity 2 as a response through the LDA model by ensemble model, the 5 most important factors are total income, transport reliability, know homeless student, household head, and employment.
+\
+
+```{r message=FALSE, warning=FALSE, echo= F}
+ # rank_pred_by_ensemb(FI_q27_models$ensemble, 20) + 
+  rank_pred(FI_q27_models$model_list$earth, mod_label = "lda")
+```
+\
+Given the plot above, the top 5 subgroups are transport reliability4, know homeless student2, total income8, federal student aid5, and residence2.
+\
+
 
 #### Results for Food Insecurity Response III
+\newline
 
 ```{r message=FALSE, warning=FALSE, echo= F}
-# FI_q28_models <- modeling("FI_q28")
+FI_q28_models <- modeling("FI_q28")
 
 eval_table(FI_q28_models$model_list, "FI_q28",FI_q28_models$test, "Food Insecurity III")
 ```
-
+\
+Given the table values of evaluation metric criteria, our initial best models are all but knn and MARS.
+\
 
 ```{r message=FALSE, warning=FALSE, echo= F}
 # draw plots to visually compare modes
@@ -769,60 +822,96 @@ plot(FI_q28_models$ensemble, main="Performance of individual models versus the E
 # Var <- varImp(FI_q26_models$model_list$svmRadial, scale = FALSE)
 # plot(Var, main ="Figure: Variable of Importance by the SVM Radial model")
 ```
+\
+The final best model through the ensemble method is the SVM Radial for the food insecurity 3.
+\
 
-```{r}
+```{r message=FALSE, warning=FALSE, echo= F}
 rank_pred_by_ensemb(FI_q28_models$ensemble, 20) 
 # rank_pred(FI_q28_models$model_list$glm, 20)
 ```
+\
+The plot above indicates that treating food insecurity 3 as a response through the SVM Radial model by ensemble model, the 5 most important factors are total income, transport reliability, know homeless student, household head, and depedents.
+\
 
+```{r message=FALSE, warning=FALSE, echo= F}
+ rank_pred(FI_q28_models$model_list$glm,10, mod_label = "svmRadial")
+```
+\
+Given the plot above for food insecurity 3, the top 5 subgroups are know homeless student2, total income8, total income7, academic level3, and residence2.
 
 <!-- #### Results for Food Insecurity Response IV -->
 
-```{r message=FALSE, warning=FALSE, echo= F, eval=F}
-# FI_q30_models <- modeling("FI_q30")
+<!-- ```{r message=FALSE, warning=FALSE, echo= F, eval=F} -->
+<!-- # FI_q30_models <- modeling("FI_q30") -->
 
-eval_table(FI_q30_models$model_list, "FI_q30",FI_q30_models$test, "Food Insecurity IV")
+<!-- eval_table(FI_q30_models$model_list, "FI_q30",FI_q30_models$test, "Food Insecurity IV") -->
 
-# draw plots to visually compare modes
-# dotplot(resamples(dat$model_list))
-plot(FI_q30_models$ensemble, main="Performance of individual models versus the Ensemble model")
+<!-- # draw plots to visually compare modes -->
+<!-- # dotplot(resamples(dat$model_list)) -->
+<!-- plot(FI_q30_models$ensemble, main="Performance of individual models versus the Ensemble model") -->
 
-rank_pred_by_ensemb(FI_q30_models$ensemble, 20) 
-# rank_pred(FI_q30_models$model_list$glm, 20)
-```
+<!-- rank_pred_by_ensemb(FI_q30_models$ensemble, 20)  -->
+<!-- # rank_pred(FI_q30_models$model_list$glm, 20) -->
+<!-- ``` -->
 
+#### Results for Food Insecurity Response IV 
+\newline
 
-#### Results for Food Insecurity Response IV
+```{r message=FALSE, warning=FALSE, echo= F}
 
-```{r message=FALSE, warning=FALSE, echo= F, eval=F}
-
-# FI_q31_models <- modeling("FI_q31")
+FI_q31_models <- modeling("FI_q31")
 
 eval_table(FI_q31_models$model_list, "FI_q31",FI_q31_models$test, "Food Insecurity V")
 ```
-
+\
+Our best models according the evaluation metrics criteria are glm and SVM Radial for food insecurity response 4.
+\
 
 ```{r message=FALSE, warning=FALSE, echo= F}
 # draw plots to visually compare modes
 # dotplot(resamples(dat$model_list), metric = c("ROC", "Sens", "Spec"))
 plot(FI_q31_models$ensemble, main="Performance of individual models versus the Ensemble model")
 ```
-
-
+\
+Now according to the ensemble method, both initial best models are best for predicting the response variable, however, we decided on the glm model as per the ensemble model.
+\
 
 ```{r message=FALSE, warning=FALSE, echo= F}
 rank_pred_by_ensemb(FI_q31_models$ensemble, 20)
 # rank_pred(FI_q31_models$model_list$glm, 20)
 ```
+\
+The plot above indicates that treating food insecurity 4 as a response through the glm model by ensemble model, the 5 most important factors are total income, transport reliability, know homeless student, household head, and dependents.
+\
+
+```{r message=FALSE, warning=FALSE, echo= F}
+rank_pred(FI_q31_models$model_list$glm,10, mod_label = "glm")
+
+```
+\
+Given the plot above for food insecurity 3, the top 10 subgroups involves known homeless student2, total income (2,3 - 8), dependents4 and federal student aid5.
+
 
 # Discussion
 
-Base on our table of results, the best model is selected based on the performance metrics accuracy, misclassification, and fbeta. That is a model with the least misclassification, higher accuracy, and an fbeta score approaching one. Considering the results from the housing insecurity models, the SVM with the radial basis kernel has the highest f$\beta$ value and the least misclassification rate, followed by the linear discriminate analysis. Hence the support vector machine through the radial basis function is chosen as our best model. The variables are highly associated with predicting housing insecurity as displayed by the graph of the variable of important shows that total income, residence, and transportation reliability been the top variables with federal aid, gender, and weekly work hours being least of importance. However if a cutoff of say 50% is employed the best or associated variables will be the top three variables together with the head of household, living alone, and spending the night elsewhere. 
-
-Furthermore, we observed that SVM performs better with the least misclafficattion rate, the highest accuracy, and f$\beta$ value of best performance, respectively for the food insecurity. This is associated with the response Food insecurity 1. Assuming a cut off point of 50%, we can infer from the variable importance plot that, total income,  transport reliability and household are the top variables which are associated or predicts the response variable.
+Our initial preferred model or models are selected based on the evaluation metrics accuracy, misclassification, and fbeta, and the area under the curve (AUC) from each response variable table obtained. That is, a model with the least misclassification, higher accuracy, an fbeta score approaching one, and a higher AUC. However, our initial preferred model or models are may or may not be sufficient enough to make a predictive decision because they may involve irregularities. As an improvement to phase one of our modelings, we employed post hoc predictive modeling to ascertain the initial preferred models. Specifically, we employed the ensemble analysis model to train our obtained several related but different analytical models (SVM, LDA,  etc..) and then synthesized the results into a single score or spread in order to improve the accuracy of prediction. We made use of this idea of the ensemble method because a single model based on a data sample can have biases, high variability, or outright inaccuracies that affect the reliability of its analytical findings. By combining these different models we can reduce the effects of those limitations and provide better predictive information from the Learning model. After the best predictive modelings are chosen a plot of variables of importance are obtained to determine which variables are of the essence in predicting a given response variable, and also to answer the research question of which subgroup are at risk of a given food and house insecurity response. 
 
 
-Also, we can observe that, support vector machine comes with the lowest misclaffication rate, the highest accuracy, and the best f$\beta$ value closest to 1. This shows that, SVM performs better considering response variables: Food insecurity 2 and 3. Considering a cut of 50%, we can conclude from the variable importance plot that total income, transport reliability and known homelessnes student show the strongest associated with food insecurity 2 and 3. 
+<!-- Base on the few variables selected say 10 from the plot it clearly indicates that residence off campus with family, college of education and very reliable transportation are of higher risk of been housing insecure. That is to say someone living with family off campus from the college of education with a very reliable transposition as some point will be of higher risk of housing insecure. -->
+
+
+
+<!-- Considering the results from the housing insecurity models, the SVM with the radial basis kernel has the highest f$\beta$ value and the least misclassification rate, followed by the linear discriminate analysis. Hence the support vector machine through the radial basis function is chosen as our best model. The variables are highly associated with predicting housing insecurity as displayed by the graph of the variable of important shows that total income, residence, and transportation reliability been the top variables with federal aid, gender, and weekly work hours being least of importance. However if a cutoff of say 50% is employed the best or associated variables will be the top three variables together with the head of household, living alone, and spending the night elsewhere.  -->
+
+<!-- Furthermore, we observed that SVM performs better with the least misclafficattion rate, the highest accuracy, and f$\beta$ value of best performance, respectively for the food insecurity. This is associated with the response Food insecurity 1. Assuming a cut off point of 50%, we can infer from the variable importance plot that, total income,  transport reliability and household are the top variables which are associated or predicts the response variable. -->
+
+
+<!-- Also, we can observe that, support vector machine comes with the lowest misclaffication rate, the highest accuracy, and the best f$\beta$ value closest to 1. This shows that, SVM performs better considering response variables: Food insecurity 2 and 3. Considering a cut of 50%, we can conclude from the variable importance plot that total income, transport reliability and known homelessnes student show the strongest associated with food insecurity 2 and 3.  -->
+
+
+
+
 
 <!--Base on our table of results the best model is selected based on the performance metrics accuracy, misclassification, and fbeta. That is a model with the least misclassification, higher accuracy, and an fbeta score approaching one. Considering the results from the housing insecurity models, the SVM with the radial basis kernel has the highest f$\beta$ of 96% and the least misclassification rate of 0.4%, followed by the linear discriminate analysis with f$\beta$ 72% and misclassification of 3%. Hence the support vector machine through the radial basis function is chosen as our best model. The variables are highly associated with predicting housing insecurity as displayed by the graph of the variable of important shows that total income, residence, and transportation reliability been the top variables with federal aid, gender, and weekly work hours being least of importance. However if a cutoff of say 50% is employed the best or associated variables will be the top three variables together with the head of household, living alone, and spending the night elsewhere. 
 

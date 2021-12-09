@@ -1,15 +1,15 @@
 % Options for packages loaded elsewhere
 \PassOptionsToPackage{unicode}{hyperref}
 \PassOptionsToPackage{hyphens}{url}
-\PassOptionsToPackage{dvipsnames,svgnames*,x11names*}{xcolor}
+\PassOptionsToPackage{dvipsnames,svgnames,x11names}{xcolor}
 %
 \documentclass[
   10pt,
 ]{article}
+\usepackage{amsmath,amssymb}
 \usepackage{lmodern}
-\usepackage{amssymb,amsmath}
-\usepackage{ifxetex,ifluatex}
-\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+\usepackage{iftex}
+\ifPDFTeX
   \usepackage[T1]{fontenc}
   \usepackage[utf8]{inputenc}
   \usepackage{textcomp} % provide euro and other symbols
@@ -41,14 +41,15 @@
   pdftitle={Modeling Food and Housing Insecurity at UTEP},
   pdfauthor={George E. Quaye; John Koomson; Willliam O. Agyapong},
   colorlinks=true,
-  linkcolor=blue,
-  filecolor=Maroon,
-  citecolor=Blue,
-  urlcolor=Blue,
+  linkcolor={blue},
+  filecolor={Maroon},
+  citecolor={Blue},
+  urlcolor={Blue},
   pdfcreator={LaTeX via pandoc}}
 \urlstyle{same} % disable monospaced font for URLs
 \usepackage[margin = 0.8in]{geometry}
-\usepackage{longtable,booktabs}
+\usepackage{longtable,booktabs,array}
+\usepackage{calc} % for calculating minipage widths
 % Correct order of tables after \paragraph or \subparagraph
 \usepackage{etoolbox}
 \makeatletter
@@ -57,7 +58,7 @@
 % Allow footnotes in longtable head/foot
 \IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
 \makesavenoteenv{longtable}
-\usepackage{graphicx,grffile}
+\usepackage{graphicx}
 \makeatletter
 \def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
 \def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
@@ -74,6 +75,29 @@
 \providecommand{\tightlist}{%
   \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
 \setcounter{secnumdepth}{5}
+\newlength{\cslhangindent}
+\setlength{\cslhangindent}{1.5em}
+\newlength{\csllabelwidth}
+\setlength{\csllabelwidth}{3em}
+\newlength{\cslentryspacingunit} % times entry-spacing
+\setlength{\cslentryspacingunit}{\parskip}
+\newenvironment{CSLReferences}[2] % #1 hanging-ident, #2 entry spacing
+ {% don't indent paragraphs
+  \setlength{\parindent}{0pt}
+  % turn on hanging indent if param 1 is 1
+  \ifodd #1
+  \let\oldpar\par
+  \def\par{\hangindent=\cslhangindent\oldpar}
+  \fi
+  % set entry spacing
+  \setlength{\parskip}{#2\cslentryspacingunit}
+ }%
+ {}
+\usepackage{calc}
+\newcommand{\CSLBlock}[1]{#1\hfill\break}
+\newcommand{\CSLLeftMargin}[1]{\parbox[t]{\csllabelwidth}{#1}}
+\newcommand{\CSLRightInline}[1]{\parbox[t]{\linewidth - \csllabelwidth}{#1}\break}
+\newcommand{\CSLIndent}[1]{\hspace{\cslhangindent}#1}
 \usepackage{float}
 \usepackage{setspace}
 \doublespacing
@@ -104,6 +128,9 @@
 \usepackage[normalem]{ulem}
 \usepackage{makecell}
 \usepackage{xcolor}
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
 
 \title{Modeling Food and Housing Insecurity at UTEP}
 \usepackage{etoolbox}
@@ -273,7 +300,7 @@ non-parametric methods. Unlike the Logistic Regression, no assumptions are made 
 \hypertarget{classification-trees}{%
 \paragraph{Classification Trees}\label{classification-trees}}
 
-According to (James et al., \protect\hyperlink{ref-james2013introduction}{2013}), for a classification tree, we predict that each observation belongs to the most commonly occurring class of training observations in the region to which it belongs. In interpreting the results of a classification tree, we are often interested not only in the class prediction corresponding to a particular terminal node region, but also in the class proportions among the training observations that fall into that region. A recursive binary splitting is used to grow a classification tree. Classification trees are often preferred to other classifiers for the following reasons. One thing, they are non-linear classifiers which do not require the data to be linearly separable. Two, they are easy to read and very easy to explain to people. After a model is generated, it's easy to report back to others regarding how the tree works. Moreover, trees can be displayed graphically, and are easily interpreted even bya non-expert (especially if they are small). Also, decision trees can easily handle qualitative predictors. However, trees can be very non-robust. In other words, a small change in the data can cause a large change in the final estimated tree. For this reason, we will use tree models that help circumvent this challenge and greatly improves the predictive performance by aggregating many decision trees. Such tree models include Random Forest, Boosting, and Bagging.
+According to (\protect\hyperlink{ref-james2013introduction}{James et al., 2013}), for a classification tree, we predict that each observation belongs to the most commonly occurring class of training observations in the region to which it belongs. In interpreting the results of a classification tree, we are often interested not only in the class prediction corresponding to a particular terminal node region, but also in the class proportions among the training observations that fall into that region. A recursive binary splitting is used to grow a classification tree. Classification trees are often preferred to other classifiers for the following reasons. One thing, they are non-linear classifiers which do not require the data to be linearly separable. Two, they are easy to read and very easy to explain to people. After a model is generated, it's easy to report back to others regarding how the tree works. Moreover, trees can be displayed graphically, and are easily interpreted even bya non-expert (especially if they are small). Also, decision trees can easily handle qualitative predictors. However, trees can be very non-robust. In other words, a small change in the data can cause a large change in the final estimated tree. For this reason, we will use tree models that help circumvent this challenge and greatly improves the predictive performance by aggregating many decision trees. Such tree models include Random Forest, Boosting, and Bagging.
 
 \paragraph{Random forest}
 
@@ -282,7 +309,7 @@ The random forest is a great predictive model for high dimensional data, and we 
 \hypertarget{support-vector-machines-svm}{%
 \paragraph{\texorpdfstring{Support Vector Machines (SVM) }{Support Vector Machines (SVM)  }}\label{support-vector-machines-svm}}
 
-Support Vector Machines; SVM is a great classification machine learning model for classifying data of clear classes. Also does not require a predetermined cutoff point for prediction. Given a set of training examples, each marked as belonging to one of two categories, an SVM training algorithm builds a model that assigns new examples to one category or the other, making it a non-probabilistic binary linear classifier (although methods such as Platt scaling exist to use SVM in a probabilistic classification setting). SVM maps training examples to points in space so as to maximize the width of the gap between the two categories. New examples are then mapped into that same space and predicted to belong to a category based on which side of the gap they fall (Wikipedia, \protect\hyperlink{ref-wikipedia}{2021}).
+Support Vector Machines; SVM is a great classification machine learning model for classifying data of clear classes. Also does not require a predetermined cutoff point for prediction. Given a set of training examples, each marked as belonging to one of two categories, an SVM training algorithm builds a model that assigns new examples to one category or the other, making it a non-probabilistic binary linear classifier (although methods such as Platt scaling exist to use SVM in a probabilistic classification setting). SVM maps training examples to points in space so as to maximize the width of the gap between the two categories. New examples are then mapped into that same space and predicted to belong to a category based on which side of the gap they fall (\protect\hyperlink{ref-wikipedia}{Wikipedia, 2021}).
 We will consider using this classification model because it is versatile and effective in high dimensional spaces. They are versatile in the sense that different Kernel functions can be specified for the decision function. Common kernels include polynomial kernels and radial kernels. Support vector classifiers are also able to address the problem of possibly non-linear boundaries between classes. We will try at least three kernel SVM for this analysis noticeably, the Linear SVM and two Non-Linear kernels SVM such as the Gaussian radial basis function (RBF) and Polynomial kernel SVM through packages such as caret and kernlab.
 
 \hypertarget{naive-bayes-classifier}{%
@@ -334,7 +361,7 @@ Precision is a metric that quantifies the number of correct positive predictions
 
 \textbf{Recall}
 
-Recall is a metric that quantifies the number of correct positive predictions made out of all positive predictions that could have been made. The intuition for recall is that it is not concerned with false positives and it minimizes false negatives (Machine Learning Mastery, \protect\hyperlink{ref-MLM}{2021}). It is calculated as
+Recall is a metric that quantifies the number of correct positive predictions made out of all positive predictions that could have been made. The intuition for recall is that it is not concerned with false positives and it minimizes false negatives (\protect\hyperlink{ref-MLM}{Machine Learning Mastery, 2021}). It is calculated as
 
 \[
 \text{Recall} = \frac{\text{True Positives}}{\text{True Positives} + \text{True Negatives}} = \frac{TP}{TP + NP}
@@ -344,13 +371,13 @@ Recall is a metric that quantifies the number of correct positive predictions ma
 \subsubsection{Area Under the Receiver Operator Curve (AUROC)}\label{area-under-the-receiver-operator-curve-auroc}}
 
 The AUROC curve is a graphical illustration of the performance of the prediction model. The
-ROC curve is the relationship between the recall and precision over varying threshold values. The threshold is the positive predictions of the model. The AUROC curve is plotted by keeping the x-axis a false positive rate and the y-axis as a true positive rate. Its value ranges from 0 to 1 (Theerthagiri, Jeena Jacob, Usha Ruby, and Yendapalli, \protect\hyperlink{ref-theerthagiri2021prediction}{2021}).
+ROC curve is the relationship between the recall and precision over varying threshold values. The threshold is the positive predictions of the model. The AUROC curve is plotted by keeping the x-axis a false positive rate and the y-axis as a true positive rate. Its value ranges from 0 to 1 (\protect\hyperlink{ref-theerthagiri2021prediction}{Theerthagiri, Jeena Jacob, Usha Ruby, and Yendapalli, 2021}).
 
 \hypertarget{area-under-the-precision-recall-curve-auc-pr}{%
 \subsubsection{Area Under the Precision Recall Curve (AUC-PR)}\label{area-under-the-precision-recall-curve-auc-pr}}
 
 The area under the precision-recall curve (AUC-PR) is a model performance metric for binary responses that is appropriate for rare events and not dependent on model specificity. Precision-recall
-curves have also been recognized as useful for classification performance assessment for unbalanced binary responses in bioinformatics. Like AUC-ROC, AUC-PR is a threshold-independent metric that calculates the area under a curve, where the curve is defined by a trade-off between different aspects of performance as the threshold applied to the model's predictions varies. Both ROC and PR curves are functions of the confusion matrix (Sofaer, Hoeting, and Jarnevich, \protect\hyperlink{ref-sofaer2019area}{2019}).
+curves have also been recognized as useful for classification performance assessment for unbalanced binary responses in bioinformatics. Like AUC-ROC, AUC-PR is a threshold-independent metric that calculates the area under a curve, where the curve is defined by a trade-off between different aspects of performance as the threshold applied to the model's predictions varies. Both ROC and PR curves are functions of the confusion matrix (\protect\hyperlink{ref-sofaer2019area}{Sofaer, Hoeting, and Jarnevich, 2019}).
 
 \hypertarget{model-selection}{%
 \subsubsection{Model Selection}\label{model-selection}}
@@ -578,6 +605,8 @@ Here, we modeled housing insecurity as a response based on whether or not a resp
 \hypertarget{results-for-permanent-address}{%
 \paragraph{Results for Permanent Address}\label{results-for-permanent-address}}
 
+\newline
+
 \begin{table}[H]
 
 \caption{\label{tab:unnamed-chunk-9}Evaluation metrics for Permanent House Address  as a response variable}
@@ -589,7 +618,7 @@ Model & Misclassification Rate & Accuracy & Sensitivity & Specificity & fbeta & 
 \midrule
 Logistic & 0.24 & 0.76 & 0.77 & 0.53 & 0.86 & 0.7058\\
 LDA & 0.22 & 0.78 & 0.79 & 0.55 & 0.87 & 0.7149\\
-KNN & 0.37 & 0.63 & 0.64 & 0.57 & 0.77 & 0.637\\
+KNN & 0.37 & 0.63 & 0.64 & 0.55 & 0.77 & 0.637\\
 MARS & 0.2 & 0.8 & 0.82 & 0.48 & 0.89 & 0.7206\\
 SVM Linear & 0.22 & 0.78 & 0.79 & 0.51 & 0.87 & 0.7151\\
 SVM Radial & 0.17 & 0.83 & 0.85 & 0.45 & 0.91 & 0.7011\\
@@ -597,16 +626,27 @@ SVM Radial & 0.17 & 0.83 & 0.85 & 0.45 & 0.91 & 0.7011\\
 \end{tabular}
 \end{table}
 
+Based on the table values our best initial models are SVM Radial and the MARS (earth) model from the permanent housing address response.\\
+
 \begin{center}\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-10-1} \end{center}
 
+\hfill\break
+The ensemble model came up with the MARS (earth) model as the best performing model given its line of reference. Therefore, we confidently conclude that the MARS model which appeared at both our necessary and sufficient measure for selection criteria is the model predictive model for modeling the housing insecurity permanent address.\\
+
 \begin{center}\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-11-1} \end{center}
+
+\begin{center}\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-12-1} \end{center}
+
+\hfill\break
+Our initial preferred model based on the evaluation metrics been SVM Radial would have total income, residence, transport reliability, household head, and living alone are the top five variables that accurately predicts the housing insecurity, with employment, federal aid, gender, and dependents been least of importance. However our final model by the ensemble method which is the MARS model also had same variables of most importance as that of the SVM radial. However this MARS model plot further classifies the important variable residence2 , transport reliability and college\_school2 as subgroups of importance.\\
 
 \hypertarget{results-for-spending-the-night-elsewhere}{%
 \paragraph{Results for Spending the night elsewhere}\label{results-for-spending-the-night-elsewhere}}
 
+\newline
 \begin{table}[H]
 
-\caption{\label{tab:unnamed-chunk-12}Evaluation metrics for Spent Night Elsewhere  as a response variable}
+\caption{\label{tab:unnamed-chunk-13}Evaluation metrics for Spent Night Elsewhere  as a response variable}
 \centering
 \fontsize{12}{14}\selectfont
 \begin{tabular}[t]{lcccccc}
@@ -614,7 +654,7 @@ SVM Radial & 0.17 & 0.83 & 0.85 & 0.45 & 0.91 & 0.7011\\
 Model & Misclassification Rate & Accuracy & Sensitivity & Specificity & fbeta & AUC\\
 \midrule
 Logistic & 0.54 & 0.46 & 0.35 & 0.56 & 0.37 & 0.5216\\
-KNN & 0.45 & 0.55 & 0.49 & 0.6 & 0.49 & 0.5294\\
+KNN & 0.48 & 0.52 & 0.46 & 0.58 & 0.47 & 0.5294\\
 MARS & 0.45 & 0.55 & 0.65 & 0.47 & 0.56 & 0.5952\\
 SVM Linear & 0.54 & 0.46 & 0.51 & 0.42 & 0.46 & 0.5012\\
 SVM Radial & 0.51 & 0.49 & 0.54 & 0.44 & 0.49 & 0.5498\\
@@ -622,9 +662,20 @@ SVM Radial & 0.51 & 0.49 & 0.54 & 0.44 & 0.49 & 0.5498\\
 \end{tabular}
 \end{table}
 
-\begin{center}\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-13-1} \end{center}
+\hfill\break
+Taking spending the night elsewhere, our initial best model is the MARS (earth) model given the table values, that is MARS model has the least misclassification, higher accuracy, higher fbeta, and higher AUC. However we add SVM radial to our best model since its comes next to the MARS model for example that AUC and fbeta.\\
 
 \begin{center}\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-14-1} \end{center}
+
+\hfill\break
+According to the ensemble modeling, the SVM Radial is the best given the reference line. Hence the SVM Radial becomes our best model given spending the night elsewhere as the response variable.\\
+
+\begin{center}\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-15-1} \end{center}
+
+\begin{center}\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-16-1} \end{center}
+
+\hfill\break
+According to our variable of an important plot from the best model (SVM radial), the top 5 variables that determine housing insecurity are transport reliability, college, known homeless students, academic level, and household head. Also know homeless student2, residence2, transport reliability 4, college school6 and ethnicity2 are the subgroups of importance.\\
 
 \hypertarget{modeling-food-insecurity}{%
 \subsubsection{Modeling Food Insecurity}\label{modeling-food-insecurity}}
@@ -651,9 +702,11 @@ Though Food Insecurity I and II originally had three levels (Often true, Sometim
 \hypertarget{results-for-food-insecurity-response-i}{%
 \paragraph{Results for Food Insecurity Response I}\label{results-for-food-insecurity-response-i}}
 
+\newline
+
 \begin{table}[H]
 
-\caption{\label{tab:unnamed-chunk-15}Evaluation metrics for Food Insecurity I  as a response variable}
+\caption{\label{tab:unnamed-chunk-17}Evaluation metrics for Food Insecurity I  as a response variable}
 \centering
 \fontsize{12}{14}\selectfont
 \begin{tabular}[t]{lcccccc}
@@ -662,7 +715,7 @@ Model & Misclassification Rate & Accuracy & Sensitivity & Specificity & fbeta & 
 \midrule
 Logistic & 0.33 & 0.67 & 0.66 & 0.67 & 0.64 & 0.7342\\
 LDA & 0.34 & 0.66 & 0.65 & 0.67 & 0.63 & 0.7335\\
-KNN & 0.37 & 0.63 & 0.57 & 0.68 & 0.58 & 0.6747\\
+KNN & 0.37 & 0.63 & 0.57 & 0.67 & 0.58 & 0.6747\\
 MARS & 0.34 & 0.66 & 0.66 & 0.66 & 0.64 & 0.7319\\
 SVM Linear & 0.34 & 0.66 & 0.66 & 0.66 & 0.63 & 0.7314\\
 SVM Radial & 0.33 & 0.67 & 0.66 & 0.67 & 0.64 & 0.7322\\
@@ -670,16 +723,31 @@ SVM Radial & 0.33 & 0.67 & 0.66 & 0.67 & 0.64 & 0.7322\\
 \end{tabular}
 \end{table}
 
-\begin{center}\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-16-1} \end{center}
+Based on the table values and the evaluation metric criteria, with the exception of knn model , all the others are preferred as our initial best models.\\
 
-\begin{center}\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-17-1} \end{center}
+\begin{center}\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-18-1} \end{center}
+
+\hfill\break
+From the ensemble model, both glm and LDA are considered the best model for predicting food insecurity response 1, however, we decide on logistics regression as our best model.\\
+
+\begin{center}\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-19-1} \end{center}
+
+\hfill\break
+Using glm as our best model the variable of importance or factor that predict food insecurity 1 as response are total income, transport reliability, know homeless student, household head and dependents.\\
+
+\begin{center}\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-20-1} \end{center}
+
+\hfill\break
+Given the plot above, the top 5 subgroups are total income8, know homeless student 2, total income 7, residence2, and ethnicity3.\\
 
 \hypertarget{results-for-food-insecurity-response-ii}{%
 \paragraph{Results for Food Insecurity Response II}\label{results-for-food-insecurity-response-ii}}
 
+\newline
+
 \begin{table}[H]
 
-\caption{\label{tab:unnamed-chunk-18}Evaluation metrics for Food Insecurity II  as a response variable}
+\caption{\label{tab:unnamed-chunk-21}Evaluation metrics for Food Insecurity II  as a response variable}
 \centering
 \fontsize{12}{14}\selectfont
 \begin{tabular}[t]{lcccccc}
@@ -688,7 +756,7 @@ Model & Misclassification Rate & Accuracy & Sensitivity & Specificity & fbeta & 
 \midrule
 Logistic & 0.34 & 0.66 & 0.64 & 0.67 & 0.66 & 0.7123\\
 LDA & 0.34 & 0.66 & 0.65 & 0.67 & 0.66 & 0.7132\\
-KNN & 0.37 & 0.63 & 0.56 & 0.7 & 0.61 & 0.6689\\
+KNN & 0.37 & 0.63 & 0.56 & 0.7 & 0.6 & 0.6689\\
 MARS & 0.35 & 0.65 & 0.64 & 0.65 & 0.65 & 0.7078\\
 SVM Linear & 0.35 & 0.65 & 0.64 & 0.67 & 0.65 & 0.7116\\
 SVM Radial & 0.35 & 0.65 & 0.63 & 0.67 & 0.65 & 0.7113\\
@@ -696,16 +764,32 @@ SVM Radial & 0.35 & 0.65 & 0.63 & 0.67 & 0.65 & 0.7113\\
 \end{tabular}
 \end{table}
 
-\begin{center}\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-19-1} \end{center}
+\hfill\break
+Modeling food insecurity 2 as response, the best initial models are all models apart from the knn model.\\
 
-\begin{center}\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-20-1} \end{center}
+\begin{center}\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-22-1} \end{center}
+
+\hfill\break
+The best model from the ensemble model is the LDA, however, the SVM Radial can as well the best model given that it is closer to the line of reference as indicated from the plot above.\\
+
+\begin{center}\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-23-1} \end{center}
+
+\hfill\break
+The plot above indicates that treating food insecurity 2 as a response through the LDA model by ensemble model, the 5 most important factors are total income, transport reliability, know homeless student, household head, and employment.\\
+
+\begin{center}\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-24-1} \end{center}
+
+\hfill\break
+Given the plot above, the top 5 subgroups are transport reliability4, know homeless student2, total income8, federal student aid5, and residence2.\\
 
 \hypertarget{results-for-food-insecurity-response-iii}{%
 \paragraph{Results for Food Insecurity Response III}\label{results-for-food-insecurity-response-iii}}
 
+\newline
+
 \begin{table}[H]
 
-\caption{\label{tab:unnamed-chunk-21}Evaluation metrics for Food Insecurity III  as a response variable}
+\caption{\label{tab:unnamed-chunk-25}Evaluation metrics for Food Insecurity III  as a response variable}
 \centering
 \fontsize{12}{14}\selectfont
 \begin{tabular}[t]{lcccccc}
@@ -722,25 +806,70 @@ SVM Radial & 0.33 & 0.67 & 0.59 & 0.71 & 0.56 & 0.7033\\
 \end{tabular}
 \end{table}
 
-\begin{center}\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-22-1} \end{center}
+\hfill\break
+Given the table values of evaluation metric criteria, our initial best models are all but knn and MARS.\\
 
-\begin{center}\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-23-1} \end{center}
+\begin{center}\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-26-1} \end{center}
+
+\hfill\break
+The final best model through the ensemble method is the SVM Radial for the food insecurity 3.\\
+
+\begin{center}\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-27-1} \end{center}
+
+\hfill\break
+The plot above indicates that treating food insecurity 3 as a response through the SVM Radial model by ensemble model, the 5 most important factors are total income, transport reliability, know homeless student, household head, and depedents.\\
+
+\begin{center}\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-28-1} \end{center}
+
+\hfill\break
+Given the plot above for food insecurity 3, the top 5 subgroups are know homeless student2, total income8, total income7, academic level3, and residence2.
 
 \hypertarget{results-for-food-insecurity-response-iv}{%
 \paragraph{Results for Food Insecurity Response IV}\label{results-for-food-insecurity-response-iv}}
 
-\begin{center}\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-26-1} \end{center}
+\newline
 
-\begin{center}\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-27-1} \end{center}
+\begin{table}[H]
+
+\caption{\label{tab:unnamed-chunk-29}Evaluation metrics for Food Insecurity V  as a response variable}
+\centering
+\fontsize{12}{14}\selectfont
+\begin{tabular}[t]{lcccccc}
+\toprule
+Model & Misclassification Rate & Accuracy & Sensitivity & Specificity & fbeta & AUC\\
+\midrule
+Logistic & 0.31 & 0.69 & 0.65 & 0.7 & 0.52 & 0.7325\\
+LDA & 0.32 & 0.68 & 0.65 & 0.69 & 0.51 & 0.7312\\
+KNN & 0.38 & 0.62 & 0.55 & 0.65 & 0.43 & 0.6433\\
+MARS & 0.32 & 0.68 & 0.63 & 0.69 & 0.5 & 0.7262\\
+SVM Linear & 0.32 & 0.68 & 0.65 & 0.7 & 0.51 & 0.731\\
+SVM Radial & 0.3 & 0.7 & 0.62 & 0.73 & 0.52 & 0.7375\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\hfill\break
+Our best models according the evaluation metrics criteria are glm and SVM Radial for food insecurity response 4.\\
+
+\begin{center}\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-30-1} \end{center}
+
+\hfill\break
+Now according to the ensemble method, both initial best models are best for predicting the response variable, however, we decided on the glm model as per the ensemble model.\\
+
+\begin{center}\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-31-1} \end{center}
+
+\hfill\break
+The plot above indicates that treating food insecurity 4 as a response through the glm model by ensemble model, the 5 most important factors are total income, transport reliability, know homeless student, household head, and dependents.\\
+
+\begin{center}\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-32-1} \end{center}
+
+\hfill\break
+Given the plot above for food insecurity 3, the top 10 subgroups involves known homeless student2, total income (2,3 - 8), dependents4 and federal student aid5.
 
 \hypertarget{discussion}{%
 \section{Discussion}\label{discussion}}
 
-Base on our table of results, the best model is selected based on the performance metrics accuracy, misclassification, and fbeta. That is a model with the least misclassification, higher accuracy, and an fbeta score approaching one. Considering the results from the housing insecurity models, the SVM with the radial basis kernel has the highest f\(\beta\) value and the least misclassification rate, followed by the linear discriminate analysis. Hence the support vector machine through the radial basis function is chosen as our best model. The variables are highly associated with predicting housing insecurity as displayed by the graph of the variable of important shows that total income, residence, and transportation reliability been the top variables with federal aid, gender, and weekly work hours being least of importance. However if a cutoff of say 50\% is employed the best or associated variables will be the top three variables together with the head of household, living alone, and spending the night elsewhere.
-
-Furthermore, we observed that SVM performs better with the least misclafficattion rate, the highest accuracy, and f\(\beta\) value of best performance, respectively for the food insecurity. This is associated with the response Food insecurity 1. Assuming a cut off point of 50\%, we can infer from the variable importance plot that, total income, transport reliability and household are the top variables which are associated or predicts the response variable.
-
-Also, we can observe that, support vector machine comes with the lowest misclaffication rate, the highest accuracy, and the best f\(\beta\) value closest to 1. This shows that, SVM performs better considering response variables: Food insecurity 2 and 3. Considering a cut of 50\%, we can conclude from the variable importance plot that total income, transport reliability and known homelessnes student show the strongest associated with food insecurity 2 and 3.
+Our initial preferred model or models are selected based on the evaluation metrics accuracy, misclassification, and fbeta, and the area under the curve (AUC) from each response variable table obtained. That is, a model with the least misclassification, higher accuracy, an fbeta score approaching one, and a higher AUC. However, our initial preferred model or models are may or may not be sufficient enough to make a predictive decision because they may involve irregularities. As an improvement to phase one of our modelings, we employed post hoc predictive modeling to ascertain the initial preferred models. Specifically, we employed the ensemble analysis model to train our obtained several related but different analytical models (SVM, LDA, etc..) and then synthesized the results into a single score or spread in order to improve the accuracy of prediction. We made use of this idea of the ensemble method because a single model based on a data sample can have biases, high variability, or outright inaccuracies that affect the reliability of its analytical findings. By combining these different models we can reduce the effects of those limitations and provide better predictive information from the Learning model. After the best predictive modelings are chosen a plot of variables of importance are obtained to determine which variables are of the essence in predicting a given response variable, and also to answer the research question of which subgroup are at risk of a given food and house insecurity response.
 
 In a general, total income being an underlying factor for both food insecurity and housing insecurity, clearly suggests that the income on which students live for their livelihood appears not to be enough. Also, we observed issues of multiple responses with some of the variables, especially, for the gender variable. We did not find it reasonable for respondents to be given the chance to select more than one options for their gender.
 
@@ -771,26 +900,29 @@ We hope to construct a measure of food insecurity as a dichotomous response vari
 \addcontentsline{toc}{section}{References}
 
 \hypertarget{refs}{}
-\leavevmode\hypertarget{ref-dominguez2021bayesian}{}%
-Dominguez-Rodriguez, S., Villaverde, S., Sanz-Santaeufemia, F. J., Grasa, C., Soriano-Arandes, A., Saavedra-Lozano, J., \ldots{} others. (2021). A bayesian model to predict covid-19 severity in children. \emph{The Pediatric Infectious Disease Journal}, \emph{40}(8), e287--e293.
+\begin{CSLReferences}{1}{0}
+\leavevmode\vadjust pre{\hypertarget{ref-dominguez2021bayesian}{}}%
+Dominguez-Rodriguez, S., Villaverde, S., Sanz-Santaeufemia, F. J., Grasa, C., Soriano-Arandes, A., Saavedra-Lozano, J., \ldots{} others. (2021). A bayesian model to predict COVID-19 severity in children. \emph{The Pediatric Infectious Disease Journal}, \emph{40}(8), e287--e293.
 
-\leavevmode\hypertarget{ref-james2013introduction}{}%
+\leavevmode\vadjust pre{\hypertarget{ref-james2013introduction}{}}%
 James, G., Witten, D., Hastie, T., and Tibshirani, R. (2013). \emph{An introduction to statistical learning} (Vol. 112). Springer.
 
-\leavevmode\hypertarget{ref-MLM}{}%
+\leavevmode\vadjust pre{\hypertarget{ref-MLM}{}}%
 Machine Learning Mastery. (2021). A gentle introduction to the fbeta-measure for machine learning. Retrieved October 15, 2021, from \url{https://machinelearningmastery.com/fbeta-measure-for-machine-learning/}
 
-\leavevmode\hypertarget{ref-scikit_learn}{}%
-Scikit Learn. (2021). Retrieved October 15, 2021, from \url{https://scikit-learn.org/stable/modules/generated/sklearn.metrics.fbeta_score.html}
+\leavevmode\vadjust pre{\hypertarget{ref-scikit_learn}{}}%
+Scikit Learn. (2021). Scikit learn documentation, fbeta\_score. Retrieved October 15, 2021, from \url{https://scikit-learn.org/stable/modules/generated/sklearn.metrics.fbeta_score.html}
 
-\leavevmode\hypertarget{ref-sofaer2019area}{}%
+\leavevmode\vadjust pre{\hypertarget{ref-sofaer2019area}{}}%
 Sofaer, H. R., Hoeting, J. A., and Jarnevich, C. S. (2019). The area under the precision-recall curve as a performance metric for rare binary events. \emph{Methods in Ecology and Evolution}, \emph{10}(4), 565--577.
 
-\leavevmode\hypertarget{ref-theerthagiri2021prediction}{}%
-Theerthagiri, P., Jeena Jacob, I., Usha Ruby, A., and Yendapalli, V. (2021). Prediction of covid-19 possibilities using k-nearest neighbour classification algorithm. \emph{Int J Cur Res Rev\textbar{} Vol}, \emph{13}(06), 156.
+\leavevmode\vadjust pre{\hypertarget{ref-theerthagiri2021prediction}{}}%
+Theerthagiri, P., Jeena Jacob, I., Usha Ruby, A., and Yendapalli, V. (2021). Prediction of COVID-19 possibilities using k-nearest neighbour classification algorithm. \emph{Int J Cur Res Rev\textbar{} Vol}, \emph{13}(06), 156.
 
-\leavevmode\hypertarget{ref-wikipedia}{}%
+\leavevmode\vadjust pre{\hypertarget{ref-wikipedia}{}}%
 Wikipedia. (2021). Support-vector machine. Retrieved October 15, 2021, from \url{https://en.wikipedia.org/wiki/Support-vector_machine}
+
+\end{CSLReferences}
 
 \hypertarget{apendix}{%
 \section*{Apendix}\label{apendix}}
@@ -799,7 +931,7 @@ Wikipedia. (2021). Support-vector machine. Retrieved October 15, 2021, from \url
 \hypertarget{visualizing-missing-data}{%
 \subsection{Visualizing Missing Data}\label{visualizing-missing-data}}
 
-\begin{center}\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-28-1} \end{center}
+\begin{center}\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-33-1} \end{center}
 
 \begin{tabular}{l|r|r}
 \hline
@@ -865,9 +997,9 @@ living\_alone & 0 & 0.0000000\\
 \hline
 \end{tabular}
 
-\begin{center}\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-28-2} \end{center}
+\begin{center}\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-33-2} \end{center}
 
-\begin{center}\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-28-3} \end{center}
+\begin{center}\includegraphics{phase2_report_files/figure-latex/unnamed-chunk-33-3} \end{center}
 
 \hypertarget{codes}{%
 \subsection{Codes}\label{codes}}
