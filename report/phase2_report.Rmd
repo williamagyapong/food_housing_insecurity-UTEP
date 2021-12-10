@@ -557,7 +557,7 @@ The table and graphs above display the number of missing values with missing per
 
 * The mice package aided in imputation the missing values in the predictor variables, specifically by using the median, mice was chosen because it is robust to data and its imputation style.
 
-* The selected responses variables exhibited highly imbalanced classification. The imbalanced classification was treated with both sampling methods under the ROSE package.
+* The selected response variables exhibited highly imbalanced classification. The imbalanced classification was treated with both sampling methods under the ROSE package.
 
 
 ## Model Building  
@@ -590,21 +590,21 @@ Here, we modeled housing insecurity as a response based on whether or not a resp
 # 
 source("modeling_functions.R") 
 
-#load("trained_models.RData") # import already trained models
+load("trained_models.RData") # import already trained models
 ```
 
 #### Results for Permanent Address
-\newline 
+<!-- \newline  -->
 
 ```{r message=FALSE, warning=FALSE, echo= F}
-pa_models <- modeling("permanent_address")
+# pa_models <- modeling("permanent_address")
 
 eval_table(pa_models$model_list, "permanent_address",
            pa_models$test,
            "Permanent House Address")
 
 ```
-
+\
 Based on the table values our best initial models are SVM Radial and the MARS (earth) model from the permanent housing address response.
 \
 
@@ -634,9 +634,9 @@ Our initial preferred model based on the evaluation metrics been SVM Radial woul
 \
 
 #### Results for Spending the night elsewhere
-\newline
+<!-- \newline -->
 ```{r message=FALSE, warning=FALSE, echo= F}
- sne_models <- modeling("spent_night_elsewhere", c("earth","glm","knn","svmLinear","svmRadial"))
+ # sne_models <- modeling("spent_night_elsewhere", c("earth","glm","knn","svmLinear","svmRadial"))
 
 # Display a table of performance metrics
 # eval_table(sne_models$model_list, "spent_night_elsewhere",sne_models$test, "Spent Night Elsewhere")
@@ -727,15 +727,16 @@ Though Food Insecurity I and II originally had three levels (Often true, Sometim
 
 
 #### Results for Food Insecurity Response I
-\newline
+<!-- \newline --> 
 
 ```{r message=FALSE, warning=FALSE, echo= F}
-FI_q26_models <- modeling("FI_q26")
+# FI_q26_models <- modeling("FI_q26")
 
 eval_table(FI_q26_models$model_list,"FI_q26",FI_q26_models$test,"Food Insecurity I")
 
 ```
 
+\
 Based on the table values and the evaluation metric criteria, with the exception of knn model , all the others are preferred as our initial best models.
 \
 
@@ -766,10 +767,10 @@ Given the plot above, the top 5 subgroups are total income8, know homeless stude
 \
 
 #### Results for Food Insecurity Response II
-\newline
+<!-- \newline --><br>
 
 ```{r message=FALSE, warning=FALSE, echo= F}
- FI_q27_models <- modeling("FI_q27")
+ # FI_q27_models <- modeling("FI_q27")
 
 eval_table(FI_q27_models$model_list,"FI_q27",FI_q27_models$test, "Food Insecurity II")
 ```
@@ -804,10 +805,10 @@ Given the plot above, the top 5 subgroups are transport reliability4, know homel
 
 
 #### Results for Food Insecurity Response III
-\newline
+<!-- \newline --><br>
 
 ```{r message=FALSE, warning=FALSE, echo= F}
-FI_q28_models <- modeling("FI_q28")
+# FI_q28_models <- modeling("FI_q28")
 
 eval_table(FI_q28_models$model_list, "FI_q28",FI_q28_models$test, "Food Insecurity III")
 ```
@@ -856,11 +857,11 @@ Given the plot above for food insecurity 3, the top 5 subgroups are know homeles
 <!-- ``` -->
 
 #### Results for Food Insecurity Response IV 
-\newline
+<!-- \newline --> <br>
 
 ```{r message=FALSE, warning=FALSE, echo= F}
 
-FI_q31_models <- modeling("FI_q31")
+# FI_q31_models <- modeling("FI_q31")
 
 eval_table(FI_q31_models$model_list, "FI_q31",FI_q31_models$test, "Food Insecurity V")
 ```
