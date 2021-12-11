@@ -898,6 +898,17 @@ Given the plot above for food insecurity 3, the top 10 subgroups involves known 
 
 Our initial preferred model or models are selected based on the evaluation metrics accuracy, misclassification, and fbeta, and the area under the curve (AUC) from each response variable table obtained. That is, a model with the least misclassification, higher accuracy, an fbeta score approaching one, and a higher AUC. However, our initial preferred model or models are may or may not be sufficient enough to make a predictive decision because they may involve irregularities. As an improvement to phase one of our modelings, we employed post hoc predictive modeling to ascertain the initial preferred models. Specifically, we employed the ensemble analysis model to train our obtained several related but different analytical models (SVM, LDA,  etc..) and then synthesized the results into a single score or spread in order to improve the accuracy of prediction. We made use of this idea of the ensemble method because a single model based on a data sample can have biases, high variability, or outright inaccuracies that affect the reliability of its analytical findings. By combining these different models we can reduce the effects of those limitations and provide better predictive information from the Learning model. After the best predictive modelings are chosen a plot of variables of importance are obtained to determine which variables are of the essence in predicting a given response variable, and also to answer the research question of which subgroup are at risk of a given food and house insecurity response. 
 
+Considering the measure for housing insecurity, permanent house address and spend the night elsewhere both came up transport reliability, household head, the college one come from, and whether he or she is living alone total income as the most important variables among others. That is to say, the chances of one being housing insecure rely on one's total income, one a household head where more responsibilities are performed, and how reliable your transportation is with regards to one's income and expenditure. Also considering which subgroups or populations are at risk of being housing insecure, both models came up with having a residence off-campus with family, coming from either a college of education or college of science, and having a very reliable transportation mode. Specifically, we say and if the student belongs to the college of science or college of education and staying off-campus with the family couple with having a reliable transportation mode is at risk at a point in time of housing insecurity should he or she be deprived of such benefits.
+
+Furthermore, the Logistics model and support vector machine dominated as the best model for modeling and predicting food insecurity response variables. The topmost factor predicting food insecurity from all four modeled response was the total income of the person, mode of transport, and its reliability, whether one know of any homeless student, household head, the number of dependents, and finally whether one is employed or not. Suggesting that one becoming food insecure depends on one income, numbers of dependents, and more as depicted by the model graphs. Identifying which person or persons are at risk of food being insecure was characterized by people living off-campus with family, someone been black or African American, and enrolled as a junior and having more than four dependents. Specifically, a Black American enrolled as a junior living with a family off campus with more than four dependents is a high risk of being food insecure.
+
+Again it was clearly noticed from our analysis that given all the six best models predicting whether one is food insecure or housing insecure, the factors or variables such as a total of income, transport reliability, type of residence specifically residence off-campus with family, whether one is head of the household and number of dependents on the person were part of the major contributing factors. However, we made a weird observation which is the subgroup at risk for food insecurity, total income for people earning more than $100,000 were occurring in all four responses, which analytical and socially does not make sense but however its a factor statistically. In general, total income being an underlying factor for both food insecurity and housing insecurity, clearly suggests that the income on which students live for their livelihood appears not to be enough.
+
+
+** Vdersion control
+
+In this work, we used Github as the version control to ensure reproducibility and collaboration by team members. Version or source control is the practice of tracking and managing changes to projects. These version controls help teams to keep track and modify their code in a special kind of database. This ensures effective collaboration of team members since teams can track back and compare earlier versions of code. By using version control, we were able to document a complete history of every file and code. These changes include the creation and deleting of files and editing of codes. In addition, team members can branch and merge. For example, to ensure faster completion of the project, we worked independently on “branches” and merged our files together after completion. 
+
 
 <!-- Base on the few variables selected say 10 from the plot it clearly indicates that residence off campus with family, college of education and very reliable transportation are of higher risk of been housing insecure. That is to say someone living with family off campus from the college of education with a very reliable transposition as some point will be of higher risk of housing insecure. -->
 
@@ -922,7 +933,10 @@ Also, we can observe that, support vector machine with misclaffication rate of 0
 
 Again, we can observe that, support vector machine with misclaffication rate of 0.07, with accuracy of 0.93, and f$\beta$ of 0.93 shows that, SVM performs better considering response variable: Food insecurity 2 . Considering a cut of 50%, we can observe infer from the variable importance plot that total income, transport reliability and known_homelessnes_student predict or is associated with food insecurity. We can observe that, the total income, total reliability and known_homelessness_student are associated with both food insecurity 2  and 3. -->
 
-In a general, total income being an underlying factor for both food insecurity and housing insecurity, clearly suggests that the income on which students live for their livelihood appears not to be enough. Also, we observed issues of multiple responses with some of the variables, especially, for the gender variable. We did not find it reasonable for respondents to be given the chance to select more than one options for their gender. 
+ 
+
+
+<!-- Also, we observed issues of multiple responses with some of the variables, especially, for the gender variable. We did not find it reasonable for respondents to be given the chance to select more than one options for their gender. -->
 
 # Recommendations
 
@@ -932,14 +946,16 @@ From the results and discussions, we make the following recommendations:
 
 * With regards to multiple responses, we are of the opinion that this should not be allowed for the gender variable in subsequent surveys.
 
+* We also recommend in later part on this work constructing a measure of food insecurity as a dichotomous response variable that combines what we consider to be four main dimensions of food insecurity embodied in five of the survey questions, namely, a stable source of food , lack of healthy/balanced meals, inadequate size of food – eating less and going hungry . Using this definition as proposed by the USDA, we selected $Q26, Q27, Q28$ and $Q30$ respectively as our response variable for food insecurity. Therefore, an individual who participated in the survey is classified as being at risk of food insecurity if they answered yes to all of questions $Q26, Q27, Q31$, and answered yes to either $Q28$ or  $Q30$ since these two questions are similar in terms of measuring a single dimension of food insecurity. Thus, an individual who reports four conditions that indicate food insecurity are classified as "food insecure".
 
-# Future Work (Phase II)
 
-## Rule for defining response variable for Food and Housing Insecurities ##
+<!-- # Future Work (Phase II) -->
 
-In the phase of the analysis, we will provide a rule for classifying a student as food insecure or housing insecure. These rules were used in selecting the appropriate response variables for both food and housing insecurities.
+<!-- ## Rule for defining response variable for Food and Housing Insecurities ## -->
 
-We hope to construct a measure of food insecurity as a dichotomous response variable that combines what we consider to be four main dimensions of food insecurity embodied in five of the survey questions, namely, a stable source of food , lack of healthy/balanced meals, inadequate size of food – eating less and going hungry . Using this definition as proposed by the USDA, we selected $Q26, Q27, Q28$ and $Q30$ respectively as our response variable for food insecurity. Therefore, an individual who participated in the survey is classified as being at risk of food insecurity if they answered yes to all of questions $Q26, Q27, Q31$, and answered yes to either $Q28$ or  $Q30$ since these two questions are similar in terms of measuring a single dimension of food insecurity. Thus, an individual who reports four conditions that indicate food insecurity are classified as "food insecure". 
+<!-- In the phase of the analysis, we will provide a rule for classifying a student as food insecure or housing insecure. These rules were used in selecting the appropriate response variables for both food and housing insecurities. -->
+
+ 
 
 
  <!-- At risk for food insecurity= $$$$ -->
