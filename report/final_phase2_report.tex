@@ -356,7 +356,7 @@ Model & Misclassification Rate & Accuracy & Sensitivity & Specificity & fbeta & 
 \midrule
 Logistic & 0.24 & 0.76 & 0.77 & 0.53 & 0.86 & 0.7058\\
 LDA & 0.22 & 0.78 & 0.79 & 0.55 & 0.87 & 0.7149\\
-KNN & 0.37 & 0.63 & 0.64 & 0.57 & 0.77 & 0.637\\
+KNN & 0.37 & 0.63 & 0.64 & 0.58 & 0.77 & 0.637\\
 MARS & 0.2 & 0.8 & 0.82 & 0.48 & 0.89 & 0.7206\\
 SVM Linear & 0.22 & 0.78 & 0.79 & 0.51 & 0.87 & 0.7151\\
 SVM Radial & 0.17 & 0.83 & 0.85 & 0.45 & 0.91 & 0.7011\\
@@ -388,7 +388,7 @@ Our initial preferred model based on the evaluation metrics been SVM Radial woul
 Model & Misclassification Rate & Accuracy & Sensitivity & Specificity & fbeta & AUC\\
 \midrule
 Logistic & 0.54 & 0.46 & 0.35 & 0.56 & 0.37 & 0.5216\\
-KNN & 0.45 & 0.55 & 0.49 & 0.6 & 0.49 & 0.5294\\
+KNN & 0.48 & 0.52 & 0.49 & 0.56 & 0.48 & 0.5294\\
 MARS & 0.45 & 0.55 & 0.65 & 0.47 & 0.56 & 0.5952\\
 SVM Linear & 0.54 & 0.46 & 0.51 & 0.42 & 0.46 & 0.5012\\
 SVM Radial & 0.51 & 0.49 & 0.54 & 0.44 & 0.49 & 0.5498\\
@@ -443,7 +443,7 @@ Model & Misclassification Rate & Accuracy & Sensitivity & Specificity & fbeta & 
 \midrule
 Logistic & 0.33 & 0.67 & 0.66 & 0.67 & 0.64 & 0.7342\\
 LDA & 0.34 & 0.66 & 0.65 & 0.67 & 0.63 & 0.7335\\
-KNN & 0.36 & 0.64 & 0.58 & 0.68 & 0.59 & 0.6747\\
+KNN & 0.37 & 0.63 & 0.57 & 0.68 & 0.58 & 0.6747\\
 MARS & 0.34 & 0.66 & 0.66 & 0.66 & 0.64 & 0.7319\\
 SVM Linear & 0.34 & 0.66 & 0.66 & 0.66 & 0.63 & 0.7314\\
 SVM Radial & 0.33 & 0.67 & 0.66 & 0.67 & 0.64 & 0.7322\\
@@ -513,7 +513,7 @@ Model & Misclassification Rate & Accuracy & Sensitivity & Specificity & fbeta & 
 \midrule
 Logistic & 0.35 & 0.65 & 0.59 & 0.68 & 0.55 & 0.7004\\
 LDA & 0.34 & 0.66 & 0.62 & 0.69 & 0.57 & 0.7017\\
-KNN & 0.38 & 0.62 & 0.54 & 0.67 & 0.51 & 0.6515\\
+KNN & 0.38 & 0.62 & 0.54 & 0.66 & 0.51 & 0.6515\\
 MARS & 0.35 & 0.65 & 0.59 & 0.68 & 0.55 & 0.6975\\
 SVM Linear & 0.34 & 0.66 & 0.6 & 0.69 & 0.56 & 0.7006\\
 SVM Radial & 0.33 & 0.67 & 0.59 & 0.71 & 0.56 & 0.7033\\
@@ -803,7 +803,7 @@ Taking our inspiration from the talk by Peng (\protect\hyperlink{ref-peng}{2014}
   From the very beginning of our data processing, instead of manually specifying the file or directory paths, we used R codes to dynamically determine the paths to prevent our files reading codes from breaking down on other people's computer platforms. This helped with our collaboration on github by giving each member the convenience to clone the github repository of the project and start running the codes without having to change any file paths. To achieve this, we used the \texttt{rstudioapi::getSourceEditorContext} function to get the file path and extracted the directory name with the help of the \texttt{dirname} function.
 \item
   \textbf{A program to remove unwanted parts of variable names}
-  One will notice that the original variable names from the excel data file included the actual survey questions which does not make it easy for reading and processing. Instead of manually editing the names in the excel file, we used regular expressions with the help of the R pattern matching and replacement function \texttt{gsub} to automatically strip off the redundant character strings in the original variable names to facilitate the initial stages of our data cleaning. At this stage we needed just the question number part of the variable names so we took advantage of the fact that each question number ended with two dots. The regular expression pattern used is \texttt{"\textbackslash{}\textbackslash{}..*"}, which \ldots{}
+  One will notice that the original variable names from the excel data file included the actual survey questions which does not make it easy for reading and processing. Instead of manually editing the names in the excel file, we used regular expressions with the help of the R pattern matching and replacement function \texttt{gsub} to automatically strip off the redundant character strings in the original variable names to facilitate the initial stages of our data cleaning. At this stage we needed just the question number part of the variable names so we took advantage of the fact that each question number ended with two dots followed by the unwanted characters after importing the data into R. The regular expression pattern used is \texttt{"\textbackslash{}\textbackslash{}..*"}, which helped us match all characters after the two dots and replacing them with an empty string to get rid of the unwanted parts of the variable names.
 \item
   We also created a program to track variables that were part multiple response survey questions. For example, because multiple responses were enabled for ethnicity on the survey, the dataset provided to us had separate columns for the each level of ethnicity. The goal then was to consolidate the individual parts belonging to the same survey question into one variable. We first created a count variable to record the total number of \textbf{non-na} responses for each question. We then used two helper functions we created called \texttt{na\_to\_zero} and \texttt{zero\_to\_na} to convert all the \textbf{NA's} to zeros, and to restore the \textbf{NA's} in the end, respectively.
 \end{itemize}
