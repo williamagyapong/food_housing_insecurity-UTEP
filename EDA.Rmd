@@ -327,7 +327,6 @@ p1 <- ggplot(plotdf, aes(gender, pct, fill=permanent_address)) +
 ```
 
 
-<!--
 # Data Science Best Practices Adopted
 
 
@@ -336,13 +335,20 @@ We sought to improve upon our initial work from the first phase of the project b
 
 ## Programming or Process Automation
 
-We like to put on record that R codes were written to handle all aspects of data cleaning 
+We programmed and automated various aspects of our project in order to aid reproducibility, allow for convenient extension of the project to future survey data , and to help avoid common errors associated with manual data processing. Here, we highlight what we did and how we went about with their implementations.
 
-Data Cleaning: 
+### Data Cleaning
 
-* Identifying and fixing errors and / or anomalies in the data
+* From the very beginning of our data processing, instead of manually specifying the file or directory paths, we used R codes to dynamically determine the paths to prevent our files reading codes from breaking down on other people's computer platforms. This helped with our collaboration on github by giving each member the convenience to clone the github repository of the project and start running the codes without having to change any file paths. To achieve this, we used the `rstudioapi::getSourceEditorContext` function to get the file path and extracted the directory name with the help of the `dirname` function.
 
-One area of the data cleaning that we found very challenging had to do with the issue of multiple responses for some of the variables. Superficially, this seemed like no issue at all but it did gave us a run for our money, probably because of the approach we took, which we found to be the most viable though. The original data set had 
+* **A program to remove unwanted parts of variable names**
+One will notice that the original variable names from the excel data file included the actual survey questions which does not make it easy for reading and processing. Instead of manually editing the names in the excel file, we used regular expressions with the help of the R pattern matching and replacement function `gsub` to automatically strip off the redundant character strings in the original variable names to facilitate the initial stages of our data cleaning. At this stage we needed just the question number part of the variable names so we took  advantage of the fact that each question number ended with two dots. The regular expression pattern used is `"\\..*"`, which ...
+
+* We also created a program to track variables that were part multiple response survey questions. For example, because multiple responses were enabled for ethnicity on the survey, the dataset provided to us had separate columns for the each level of ethnicity. The goal then was to consolidate the individual parts belonging to the same survey question into one variable. We first created a count variable to record the total number of **non-na** responses for each question.  We  then used two helper functions we created called `na_to_zero` and `zero_to_na` to convert all the **NA's** to zeros, and to restore the **NA's** in the end, respectively. 
+
+### EDA
+
+The exploratory data analysis section also received a lot of programming. Functions were written to create graphs and summary statistics tables. One area we want to talk about is where we wrote R codes to dynamically alternate the background colors of table rows to make it easy to read all the records pertaining to a particular variable in **Table 2** of the report. Instead of manually specifying the row indexes in the *stripe_index* argument of `kable` function to show where the records for a variable begins and ends, we did this programmatically by creating a `get_stripe_index` function.
 
 
 
@@ -352,12 +358,15 @@ One area of the data cleaning that we found very challenging had to do with the 
 - Rmarkdown
 - R package manager
 
+### Version control
+
+In this work, we used Github as the version control to ensure reproducibility and collaboration by team members. Version or source control is the practice of tracking and managing changes to projects. These version controls help teams to keep track and modify their code in a special kind of database. This ensures effective collaboration of team members since teams can track back and compare earlier versions of code. By using version control, we were able to document a complete history of every file and code. These changes include the creation and deleting of files and editing of codes. In addition, team members can branch and merge. For example, to ensure faster completion of the project, we worked independently on “branches” and merged our files together after completion. 
+
+
 ## Communication
 
-- Flipping the paradigm
-- 
+ - Flipping the paradigm
 
--->
 
 
 
