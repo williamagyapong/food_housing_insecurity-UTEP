@@ -356,7 +356,7 @@ Model & Misclassification Rate & Accuracy & Sensitivity & Specificity & fbeta & 
 \midrule
 Logistic & 0.24 & 0.76 & 0.77 & 0.53 & 0.86 & 0.7058\\
 LDA & 0.22 & 0.78 & 0.79 & 0.55 & 0.87 & 0.7149\\
-KNN & 0.37 & 0.63 & 0.64 & 0.58 & 0.77 & 0.637\\
+KNN & 0.37 & 0.63 & 0.64 & 0.55 & 0.77 & 0.637\\
 MARS & 0.2 & 0.8 & 0.82 & 0.48 & 0.89 & 0.7206\\
 SVM Linear & 0.22 & 0.78 & 0.79 & 0.51 & 0.87 & 0.7151\\
 SVM Radial & 0.17 & 0.83 & 0.85 & 0.45 & 0.91 & 0.7011\\
@@ -388,7 +388,7 @@ Our initial preferred model based on the evaluation metrics been SVM Radial woul
 Model & Misclassification Rate & Accuracy & Sensitivity & Specificity & fbeta & AUC\\
 \midrule
 Logistic & 0.54 & 0.46 & 0.35 & 0.56 & 0.37 & 0.5216\\
-KNN & 0.48 & 0.52 & 0.49 & 0.56 & 0.48 & 0.5294\\
+KNN & 0.5 & 0.5 & 0.46 & 0.53 & 0.45 & 0.5294\\
 MARS & 0.45 & 0.55 & 0.65 & 0.47 & 0.56 & 0.5952\\
 SVM Linear & 0.54 & 0.46 & 0.51 & 0.42 & 0.46 & 0.5012\\
 SVM Radial & 0.51 & 0.49 & 0.54 & 0.44 & 0.49 & 0.5498\\
@@ -443,7 +443,7 @@ Model & Misclassification Rate & Accuracy & Sensitivity & Specificity & fbeta & 
 \midrule
 Logistic & 0.33 & 0.67 & 0.66 & 0.67 & 0.64 & 0.7342\\
 LDA & 0.34 & 0.66 & 0.65 & 0.67 & 0.63 & 0.7335\\
-KNN & 0.37 & 0.63 & 0.57 & 0.68 & 0.58 & 0.6747\\
+KNN & 0.37 & 0.63 & 0.58 & 0.68 & 0.58 & 0.6747\\
 MARS & 0.34 & 0.66 & 0.66 & 0.66 & 0.64 & 0.7319\\
 SVM Linear & 0.34 & 0.66 & 0.66 & 0.66 & 0.63 & 0.7314\\
 SVM Radial & 0.33 & 0.67 & 0.66 & 0.67 & 0.64 & 0.7322\\
@@ -478,7 +478,7 @@ Model & Misclassification Rate & Accuracy & Sensitivity & Specificity & fbeta & 
 \midrule
 Logistic & 0.34 & 0.66 & 0.64 & 0.67 & 0.66 & 0.7123\\
 LDA & 0.34 & 0.66 & 0.65 & 0.67 & 0.66 & 0.7132\\
-KNN & 0.37 & 0.63 & 0.56 & 0.7 & 0.6 & 0.6689\\
+KNN & 0.37 & 0.63 & 0.56 & 0.7 & 0.61 & 0.6689\\
 MARS & 0.35 & 0.65 & 0.64 & 0.65 & 0.65 & 0.7078\\
 SVM Linear & 0.35 & 0.65 & 0.64 & 0.67 & 0.65 & 0.7116\\
 SVM Radial & 0.35 & 0.65 & 0.63 & 0.67 & 0.65 & 0.7113\\
@@ -513,7 +513,7 @@ Model & Misclassification Rate & Accuracy & Sensitivity & Specificity & fbeta & 
 \midrule
 Logistic & 0.35 & 0.65 & 0.59 & 0.68 & 0.55 & 0.7004\\
 LDA & 0.34 & 0.66 & 0.62 & 0.69 & 0.57 & 0.7017\\
-KNN & 0.38 & 0.62 & 0.54 & 0.66 & 0.51 & 0.6515\\
+KNN & 0.38 & 0.62 & 0.54 & 0.67 & 0.51 & 0.6515\\
 MARS & 0.35 & 0.65 & 0.59 & 0.68 & 0.55 & 0.6975\\
 SVM Linear & 0.34 & 0.66 & 0.6 & 0.69 & 0.56 & 0.7006\\
 SVM Radial & 0.33 & 0.67 & 0.59 & 0.71 & 0.56 & 0.7033\\
@@ -769,7 +769,7 @@ debt\_changed & Since COVID-19, has there been any personal or household change 
 
 \subsubsection{Collapsing the variables}
 
-In other to obtain a feasible result, the following variables were collapsed due to insignificant proportion of respondent answering those questions. With regards to \textbf{Ethinicity}, we maintained Hispanic , Black/African American, White/Caucassian, Asian and collapsed American Indian, Native Hawaiian, mixed race and other into \textbf{other} . We decided not to keep a mixed race level because the total reduced to 88 after we assigned (Hispanic, white) to Hispanic, and (Hispanic, Black) to Black. \textbf{Gender} was reduced to 3 levels: female, male, and non-binary/non-conforming. With respect to \textbf{Income} we kept first 5 levels and 100000 or more (11)-\textgreater8, collapse (6,7)-\textgreater6, (8,9,10)-\textgreater7. For \textbf{Academic level}, we keep first 5, and collapse last 2 -\textgreater{} 6. For \textbf{College}, we maintain first 6 levels and colapse the remaining ones into other (level 7). For \textbf{Commute}, we keep car, Bus/public and other, and collapse car \& carpool (2,3) -\textgreater{} 9, collapse bike, trolley, walk (5,6,7) -\textgreater{} 10. Keep Not applicable (0). For, \textbf{Federal Aid}, Emergency loan was reduced from 316 to 50, so we added those to loans(3).
+In other to obtain a feasible result, the following variables were collapsed due to insignificant proportion of respondent answering those questions. With regards to \textbf{Ethinicity}, we maintained Hispanic , Black/African American, White/Caucassian, Asian and collapsed American Indian, Native Hawaiian, mixed race and other into \textbf{other} . We decided not to keep a mixed race level because the total reduced to 88 after we assigned (Hispanic, white) to Hispanic, and (Hispanic, Black) to Black. \textbf{Gender} was reduced to 3 levels: female, male, and non-binary/non-conforming. With respect to \textbf{Income} we kept first 5 levels and the last level, while collapsing the 6th and the 7th levels into a new level, as well as the 8th, 9th and 10th as another level. For \textbf{Academic level}, we mainted the first 5 levels, and collapsed the last 2 into a new level called Doctoral/professional. For \textbf{College}, we maintained the first 6 levels and collapsed the remaining ones into other (level 7). For \textbf{Commute}, we kept car, Bus/public and other, and joined car \& carpool together, put bike, trolley, walk into one group. Also, we maintained the Not applicable (0) level. For, \textbf{Federal Aid}, Emergency loan was reduced from 316 to 50 after correcting double counting resulting from the multiple response questions, so we added those to loans(3).
 
 \hypertarget{recommendations}{%
 \section{Recommendations}\label{recommendations}}
