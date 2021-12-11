@@ -61,7 +61,7 @@ load("../FIHI_clean.RData")
 
 # Discussion
 
-It was clearly noticed from our analysis that given each best model predicting whether one is food insecure or housing insecure for the six responses, the factors or variables such as total income, transportation reliability, type of residence, specifically residence off-campus with family, whether or not one is the head of the household and the number of dependents on the person were part of the major contributing factors. However, we made a weird observation, which is among the subgroups at risk for food insecurity factors, total income for people earning more than $100,000 were occurring in all four responses, which analytical and socially does not make sense. In general, total income being an underlying factor for both food insecurity and housing insecurity, clearly suggests that the income on which students live for their livelihood appears not to be enough.
+It was clearly noticed from our analysis that given each best model, predicting whether one is food insecure or housing insecure for the six responses, the factors or variables such as total income, transportation reliability, type of residence, specifically residence off-campus with family, whether or not one is the head of the household and the number of dependents on the person were part of the major contributing factors. However, we made a weird observation, which is among the subgroups at risk for food insecurity factors, total income for people earning more than $100,000 were occurring in all four responses, which analytical and socially does not make sense. In general, total income being an underlying factor for both food insecurity and housing insecurity, clearly suggests that the income on which students live for their livelihood appears not to be enough.
 
 Considering the factors affecting housing insecurity responses, permanent house address and spending the night elsewhere, both were found to be associated with transport reliability, household head, the college one comes from, and whether the person is living alone, and total income as the most important variables among others. That is to say, the chances of one being housing insecure rely on one's total income, one being a household head with more dependents, and how reliable their transportation is with regards to one's income and expenditure. Also considering which subgroups or populations are at risk of being housing insecure, factors including having a residence off-campus with family, coming from either a college of education or college of science, and having a very reliable transportation mode. Specifically, it appears that if a student belongs to the college of science or college of education and stays off-campus with the family coupled with having a reliable common mode of transportation is at risk at a point in time of housing insecurity should that person is being deprived of such benefits.
 
@@ -883,7 +883,7 @@ We sought to improve upon our initial work from the first phase of the project b
 
 ## Programming or Process Automation
 
-We programmed and automated various aspects of our project in order to aid reproducibility, allow for convenient extension of the project to future survey data , and to help avoid common errors associated with manual data processing. Here, we highlight what we did and how we went about with their implementations.
+Taking  our inspiration from the talk by @peng on Reproducible Research Checklist, we programmed and automated various aspects of our project in order to aid reproducibility, allow for convenient extension of the project to future survey data , and to help avoid common errors associated with manual data processing. Here, we highlight what we did and how we went about with their implementations.
 
 ### Data Cleaning
 
@@ -898,11 +898,20 @@ One will notice that the original variable names from the excel data file includ
 
 The exploratory data analysis section also received a lot of programming. Functions were written to create graphs and summary statistics tables. One area we want to talk about is where we wrote R codes to dynamically alternate the background colors of table rows to make it easy to read all the records pertaining to a particular variable in **Table 2** of the report. Instead of manually specifying the row indexes in the *stripe_index* argument of `kable` function to show where the records for a variable begins and ends, we did this programmatically by creating a `get_stripe_index` function.
 
+### Modeling
+
+Codes for training models and generating reports for the responses were manually duplicated for each response in our phase I report. We decided to improve upon this area because of the potential dangers of having to make changes at many different places when there comes the need to modify aspects of the modeling processes. With some programming, we were able to abstract the modeling and results reporting codes into functions. These functions are available in `modeling_functions.R` file in the github repository. First, there is a function called `modeling` for training the models for different responses. This function takes in the name of the response variable (a character string), model list, and a k-fold (an integer value for the number of cross-validations) as argument. Other functions created include evaluation metrics and results table functions, as well as a variable importance function.
+
+
+
+
+
+
 
 
 ## Reproducibility
 
-Results or project reproducibility has become a major concern for data scientists, and scientific and research community. To this end, several authors have taken it upon themselves to solve this issue of reproducibility. For instance, @yu2020veridical proposed a framework known as PCS which discusses reproducibility through the stability component.
+Results or project reproducibility has become a major concern for data scientists, and the scientific and research community. To this end, several authors have taken it upon themselves to solve this issue of reproducibility. For instance, @yu2020veridical proposed a framework known as PCS which discusses reproducibility through the stability component.
 
 ### Version control
 
@@ -924,6 +933,24 @@ Our findings and procedure were communicated through a written document in Rmark
 * Methodology and Data Preprocessing
 
 * Background
+
+\newpage
+
+# Reflection 
+
+We employed several data science rules and guidelines that ensure a veridical data science project. One way for data scientists to maximize the impact of their research or project is to improve their collaborations with domain experts. Throughout the data cleaning, data manipulation, modeling, and communication phase, we ensured collaboration among team members and domain experts and enforced good data science practices and guidelines in our work. In this section, we provide ways in which these concepts we learned in class helped us work on this project. Thus, we emphasize the impact of ASCCR by @vance2019asccr to our work. Those guidelines include but are not limited to ensuring reproducibility, communication, good modeling practices, and this project's adequate documentation.
+
+For the duration of this project, we had the opportunity to grow as young data science professionals by developing a solid relationship with the domain expert. During the variable screening, the domain expert provided advice on extracting some of the variables from the survey questions and guided the team in ways to achieve efficient results. This advice and guidance inspired us to produce an impactful research result by our team. We achieved this feat by employing the ASCCR framework, which ensures a good relationship between the domain expert and data scientist. This was since we had good relationship with the domain expert.
+
+In addition, content in ASCCR ensures that the data scientist includes Qualitative, Quantitative, and Qualitative components in data science projects. For example, while working on this project, we selected the appropriate quantitative or modeling approaches to use since the domain experts provide a refined formulated domain problem. Having a clear understanding of the domain problem is imperative to select the proper data cleaning, imputation, and modeling approaches.
+
+Furthermore, communication under ASCCR ensured that data scientist apply practical skills in their collaboration with domain experts to understand the results of the project. In general, we ensured effective communication of our model results to expected audience. For example, the paradigm for presenting academic work and project is literature review, proof and formulas, new work, results, and the decision. But we observed that, the appropriate way to present our project report is to flip the paradigm [@elizabeth_flip]: results, new work, proof and formulas, background, and history. We observed that the audience (decision makers, policy makers, among others) plays important role on how to present results.
+
+
+Moreover, we used version control and GitHub to improve on collaboration and reproducibility of our codes. We observed that GitHub enabled us to work independently on the project and keep track of any code changes. Also, it provided a secure way to store the codes for the project.
+
+Finally, we see other changes that we made including the development of functions for flexibly training models and generating reports of the results as a great addition to the project. This is because there could be the need for people who gain access to our project through the GitHub repository to want to try other models or choose to model other responses. With the help of these functions, it should be easy or possible for anyone to effortlessly accomplish this. All that need to be done will be to specify a single model name or a list of models supported by the caret package in R, and with a little tweak to the modeling functions one can also model any other variable from the survey data as a response variable. 
+
 
 
 

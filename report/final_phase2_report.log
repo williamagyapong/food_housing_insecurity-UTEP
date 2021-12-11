@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020) (preloaded format=pdflatex 2020.9.19)  10 DEC 2021 20:44
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020) (preloaded format=pdflatex 2020.9.19)  10 DEC 2021 22:07
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -709,7 +709,7 @@ LaTeX Font Info:    External font `lmex10' loaded for size
 \openout3 = `final_phase2_report.toc'.
 
 [2] [3] [4] [5] [6] [7]
-<final_phase2_report_files/figure-latex/unnamed-chunk-3-1.pdf, id=141, 462.7287
+<final_phase2_report_files/figure-latex/unnamed-chunk-3-1.pdf, id=145, 462.7287
 4pt x 287.0725pt>
 File: final_phase2_report_files/figure-latex/unnamed-chunk-3-1.pdf Graphic file
  (type pdf)
@@ -717,7 +717,7 @@ File: final_phase2_report_files/figure-latex/unnamed-chunk-3-1.pdf Graphic file
 Package pdftex.def Info: final_phase2_report_files/figure-latex/unnamed-chunk-3
 -1.pdf  used on input line 290.
 (pdftex.def)             Requested size: 462.73466pt x 287.07617pt.
-<final_phase2_report_files/figure-latex/unnamed-chunk-5-1.pdf, id=142, 463.7325
+<final_phase2_report_files/figure-latex/unnamed-chunk-5-1.pdf, id=146, 463.7325
 pt x 299.1175pt>
 File: final_phase2_report_files/figure-latex/unnamed-chunk-5-1.pdf Graphic file
  (type pdf)
@@ -726,7 +726,7 @@ Package pdftex.def Info: final_phase2_report_files/figure-latex/unnamed-chunk-5
 -1.pdf  used on input line 295.
 (pdftex.def)             Requested size: 463.73842pt x 299.12132pt.
 [8 <./final_phase2_report_files/figure-latex/unnamed-chunk-3-1.pdf>]
-<final_phase2_report_files/figure-latex/unnamed-chunk-6-1.pdf, id=156, 463.7325
+<final_phase2_report_files/figure-latex/unnamed-chunk-6-1.pdf, id=160, 463.7325
 pt x 298.11375pt>
 File: final_phase2_report_files/figure-latex/unnamed-chunk-6-1.pdf Graphic file
  (type pdf)
@@ -734,7 +734,7 @@ File: final_phase2_report_files/figure-latex/unnamed-chunk-6-1.pdf Graphic file
 Package pdftex.def Info: final_phase2_report_files/figure-latex/unnamed-chunk-6
 -1.pdf  used on input line 297.
 (pdftex.def)             Requested size: 463.73842pt x 298.11757pt.
-<final_phase2_report_files/figure-latex/unnamed-chunk-7-1.pdf, id=157, 452.6912
+<final_phase2_report_files/figure-latex/unnamed-chunk-7-1.pdf, id=161, 452.6912
 5pt x 287.0725pt>
 File: final_phase2_report_files/figure-latex/unnamed-chunk-7-1.pdf Graphic file
  (type pdf)
@@ -744,7 +744,7 @@ Package pdftex.def Info: final_phase2_report_files/figure-latex/unnamed-chunk-7
 (pdftex.def)             Requested size: 452.69014pt x 287.0718pt.
 [9 <./final_phase2_report_files/figure-latex/unnamed-chunk-5-1.pdf> <./final_ph
 ase2_report_files/figure-latex/unnamed-chunk-6-1.pdf>]
-<final_phase2_report_files/figure-latex/unnamed-chunk-8-1.pdf, id=177, 463.7325
+<final_phase2_report_files/figure-latex/unnamed-chunk-8-1.pdf, id=181, 463.7325
 pt x 298.11375pt>
 File: final_phase2_report_files/figure-latex/unnamed-chunk-8-1.pdf Graphic file
  (type pdf)
@@ -762,7 +762,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 367--368
 
  []
 
-<final_phase2_report_files/figure-latex/unnamed-chunk-10-1.pdf, id=204, 459.717
+<final_phase2_report_files/figure-latex/unnamed-chunk-10-1.pdf, id=208, 459.717
 5pt x 316.18124pt>
 File: final_phase2_report_files/figure-latex/unnamed-chunk-10-1.pdf Graphic fil
 e (type pdf)
@@ -775,7 +775,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 371--372
 
  []
 
-<final_phase2_report_files/figure-latex/unnamed-chunk-11-1.pdf, id=205, 429.605
+<final_phase2_report_files/figure-latex/unnamed-chunk-11-1.pdf, id=209, 429.605
 pt x 288.07625pt>
 File: final_phase2_report_files/figure-latex/unnamed-chunk-11-1.pdf Graphic fil
 e (type pdf)
@@ -791,7 +791,7 @@ has been already used, duplicate ignored
 l.373 ...re-latex/unnamed-chunk-11-1} \end{center}
                                                    <./final_phase2_report_files
 /figure-latex/unnamed-chunk-10-1.pdf>]
-<final_phase2_report_files/figure-latex/unnamed-chunk-12-1.pdf, id=218, 459.717
+<final_phase2_report_files/figure-latex/unnamed-chunk-12-1.pdf, id=222, 459.717
 5pt x 315.1775pt>
 File: final_phase2_report_files/figure-latex/unnamed-chunk-12-1.pdf Graphic fil
 e (type pdf)
@@ -810,7 +810,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 399--400
 
  []
 
-<final_phase2_report_files/figure-latex/unnamed-chunk-14-1.pdf, id=238, 459.717
+<final_phase2_report_files/figure-latex/unnamed-chunk-14-1.pdf, id=242, 459.717
 5pt x 316.18124pt>
 File: final_phase2_report_files/figure-latex/unnamed-chunk-14-1.pdf Graphic fil
 e (type pdf)
@@ -830,7 +830,7 @@ has been already used, duplicate ignored
                                                   \fi \fi 
 l.404 
        <./final_phase2_report_files/figure-latex/unnamed-chunk-14-1.pdf>]
-<final_phase2_report_files/figure-latex/unnamed-chunk-15-1.pdf, id=251, 459.717
+<final_phase2_report_files/figure-latex/unnamed-chunk-15-1.pdf, id=255, 459.717
 5pt x 315.1775pt>
 File: final_phase2_report_files/figure-latex/unnamed-chunk-15-1.pdf Graphic fil
 e (type pdf)
@@ -838,7 +838,7 @@ e (type pdf)
 Package pdftex.def Info: final_phase2_report_files/figure-latex/unnamed-chunk-1
 5-1.pdf  used on input line 405.
 (pdftex.def)             Requested size: 459.74442pt x 315.19595pt.
-<final_phase2_report_files/figure-latex/unnamed-chunk-16-1.pdf, id=252, 429.605
+<final_phase2_report_files/figure-latex/unnamed-chunk-16-1.pdf, id=256, 429.605
 pt x 311.1625pt>
 File: final_phase2_report_files/figure-latex/unnamed-chunk-16-1.pdf Graphic fil
 e (type pdf)
@@ -856,7 +856,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 454--455
 
  []
 
-<final_phase2_report_files/figure-latex/unnamed-chunk-18-1.pdf, id=277, 459.717
+<final_phase2_report_files/figure-latex/unnamed-chunk-18-1.pdf, id=281, 459.717
 5pt x 316.18124pt>
 File: final_phase2_report_files/figure-latex/unnamed-chunk-18-1.pdf Graphic fil
 e (type pdf)
@@ -876,7 +876,7 @@ has been already used, duplicate ignored
                                                   \fi \fi 
 l.459 
        <./final_phase2_report_files/figure-latex/unnamed-chunk-18-1.pdf>]
-<final_phase2_report_files/figure-latex/unnamed-chunk-19-1.pdf, id=290, 459.717
+<final_phase2_report_files/figure-latex/unnamed-chunk-19-1.pdf, id=294, 459.717
 5pt x 315.1775pt>
 File: final_phase2_report_files/figure-latex/unnamed-chunk-19-1.pdf Graphic fil
 e (type pdf)
@@ -889,7 +889,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 462--463
 
  []
 
-<final_phase2_report_files/figure-latex/unnamed-chunk-20-1.pdf, id=291, 459.717
+<final_phase2_report_files/figure-latex/unnamed-chunk-20-1.pdf, id=295, 459.717
 5pt x 315.1775pt>
 File: final_phase2_report_files/figure-latex/unnamed-chunk-20-1.pdf Graphic fil
 e (type pdf)
@@ -907,7 +907,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 489--490
 
  []
 
-<final_phase2_report_files/figure-latex/unnamed-chunk-22-1.pdf, id=303, 459.717
+<final_phase2_report_files/figure-latex/unnamed-chunk-22-1.pdf, id=307, 459.717
 5pt x 316.18124pt>
 File: final_phase2_report_files/figure-latex/unnamed-chunk-22-1.pdf Graphic fil
 e (type pdf)
@@ -927,7 +927,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 493--494
 
  []
 
-<final_phase2_report_files/figure-latex/unnamed-chunk-23-1.pdf, id=318, 459.717
+<final_phase2_report_files/figure-latex/unnamed-chunk-23-1.pdf, id=322, 459.717
 5pt x 315.1775pt>
 File: final_phase2_report_files/figure-latex/unnamed-chunk-23-1.pdf Graphic fil
 e (type pdf)
@@ -940,7 +940,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 497--498
 
  []
 
-<final_phase2_report_files/figure-latex/unnamed-chunk-24-1.pdf, id=330, 459.717
+<final_phase2_report_files/figure-latex/unnamed-chunk-24-1.pdf, id=334, 459.717
 5pt x 315.1775pt>
 File: final_phase2_report_files/figure-latex/unnamed-chunk-24-1.pdf Graphic fil
 e (type pdf)
@@ -958,7 +958,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 524--525
 
  []
 
-<final_phase2_report_files/figure-latex/unnamed-chunk-26-1.pdf, id=342, 459.717
+<final_phase2_report_files/figure-latex/unnamed-chunk-26-1.pdf, id=346, 459.717
 5pt x 316.18124pt>
 File: final_phase2_report_files/figure-latex/unnamed-chunk-26-1.pdf Graphic fil
 e (type pdf)
@@ -978,7 +978,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 528--529
 
  []
 
-<final_phase2_report_files/figure-latex/unnamed-chunk-27-1.pdf, id=355, 459.717
+<final_phase2_report_files/figure-latex/unnamed-chunk-27-1.pdf, id=359, 459.717
 5pt x 315.1775pt>
 File: final_phase2_report_files/figure-latex/unnamed-chunk-27-1.pdf Graphic fil
 e (type pdf)
@@ -991,7 +991,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 532--533
 
  []
 
-<final_phase2_report_files/figure-latex/unnamed-chunk-28-1.pdf, id=367, 464.736
+<final_phase2_report_files/figure-latex/unnamed-chunk-28-1.pdf, id=371, 464.736
 25pt x 315.1775pt>
 File: final_phase2_report_files/figure-latex/unnamed-chunk-28-1.pdf Graphic fil
 e (type pdf)
@@ -1004,7 +1004,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 559--560
 
  []
 
-<final_phase2_report_files/figure-latex/unnamed-chunk-30-1.pdf, id=379, 459.717
+<final_phase2_report_files/figure-latex/unnamed-chunk-30-1.pdf, id=383, 459.717
 5pt x 316.18124pt>
 File: final_phase2_report_files/figure-latex/unnamed-chunk-30-1.pdf Graphic fil
 e (type pdf)
@@ -1024,7 +1024,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 563--564
 
  []
 
-<final_phase2_report_files/figure-latex/unnamed-chunk-31-1.pdf, id=393, 459.717
+<final_phase2_report_files/figure-latex/unnamed-chunk-31-1.pdf, id=397, 459.717
 5pt x 315.1775pt>
 File: final_phase2_report_files/figure-latex/unnamed-chunk-31-1.pdf Graphic fil
 e (type pdf)
@@ -1037,7 +1037,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 567--568
 
  []
 
-<final_phase2_report_files/figure-latex/unnamed-chunk-32-1.pdf, id=405, 459.717
+<final_phase2_report_files/figure-latex/unnamed-chunk-32-1.pdf, id=409, 459.717
 5pt x 315.1775pt>
 File: final_phase2_report_files/figure-latex/unnamed-chunk-32-1.pdf Graphic fil
 e (type pdf)
@@ -1057,50 +1057,50 @@ identifier (name{table.8}) has been already used, duplicate ignored
 \AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
                                                   \fi \fi 
 l.773 
-      ] [35] [36] [37] [38]
-<final_phase2_report_files/figure-latex/unnamed-chunk-33-1.pdf, id=529, 460.721
+      ] [35] [36] [37] [38] [39] [40] [41]
+<final_phase2_report_files/figure-latex/unnamed-chunk-33-1.pdf, id=557, 460.721
 25pt x 312.16624pt>
 File: final_phase2_report_files/figure-latex/unnamed-chunk-33-1.pdf Graphic fil
 e (type pdf)
 <use final_phase2_report_files/figure-latex/unnamed-chunk-33-1.pdf>
 Package pdftex.def Info: final_phase2_report_files/figure-latex/unnamed-chunk-3
-3-1.pdf  used on input line 887.
+3-1.pdf  used on input line 918.
 (pdftex.def)             Requested size: 460.72012pt x 312.16548pt.
-[39 <./final_phase2_report_files/figure-latex/unnamed-chunk-33-1.pdf>]
-<final_phase2_report_files/figure-latex/unnamed-chunk-33-2.pdf, id=548, 459.717
+[42 <./final_phase2_report_files/figure-latex/unnamed-chunk-33-1.pdf>]
+<final_phase2_report_files/figure-latex/unnamed-chunk-33-2.pdf, id=575, 459.717
 5pt x 316.18124pt>
 File: final_phase2_report_files/figure-latex/unnamed-chunk-33-2.pdf Graphic fil
 e (type pdf)
 <use final_phase2_report_files/figure-latex/unnamed-chunk-33-2.pdf>
 Package pdftex.def Info: final_phase2_report_files/figure-latex/unnamed-chunk-3
-3-2.pdf  used on input line 953.
+3-2.pdf  used on input line 984.
 (pdftex.def)             Requested size: 459.74442pt x 316.19975pt.
-[40]
-<final_phase2_report_files/figure-latex/unnamed-chunk-33-3.pdf, id=553, 459.717
+[43]
+<final_phase2_report_files/figure-latex/unnamed-chunk-33-3.pdf, id=581, 459.717
 5pt x 316.18124pt>
 File: final_phase2_report_files/figure-latex/unnamed-chunk-33-3.pdf Graphic fil
 e (type pdf)
 <use final_phase2_report_files/figure-latex/unnamed-chunk-33-3.pdf>
 Package pdftex.def Info: final_phase2_report_files/figure-latex/unnamed-chunk-3
-3-3.pdf  used on input line 955.
+3-3.pdf  used on input line 986.
 (pdftex.def)             Requested size: 459.74442pt x 316.19975pt.
-[41 <./final_phase2_report_files/figure-latex/unnamed-chunk-33-2.pdf> <./final_
-phase2_report_files/figure-latex/unnamed-chunk-33-3.pdf>] [42]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 964.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 964.
+[44 <./final_phase2_report_files/figure-latex/unnamed-chunk-33-2.pdf> <./final_
+phase2_report_files/figure-latex/unnamed-chunk-33-3.pdf>] [45]
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 995.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 995.
 (./final_phase2_report.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 964.
-Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 964.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 995.
+Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 995.
 
 LaTeX Warning: There were multiply-defined labels.
 
  ) 
 Here is how much of TeX's memory you used:
- 15967 strings out of 480608
- 241660 string characters out of 5903630
- 570209 words of memory out of 5000000
- 31229 multiletter control sequences out of 15000+600000
- 622379 words of font info for 143 fonts, out of 8000000 for 9000
+ 15983 strings out of 480608
+ 241828 string characters out of 5903630
+ 570285 words of memory out of 5000000
+ 31233 multiletter control sequences out of 15000+600000
+ 622509 words of font info for 144 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  41i,11n,45p,1543b,481s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/local/texlive/2020/texmf-dist/fonts/enc/dvips/lm/lm-mathsy.enc}{/usr/lo
@@ -1119,10 +1119,10 @@ ype1/public/lm/lmr17.pfb></usr/local/texlive/2020/texmf-dist/fonts/type1/public
 al/texlive/2020/texmf-dist/fonts/type1/public/lm/lmri9.pfb></usr/local/texlive/
 2020/texmf-dist/fonts/type1/public/lm/lmsy10.pfb></usr/local/texlive/2020/texmf
 -dist/fonts/type1/public/lm/lmtt10.pfb>
-Output written on final_phase2_report.pdf (42 pages, 481130 bytes).
+Output written on final_phase2_report.pdf (45 pages, 490284 bytes).
 PDF statistics:
- 801 PDF objects out of 1000 (max. 8388607)
- 659 compressed objects within 7 object streams
- 148 named destinations out of 1000 (max. 500000)
- 16883 words of extra memory for PDF output out of 17280 (max. 10000000)
+ 837 PDF objects out of 1000 (max. 8388607)
+ 692 compressed objects within 7 object streams
+ 158 named destinations out of 1000 (max. 500000)
+ 16899 words of extra memory for PDF output out of 17280 (max. 10000000)
 
