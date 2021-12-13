@@ -1,0 +1,1012 @@
+---
+title: "Modeling Food and Housing Insecurity at UTEP"
+subtitle: "Phase II Report"
+author: 
+ - "George E. Quaye"
+ - "John Koomson"
+ - "Willliam O. Agyapong"
+  
+affiliation: "Department of Mathematical Sciences, University of Texas at El Paso"
+date: \center University of Texas, El Paso (UTEP)\center
+       \center Department of Mathematical Sciences \center
+output:
+  bookdown::pdf_document2:
+    fig_caption: yes
+    keep_tex: no
+    latex_engine: pdflatex
+    number_sections: yes
+    toc: yes
+    toc_depth: 4
+header-includes:
+  - \usepackage{float}
+  - \usepackage{setspace}
+  - \doublespacing
+  - \usepackage{bm}
+  - \usepackage{amsmath}
+  - \usepackage{amssymb}
+  - \usepackage{amsfonts}
+  - \usepackage{amsthm}
+  - \usepackage{fancyhdr}
+  - \pagestyle{fancy}
+  - \fancyhf{}
+  - \rhead{George Quaye, John Koomson, William Agyapong}
+  - \lhead{Phase II Report - DS 6335}
+  - \cfoot{\thepage}
+  - \usepackage{algorithm}
+  - \usepackage[noend]{algpseudocode}
+fig_caption: yes
+geometry: margin = 0.8in
+fontsize: 10pt
+bibliography: ../../references.bib
+link-citations: yes
+linkcolor: blue
+csl: ../../apa-6th-edition-no-ampersand.csl
+
+---
+
+```{r setup, warning=F, message=F, include=FALSE, echo=FALSE}
+knitr::opts_chunk$set(echo = F, warning=F, message=F, fig.pos = "!H",
+                      fig.align = "center", out.extra = "")
+
+
+# Load required packages and preprocessed data from the project root directory
+dir_path <-  dirname(rstudioapi::getSourceEditorContext()$path)
+setwd(dir_path) # set the current working directory to this path
+source("../../packages.R")
+
+load("../../FIHI_clean.RData")
+
+```
+
+
+# Discussion
+
+It was clearly noticed from our analysis that given each best model, predicting whether one is food insecure or housing insecure for the six responses, the factors or variables such as total income, transportation reliability, type of residence, specifically residence off-campus with family, whether or not one is the head of the household and the number of dependents on the person were part of the major contributing factors. However, we made a weird observation, which is among the subgroups at risk for food insecurity factors, total income for people earning more than $100,000 were occurring in all four responses, which analytical and socially does not make sense. In general, total income being an underlying factor for both food insecurity and housing insecurity, clearly suggests that the income on which students live for their livelihood appears not to be enough.
+
+Considering the factors affecting housing insecurity responses, permanent house address and spending the night elsewhere, both were found to be associated with transport reliability, household head, the college one comes from, and whether the person is living alone, and total income as the most important variables among others. That is to say, the chances of one being housing insecure rely on one's total income, one being a household head with more dependents, and how reliable their transportation is with regards to one's income and expenditure. Also considering which subgroups or populations are at risk of being housing insecure, factors including having a residence off-campus with family, coming from either a college of education or college of science, and having a very reliable transportation mode. Specifically, it appears that if a student belongs to the college of science or college of education and stays off-campus with the family coupled with having a reliable common mode of transportation is at risk at a point in time of housing insecurity should that person is being deprived of such benefits.
+
+Furthermore, the Logistics model and support vector machine dominated as the best model for modeling and predicting food insecurity response variables. The topmost factor predicting food insecurity from all four modeled response was the total income of the person, mode of transport, and its reliability, whether one know of any homeless student, household head, the number of dependents, and finally whether one is employed or not. Suggesting that one becoming food insecure depends on one income, numbers of dependents, and more as depicted by the model graphs. Identifying which person or persons are at risk of food being insecure was characterized by people living off-campus with family, someone been black or African American, and enrolled as a junior and having more than four dependents. Specifically, a Black American enrolled as a junior living with a family off campus with more than four dependents is a high risk of being food insecure.
+
+Our initial preferred model or models were selected based on the evaluation metrics accuracy, misclassification, fbeta, and the area under the curve (AUC) from each response variable table obtained. That is, a model with the least misclassification, higher accuracy, an fbeta score approaching one, and a higher AUC. However, our initial preferred model or models may or may not be sufficient enough to make a predictive decision because they may involve irregularities. As an improvement to phase one of our modelings, we employed post hoc predictive modeling to ascertain the initial preferred models. Specifically, we employed the ensemble analysis model to train our obtained several related but different analytical models (SVM, LDA,  etc..) and then synthesized the results into a single score or spread in order to improve the accuracy of prediction. We made use of this idea of the ensemble method because a single model based on a data sample can have biases, high variability, or outright inaccuracies that affect the reliability of its analytical findings. By combining these different models we can reduce the effects of those limitations and provide better predictive information from the learning model. After the best predictive models are chosen a plot of variables of importance were obtained to determine which variables are most significant in predicting a given response variable, and also to answer the research question of which subgroup are at risk of a given food and house insecurity response. 
+
+# Analysis and Results
+
+## Exploratory Data Analysis
+
+<!-- ## Data Preparation and cleaning  -->
+```{r, echo=F,message=FALSE, warning=FALSE, echo= F}
+# Make new data for EDA
+eda_dat <- FIHI_sub3 %>%
+  dplyr::select(-respondent_id)
+```
+
+
+<!-- ### Inspecting missing values -->
+
+```{r message=FALSE, warning=FALSE, echo= F, eval=F}
+# obtaining the missing percentage of each variable
+data <- eda_dat
+missing_rate <- data.frame()
+nr <- NROW(data)
+nc <- NCOL(data)
+Var_name <- variable.names(data)
+for (i in 1:nc) {
+  na <- sum(is.na(data[,i]))
+  na_rate <- (na/nr)*100
+  result <- list(Variable = Var_name[i],Number_Missing = na, Missing_Rate = na_rate 
+                 )
+  missing_rate <- rbind(missing_rate, result, stringsAsFactors = F)
+}
+kable(missing_rate, align = "lcc", caption = "Table : Missing values table displaying percentages") %>%
+  kable_paper("hover", full_width = T)%>% 
+       kable_styling(font_size = 12, latex_options = c("HOLD_position"))
+```
+
+### Summary Statistics
+
+Table 2 shows how the various variables used throughout the analysis are distributed across their respective levels, after data cleaning, accounting for double counting in multiple response instances, and collapsing levels where we considered appropriate. Missing values are denoted by **NA**, so variables with the additional **NA** level are those with missing observations. 
+
+```{r summary-stats, message=FALSE, warning=FALSE, echo= F}
+
+# Tracking follow-up questions to fix incorrect missing data instances:
+# Problem: Respondents who gave a response not in favor of the follow-up 
+# question will incorrectly count as missing data for the follow-up questions
+# - employment_type (Q3): filter out NO for employed
+# - weekly_work_hrs (Q4): filter out NO for employed
+# - transport_reliability (Q13): filter out Not applicable for mode_transport
+# Problem with Q13 though, the same number carried over from Q12 instead of 
+# falling short of Not applicable respondents
+# - 
+# - spent_night_elsewhere (Q22): filter out 'Yes' for permanent address
+# - 
+
+summ_stats <- data.frame() # initialize summary statistics container
+nc <- NCOL(eda_dat)
+var_name <- variable.names(eda_dat)
+nr_vec <- vector(length = nc) # a vector of number of rows for the summary df of 
+# each variable to aid in creating a striped formatted table.
+
+# Key-value pairs matching follow-up question variables to their main questions
+main_var <- c("employment_type"="employment", "weekly_work_hrs"="employment", "transport_reliability"="mode_transport", "spent_night_elsewhere"="permanent_address")
+# Key-value pairs matching follow-up question variables to tokens for filtering the true sample sizes
+filter_token <- c("employment_type"="No", "weekly_work_hrs"="No", "transport_reliability"="Not applicable", "spent_night_elsewhere"="Yes")
+
+for (i in 1:nc) {
+  # Computing the summary statistics for the ith variable
+  if(var_name[i] %in% names(main_var)) {
+    # Get summary stats for variables from follow-up survey questions.
+    # This part is necessary to account for the true sample sizes and the true
+    # missing values for such variables.
+    summ <- eda_dat %>% 
+              filter(!!as.name(main_var[var_name[i]]) != filter_token[var_name[i]]) %>%
+              dplyr::select(!!as.name(var_name[i]))%>%
+              group_by(!!as.name(var_name[i])) %>%
+              summarise(freq = n()) %>%
+              mutate(pct = freq/sum(freq),
+                     pct = percent(pct, 0.01))
+  } else {
+    # Get summary stats for variables from main survey questions
+    summ <- eda_dat %>% 
+              dplyr::select(!!as.name(var_name[i]))%>%
+              group_by(!!as.name(var_name[i])) %>%
+              summarise(freq = n()) %>%
+              mutate(pct = freq/sum(freq),
+                     pct = percent(pct, 0.01))
+  }
+  
+  # Add extra column indicating the particular variable for which the summary was generated and another column for the coded levels
+  var_col <- c(var_name[i], rep("", (NROW(summ)-1))) 
+  
+  if(anyNA(summ[[1]])) {
+    coded_levels <- c(1:(NROW(summ)-1), "")
+  } else {coded_levels <- 1:NROW(summ)}
+  
+  summ <- cbind(var_col, summ) %>%
+          mutate(coded_levels, .after = var_name[i])
+  
+  
+  # Renaming the columns
+  names(summ) <- c("Variable Name", "Levels", "Coded As", "Obervations", "Percentage")
+  
+  # Storing summary statistics for each variable
+  summ_stats <- rbind(summ_stats, summ)
+  nr_vec[i] <-  length(var_col) # store the number of rows for each variable in the df.
+}
+
+# Function to help highlight each variable information as a block
+get_stripe_index <- function(indices)
+{
+  index_vec <- NULL
+ 
+  for(i in seq_along(indices)) {
+    
+    if(i%%2 == 0) next # skip the even values
+    
+    end_index <- sum(indices[1:i])
+    
+    start_index <- end_index - (indices[i]-1)
+    
+    index_vec <- c(index_vec, start_index:end_index)
+    
+  }
+  return(index_vec)
+}
+
+kable(summ_stats, align = "llccc", longtable=T, booktabs=T, linesep="",
+      caption = " A summary of variables of interest") %>%
+  kable_paper("hover", full_width = F)%>%
+  kable_styling(font_size = 9, 
+                latex_options = c("HOLD_position", "striped", "repeat_header"),
+                stripe_index = get_stripe_index(nr_vec)
+                )
+ 
+```
+
+
+```{r plotting-functions, message=FALSE, warning=FALSE, echo= F}
+# Make data for plotting
+
+# For creating bar graphs of the response variables
+mybarplot <- function(var, palette="Set2",
+                      xlab="", ylab="",title="",dat='') 
+{
+  # palette=c("Set2","Set3","Accent","Set1","Paired","Dark2")
+  ylab = ifelse(ylab=="", "Number of Respondents", ylab)
+  
+  if(!(class(dat)[1] %in% c('data.frame','tbl','tbl_df'))) dat <- FIHI_sub3
+
+   if(ncol(dat) == 4)
+   {
+     # A plotting data was provided
+     plotdf <- dat
+   } else {
+     # prepare data frame for plotting
+      plotdf <- dat %>%
+      group_by({{ var }}) %>%
+      summarise(n=n()) %>%
+      mutate(pct = n/sum(n),
+             lbl = percent(pct)) 
+   }
+    
+  # create the plot
+  return(
+    ggplot(plotdf, aes({{ var }},n, fill={{ var }})) +
+    geom_bar(stat = "identity",position = "dodge")  +
+    geom_text(aes(label = n), size=3, position = position_stack(vjust = 0.5)) +
+    scale_fill_brewer(palette=palette) +
+    labs(x=xlab, y=ylab, title=title) +
+    theme_classic() +
+    theme(legend.position = "none")
+  )
+}
+# "Ever hungry but didn't eat?"
+# mybarplot(FI_q31)
+# mybarplot(spent_night_elsewhere, data = FIHI_sub3)
+
+```
+
+
+### Distribution of Housing Insecurity Responses
+
+
+<!--**Figure 1** and **Figure2** present the distribution of the two housing insecurity variables available in the data set. From the two figures we observe -->
+
+```{r, warning=F, message=F}
+
+# Permanent Address
+p1 <- mybarplot(permanent_address, 
+                xlab = "Had permanent address in the past 12 months?"
+                )
+
+# Spending night elsewhere
+plotdf <- FIHI_sub3 %>%
+  filter(permanent_address=='No') %>%
+  group_by(spent_night_elsewhere) %>%
+  summarise(n=n()) %>% 
+  mutate(pct = n/sum(n),
+         lbl = percent(pct))
+p2 <- mybarplot(spent_night_elsewhere, 
+                xlab = "How fequently did you spend the night elsewhere?",
+                dat = plotdf
+                )
+# Display plots side by side with the help of the patchwork package
+p1 + p2
+
+```
+
+### Distribution of Food Insecurity Responses
+```{r, warning=F, message=F}
+
+# Q26: Food bought didn't last
+p1 <- mybarplot(FI_q26, xlab = "Food bought did not last")
+
+# Q27: Balanced diet
+p2 <- mybarplot(FI_q27, xlab = "Couldn't afford balanced meals")
+
+# Q28: 
+p3 <- mybarplot(FI_q28, xlab = "Ever cut the size of meals?")
+
+# Q3: 
+p4 <- mybarplot(FI_q30, xlab = "Ever ate less than you should?")
+
+# Q31
+p5 <- mybarplot(FI_q31, xlab = "Ever got hungry but didn't eat?")
+```
+
+
+```{r}
+p1 
+```
+
+```{r}
+
+p2 
+```
+
+```{r}
+(p3 + p4)
+```
+
+```{r}
+p5
+
+```
+
+
+The table and graphs above display the number of missing values with missing percentages as well as the distribution of the potential response variables. From the results, the following observations were made:
+
+
+* It is clear that all variables have some amount of missing observation given they are all above 50%, hence a necessary missing data treatment is required.
+
+* The response variables also contains missing values, hence we filter all missing observation with respect to each response variable out and used the remaining data set for further imputation and analysis analysis.
+
+* The mice package aided in imputation the missing values in the predictor variables, specifically by using the median, mice was chosen because it is robust to data and its imputation style.
+
+* The selected response variables exhibited highly imbalanced classification. The imbalanced classification was treated with both sampling methods under the ROSE package.
+
+
+## Model Building  
+
+Given our data set and its structure, the following supervised classification machine learning algorithms were employed to obtained a predictive model for each given response variable;
+
+* Logistic Regression
+
+* Linear Discriminant Analysis (LDA)
+
+* K-Nearest Neighbors (KNN)
+
+* Multivariate Adaptive Regression Splines (MARS)
+
+* Support Vector Machines with Linear Kernel (SVM Linear)
+
+* Support Vector Machines with Radial Basis Kernel  (SVM Radial)
+
+
+
+### Partitioning data set
+
+For the purpose of training and validation of each derived model ,and the estimation of the performance metrics, the entire data set was partitioned into training and testing in a ratio of 2/3 and 1/3 respectively.
+
+### Results for Housing Insecurity Responses
+
+Here, we modeled housing insecurity as a response based on whether or not a respondent had a permanent address (permanent_address) as well as whether or not a respondent spent the night elsewhere given that they did not have a permanent address in the past six months to the survey period (spent_night_elsewhere).
+
+```{r load_mod_functions, message=FALSE, warning=FALSE, echo= F}
+# 
+source("modeling_functions.R") 
+
+load("trained_models.RData") # import already trained models
+```
+
+ **Results for Permanent Address**
+<!-- \newline  -->
+
+```{r message=FALSE, warning=FALSE, echo= F}
+# pa_models <- modeling("permanent_address")
+
+eval_table(pa_models$model_list, "permanent_address",
+           pa_models$test,
+           "Permanent House Address")
+
+```
+\
+Based on the table values our best initial models are SVM Radial and the MARS (earth) model from the permanent housing address response.
+\
+
+```{r message=FALSE, warning=FALSE, echo= F}
+
+plot(pa_models$ensemble, main="Performance of individual models versus the Ensemble model")
+
+
+# plot(varImp(pa_models$model_list$earth, scale = FALSE), main ="Figure: Variable Importance by the MARS model")
+
+```
+\
+The ensemble model came up with the MARS (earth) model as the best performing model given its line of reference. Therefore, we confidently conclude that the MARS model which appeared at both our necessary and sufficient measure for selection criteria is the model predictive model for modeling the housing insecurity permanent address.
+\
+
+```{r message=FALSE, warning=FALSE, echo= F}
+plot(varImp(pa_models$model_list$svmRadial, main ="Performance of the  SVM Model"))
+```
+
+```{r message=FALSE, warning=FALSE, echo= F}
+rank_pred_by_ensemb(pa_models$ensemble, 20)
+#rank_pred(pa_models$model_list$glm, 20, "MARS") # MARS is the best according to the ROC
+
+```
+\
+Our initial preferred model based on the evaluation metrics been SVM Radial would have total income, residence, transport reliability, household head, and living alone are the top five variables that accurately predicts the housing insecurity, with employment, federal aid, gender, and dependents been least of importance. However our final model by the ensemble method which is the MARS model also had same variables of most importance as that of the SVM radial. However this MARS model plot further classifies the important variable residence2 , transport reliability and college_school2 as subgroups of importance.
+\
+
+**Results for Spending the night elsewhere**
+<!-- \newline -->
+```{r message=FALSE, warning=FALSE, echo= F}
+ # sne_models <- modeling("spent_night_elsewhere", c("earth","glm","knn","svmLinear","svmRadial"))
+
+# Display a table of performance metrics
+# eval_table(sne_models$model_list, "spent_night_elsewhere",sne_models$test, "Spent Night Elsewhere")
+model_list <- sne_models$model_list
+response <- "spent_night_elsewhere"
+resp_label <- "Spent Night Elsewhere"
+log.metric <- metrics(model_list$glm, response, sne_models$test)
+# lda.metric <- metrics(model_list$lda, response)
+knn.metric <- metrics(model_list$knn, response, sne_models$test)
+mars.metric <- metrics(model_list$earth, response, sne_models$test)
+svc.metric <- metrics(model_list$svmLinear, response, sne_models$test)
+svmR.metric <- metrics(model_list$svmRadial, response, sne_models$test)
+  
+metrics.summ <- data.frame(rbind(
+      c("Logistic", log.metric$mcr, log.metric$accuracy, 
+        log.metric$sens, log.metric$spec, log.metric$fbeta, log.metric$auc),
+      
+      # c("LDA",  lda.metric$mcr, lda.metric$accuracy, lda.metric$sens,
+      #   lda.metric$spec, lda.metric$fbeta, lda.metric$auc),
+      
+      c("KNN", knn.metric$mcr, knn.metric$accuracy, knn.metric$sens,
+        knn.metric$spec, knn.metric$fbeta, knn.metric$auc),
+      
+      c("MARS",mars.metric$mcr,mars.metric$accuracy,mars.metric$sens,
+          mars.metric$spec, mars.metric$fbeta, mars.metric$auc),
+      
+      c("SVM Linear",  svc.metric$mcr, svc.metric$accuracy, svc.metric$sens,
+        svc.metric$spec, svc.metric$fbeta, svc.metric$auc),
+      
+      c("SVM Radial", svmR.metric$mcr, svmR.metric$accuracy, svmR.metric$sens,
+        svmR.metric$spec, svmR.metric$fbeta, svmR.metric$auc)
+      ))
+
+names(metrics.summ) <- c("Model", "Misclassification Rate", "Accuracy", 
+                         "Sensitivity", "Specificity", "fbeta", "AUC")
+
+kable(metrics.summ, align = "lcccccc", booktabs=T, linesep="",
+      caption = paste("Evaluation metrics for", resp_label, " as a response variable") ) %>%
+  kable_paper("hover", full_width = F)%>% 
+  kable_styling(font_size = 12, latex_options = c("HOLD_position"))
+```
+\
+Taking spending the night elsewhere, our initial best model is the MARS (earth) model given the table values, that is MARS model has the least misclassification, higher accuracy, higher fbeta, and higher AUC. However we add SVM radial to our best model since its comes next to the MARS model for example that AUC and fbeta.
+\
+
+```{r message=FALSE, warning=FALSE, echo= F}
+# draw plots to visually compare modes
+plot(sne_models$ensemble, main="Performance of individual models versus the Ensemble model")
+# plot(varImp(sne_models$model_list$svmRadial, scale = FALSE), main ="Figure: Variable of Importance by the SVM Radial model")
+```
+\
+According to the ensemble modeling, the SVM Radial is the best given the reference line. Hence the SVM Radial becomes our best model given spending the night elsewhere as the response variable.
+\
+
+```{r, message=FALSE, warning=FALSE, echo= F}
+ rank_pred_by_ensemb(sne_models$ensemble, 20)
+```
+
+```{r message=FALSE, warning=FALSE, echo= F}
+# rank_pred(sne_models$model_list$svmRadial)
+plot(varImp(sne_models$model_list$earth, scale=F),
+     main="Variable Importance by the SVM Radial Model with subgroups")
+# rank_pred_by_ensemb(sne_models$ensemble, 20)
+
+# The ensemble model performed poorly, so we used the MARS model and the SVM Radial models to
+# search for the significant predictors/determinants of housing insecurity.
+
+```
+\
+According to our variable of an important plot from the best model (SVM radial), the top 5 variables that determine housing insecurity are transport reliability, college, known homeless students, academic level, and household head. Also know homeless student2, residence2, transport reliability 4, college school6 and ethnicity2 are the subgroups of importance. 
+\
+
+### Results for Food Insecurity Responses
+
+In this section, we report results for modeling food insecurity in terms response variables based on survey questions as described below:
+
+* **Food Insecurity I**: "The food that I bought just didn't last, and I didn't have money to get more." Was that often, sometimes, or never true for you in the last 12 months? (FI_q26).
+
+* **Food Insecurity II**: "I couldn't afford to eat balanced meals." Was that often, sometimes, or never true for you in the last 12 months? (FI_q27).
+
+* **Food Insecurity III**: In the last 12 months, since (today's date), did you ever cut the size of your meals or skip meals because there was not enough money for food? (FI_q28).
+
+<!-- * **Food Insecurity IV**: In the last 12 months, did you ever eat less than you felt you should because there was not enough money for food? -->
+
+* **Food Insecurity IV**: In the past 12 months, were you ever hungry but didn't eat because there wasn't enough money for food? (FI_q31).
+
+Though Food Insecurity I and II originally had three levels (Often true, Sometimes true, and Never true), we modeled them as dichotomous responses where the "Often true" and "Sometimes true" levels were put in a "Yes" group as a sign of food insecurity, while the "Never true" level was classified as a "No" group for respondents not at the risk of food insecurity.
+
+
+**Results for Food Insecurity Response I**
+<!-- \newline --> 
+
+```{r message=FALSE, warning=FALSE, echo= F}
+# FI_q26_models <- modeling("FI_q26")
+
+eval_table(FI_q26_models$model_list,"FI_q26",FI_q26_models$test,"Food Insecurity I")
+
+```
+
+\
+Based on the table values and the evaluation metric criteria, with the exception of knn model , all the others are preferred as our initial best models.
+\
+
+```{r message=FALSE, warning=FALSE, echo= F}
+plot(FI_q26_models$ensemble, main="Performance of individual models versus the Ensemble model")
+
+```
+\
+From the ensemble model, both glm and LDA are considered the best model for predicting food insecurity response 1, however, we decide on logistics regression as our best model.
+\
+
+```{r message=FALSE, warning=FALSE, echo= F}
+rank_pred_by_ensemb(FI_q26_models$ensemble, 20)
+```
+\
+Using glm as our best model the variable of importance or factor that predict food insecurity 1 as response are total income, transport reliability, know homeless student, household head and dependents. 
+\
+
+```{r message=FALSE, warning=FALSE, echo= F}
+# create plots to visually compare modes
+# rank_pred_by_ensemb(FI_q26_models$ensemble, 20) 
+rank_pred(FI_q26_models$model_list$glm, 20)
+
+
+```
+\
+Given the plot above, the top 5 subgroups are total income8, know homeless student 2, total income 7, residence2, and ethnicity3.
+\
+
+**Results for Food Insecurity Response II**
+<!-- \newline --><br>
+
+```{r message=FALSE, warning=FALSE, echo= F}
+ # FI_q27_models <- modeling("FI_q27")
+
+eval_table(FI_q27_models$model_list,"FI_q27",FI_q27_models$test, "Food Insecurity II")
+```
+\
+Modeling food insecurity 2 as response, the best initial models are all models apart from the knn model.
+\
+
+```{r message=FALSE, warning=FALSE, echo= F}
+# draw plots to visually compare modes
+plot(FI_q27_models$ensemble, main="Performance of individual models versus the Ensemble model")
+
+# plot(varImp(FI_q27_models$model_list$lda, scale = FALSE), main ="Figure: Variable of Importance by the LDA model")
+```
+\
+The best model from the ensemble model is the LDA, however, the SVM Radial can as well the best model given that it is closer to the line of reference as indicated from the plot above.
+\
+
+```{r message=FALSE, warning=FALSE, echo= F}
+rank_pred_by_ensemb(FI_q27_models$ensemble, 20) 
+```
+\
+The plot above indicates that treating food insecurity 2 as a response through the LDA model by ensemble model, the 5 most important factors are total income, transport reliability, know homeless student, household head, and employment.
+\
+
+```{r message=FALSE, warning=FALSE, echo= F}
+ # rank_pred_by_ensemb(FI_q27_models$ensemble, 20) + 
+  rank_pred(FI_q27_models$model_list$earth, mod_label = "lda")
+```
+\
+Given the plot above, the top 5 subgroups are transport reliability4, know homeless student2, total income8, federal student aid5, and residence2.
+\
+
+
+**Results for Food Insecurity Response III**
+<!-- \newline --><br>
+
+```{r message=FALSE, warning=FALSE, echo= F}
+# FI_q28_models <- modeling("FI_q28")
+
+eval_table(FI_q28_models$model_list, "FI_q28",FI_q28_models$test, "Food Insecurity III")
+```
+\
+Given the table values of evaluation metric criteria, our initial best models are all but knn and MARS.
+\
+
+```{r message=FALSE, warning=FALSE, echo= F}
+# draw plots to visually compare modes
+plot(FI_q28_models$ensemble, main="Performance of individual models versus the Ensemble model")
+
+# Var <- varImp(FI_q26_models$model_list$svmRadial, scale = FALSE)
+# plot(Var, main ="Figure: Variable of Importance by the SVM Radial model")
+```
+\
+The final best model through the ensemble method is the SVM Radial for the food insecurity 3.
+\
+
+```{r message=FALSE, warning=FALSE, echo= F}
+rank_pred_by_ensemb(FI_q28_models$ensemble, 20) 
+# rank_pred(FI_q28_models$model_list$glm, 20)
+```
+\
+The plot above indicates that treating food insecurity 3 as a response through the SVM Radial model by ensemble model, the 5 most important factors are total income, transport reliability, know homeless student, household head, and depedents.
+\
+
+```{r message=FALSE, warning=FALSE, echo= F}
+ rank_pred(FI_q28_models$model_list$glm,10, mod_label = "svmRadial")
+```
+\
+Given the plot above for food insecurity 3, the top 5 subgroups are know homeless student2, total income8, total income7, academic level3, and residence2.
+
+<!-- #### Results for Food Insecurity Response IV -->
+
+<!-- ```{r message=FALSE, warning=FALSE, echo= F, eval=F} -->
+<!-- # FI_q30_models <- modeling("FI_q30") -->
+
+<!-- eval_table(FI_q30_models$model_list, "FI_q30",FI_q30_models$test, "Food Insecurity IV") -->
+
+<!-- # draw plots to visually compare modes -->
+<!-- # dotplot(resamples(dat$model_list)) -->
+<!-- plot(FI_q30_models$ensemble, main="Performance of individual models versus the Ensemble model") -->
+
+<!-- rank_pred_by_ensemb(FI_q30_models$ensemble, 20)  -->
+<!-- # rank_pred(FI_q30_models$model_list$glm, 20) -->
+<!-- ``` -->
+
+**Results for Food Insecurity Response IV** 
+<!-- \newline --> <br>
+
+```{r message=FALSE, warning=FALSE, echo= F}
+
+# FI_q31_models <- modeling("FI_q31")
+
+eval_table(FI_q31_models$model_list, "FI_q31",FI_q31_models$test, "Food Insecurity V")
+```
+\
+Our best models according the evaluation metrics criteria are glm and SVM Radial for food insecurity response 4.
+\
+
+```{r message=FALSE, warning=FALSE, echo= F}
+# draw plots to visually compare modes
+# dotplot(resamples(dat$model_list), metric = c("ROC", "Sens", "Spec"))
+plot(FI_q31_models$ensemble, main="Performance of individual models versus the Ensemble model")
+```
+\
+Now according to the ensemble method, both initial best models are best for predicting the response variable, however, we decided on the glm model as per the ensemble model.
+\
+
+```{r message=FALSE, warning=FALSE, echo= F}
+rank_pred_by_ensemb(FI_q31_models$ensemble, 20)
+# rank_pred(FI_q31_models$model_list$glm, 20)
+```
+\
+The plot above indicates that treating food insecurity 4 as a response through the glm model by ensemble model, the 5 most important factors are total income, transport reliability, know homeless student, household head, and dependents.
+\
+
+```{r message=FALSE, warning=FALSE, echo= F}
+rank_pred(FI_q31_models$model_list$glm,10, mod_label = "glm")
+
+```
+\
+Given the plot above for food insecurity 3, the top 10 subgroups involves known homeless student2, total income (2,3 - 8), dependents4 and federal student aid5.
+
+
+\section{Methodology}
+
+This section serves to provide a road map to the approaches our group adopted and executed in terms of our analysis.
+
+\subsection{Exploratory Data Analysis}
+
+In this section, we provided descriptive analyses of the data including numerical summaries and graphical displays as a first-hand insight into the data to help ourselves and our audiences to better understand the underlying dataset. We primarily looked at the distributions of our target variables and all the predictor variables.
+
+In terms of the types of graphs or visualizations, we considered segmented or comparative bar graphs.  We critically assessed these graphs and settled on a few which help us to effectively tell a compelling story about the data.
+
+* **Cross Tabulations (Contingency Tables)**: Provide numerical summary of how responses differ by some categories. 
+
+* **Bar graphs (Segmented/Comparative bar graphs)**: To explore how the available categorical predictors are distributed across the levels of the target or response variable.
+
+
+### Missing Data/Outliers and their treatments
+
+The available data was inspected for missing and unusual values. The missing data and/or outlying data identified from our data preprocessing and exploratory analysis was treated appropriately depending on the nature of the missingness and the information we were able to gather about the possible reasons for the missingness or unusual values. In such instnaces, the `mice` package was used for data imputation.
+
+
+## Modeling Approaches
+
+### Data Partitioning
+
+For the purpose of predictions or testing on the machine learning algorithm models or estimation of the evaluation metrics for the best model selection, the entire dataset were partitioned into training data and testing data. The training data would be used to fit the models and the testing data was used to derive the metrics for model selection or testing. 
+
+
+\subsubsection{Predictive Models}
+
+In this part of the analysis, since the nature of the task present a classification problem, we  fit several classification models to the target variable as a function of all the possible predictors we selected from the original dataset. All the models considered are *supervised* learning algorithms. Candidate models included Logistic regression, Linear Discriminant Analysis (LDA), K-nearest neighbors (KNN), Support Vector Machines/Classifiers, Multivariate Adaptive Regression Splines.
+
+#### Logistic Regression <br>
+
+Logistic Regression is very simple and one of the mostly used traditional machine learning algorithms. It is a statistical model for predicting binary classes. However, as remarked by @james2013introduction, multiple-class extension of Logistic Regression exists but *Discriminant Analysis* models are commonly used in place of it. The dependent variable in here follows Bernoulli distribution. Logistic Regression model uses the logistic function or sigmoid function for predictive modeling of the given problem, which takes value between 0 and 1. 1 will be predicted if the curve goes to positive infinity and 0 if it goes to negative infinity. The logistic Regression model performs the predictive analysis based on the relationship between the binary dependent variable and the other one or more independent variables from the given dataset.
+
+
+#### K-Nearest Neighbors Classifier
+
+K-nearest neighbors regression (KNN regression) is one of the simplest and best-known
+non-parametric methods. Unlike the Logistic Regression, no assumptions are made about the shape of the decision boundary. Therefore, we can expect this approach to dominate Logistic Regression when the decision boundary is highly non-linear. It uses a distance metric such as the Euclidean distance for separation between points in the feature space. In the KNN classification model, the prediction is purely based on neighbor data values without any assumption on the dataset. The $K$ in the name of the model represents the number of nearest neighbor data values. This parameter can be tuned to find an optimal value. Based on $K$, the decision is made by the KNN algorithm on classifying the given dataset. 
+
+#### Support Vector Machines (SVM) <br>
+
+Support Vector Machines; SVM is a great classification machine learning model for classifying data of clear classes. Also does not require a predetermined cutoff point for prediction. Given a set of training examples, each marked as belonging to one of two categories, an SVM training algorithm builds a model that assigns new examples to one category or the other, making it a non-probabilistic binary linear classifier (although methods such as Platt scaling exist to use SVM in a probabilistic classification setting). SVM maps training examples to points in space so as to maximize the width of the gap between the two categories. New examples are then mapped into that same space and predicted to belong to a category based on which side of the gap they fall [@wikipedia].
+We will consider using this classification model because it is versatile and effective in high dimensional spaces. They are versatile in the sense that different Kernel functions can be specified for the decision function. Common kernels include polynomial kernels and radial kernels. Support vector classifiers are also able to address the problem of possibly non-linear boundaries between classes. We will try at least three kernel SVM for this analysis noticeably, the Linear SVM and two Non-Linear kernels SVM such as the Gaussian radial basis function (RBF) and Polynomial kernel SVM through packages such as caret and kernlab.
+
+
+#### Multivariate Adaptive Regression Splines
+
+We employed one MARS model with an appropriate set-up of parameters as another baseline classifier. The MARS algorithm is also suitable for a large number of predictor variables, robust to outliers, it automatically detects interactions between variables, and despite its complexity, it is an efficient fast algorithm. However, it is susceptible to overfitting, more difficult to understand and interpret as against others, and not good with missing data.
+
+## Model Validation
+
+The k-fold cross-validation resampling technique was used to validate our prediction models. 
+
+
+## Performance/Evaluation Metrics
+
+The following metrics were employed to examine the performance of the models for best predictive power.
+
+### F-beta Score ($F_\beta$)
+
+The F-beta score or F-beta measure is the weighted harmonic mean of precision and recall, reaching its optimal value at 1 and its worst value at 0. It turns the F-measure into a configurable single-score metric for evaluating a binary classification model based on the predictions made for the positive class. The beta parameter determines the weight of recall and precision in the combined score. $\beta < 1$ lends more weight to precision, while $\beta > 1$ favors recall. That is, a smaller beta value, such as 0.5, gives more weight to precision and less to recall, whereas a larger beta value, such as 2.0, gives less weight to precision and more weight to recall in the calculation of the score. It is a useful metric to use when both precision and recall are important but slightly more attention is needed on one or the other, such as when false negatives are more important than false positives, or the reverse (@MLM, @scikit_learn). 
+
+We can compute the F-beta score by
+
+$$
+  F_\beta = \frac{(1 + \beta^2) * Precision * Recall}{\beta^2 * Precision + Recall},
+$$
+where **precision** and **recall** are defined below.
+
+The choice of the beta parameter will be used in the name of the F-beta score. For example, a $\beta$ value of 1 is referred to as the $F_1$-measure or the $F_1$ score. A $\beta$ value of 2 is referred to as $F_2$-measure or $F_2$-score. 
+
+
+**Precision**
+
+Precision is a metric that quantifies the number of correct positive predictions made. It is computed as the ratio of correctly predicted positive classes divided by the total number of positive classes that were predicted as in the formula below.
+
+$$
+\text{Precision} = \frac{TP}{TP + FP} = \frac{\text{True Positives}}{\text{Total Predicted Positives}}
+$$
+
+**Recall**
+
+Recall is a metric that quantifies the number of correct positive predictions made out of all positive predictions that could have been made. The intuition for recall is that it is not concerned with false positives and it minimizes false negatives [@MLM]. It is calculated as
+
+$$
+\text{Recall} = \frac{\text{True Positives}}{\text{True Positives} + \text{True Negatives}} = \frac{TP}{TP + NP}
+$$
+
+
+
+### Area Under the Receiver Operator Curve (AUROC)
+
+The AUROC curve is a graphical illustration of the performance of the prediction model. The
+ROC curve is the relationship between the recall and precision over varying threshold values. The threshold is the positive predictions of the model. The AUROC curve is plotted by keeping the x-axis a false positive rate and the y-axis as a true positive rate. Its value ranges from 0 to 1 [@theerthagiri2021prediction].
+
+### Model Selection
+Base on the metrics calculated using the trained models and testing data for each classifier algorithm, the best model was selected, for instance, the model with the highest AUROC be best among the others, however, AUROC alone is not the measure for selection, hence a table other performance measures together with the AUC were used to estimate the one with the best performance across all metrics. 
+
+
+## Model Deployment
+
+To aid easy deployment and implementation of our proposed model(s), we planned to develop a web application with the R Shiny App package.This dashboard was to serve as an effective form of communicating our results to our client and other audiences. This was to provide among other features the flexibility to interact with the visualizations and models to assess performance based on changing parameters. We were aiming at an application similar to the online prediction tool developed by @dominguez2021bayesian. Unfortunately, due to time constraint we were unable to develop such a communication tool. 
+
+
+\section{Background}
+
+In this section, we provide an overview of Food and Housing Insecurity in Colleges in the U.S. in addition to  the challenges faced by households in America. Also, we provide a description of the surveyed data obtained by The University of Texas at El Paso, processing of data cleaning and variable description.
+
+
+This section  primarily provides a background to the study by means of an overview of food insecurity and housing insecurity in the US in general and at El Paso, the satellite region of our target population, in particular. 
+
+
+## Overview of the study
+
+This project is aimed at analyzing data based on a survey constructed in summer 2019 and 2020 by a team of researchers at UTEP (Moya, Crouse, Schober, Wagler) to assess the state of food and housing insecurity among UTEP students. A slightly modified version of the survey was administered summer 2020. In this work, we seek to assess whether there are any changes to food and housing insecurities since 2019. This is particularly important since the worldwide pandemic hit during this period. The primary and secondary research questions are listed below. 
+
+
+1. **Primary Research Question**: What factors are associated with food insecurity (FI) and housing insecurity (HI) among UTEP students?
+
+2. **Secondary Research Question**: Which subpopulations of students are most at risk for FI and HI at UTEP?
+
+There are two phases to the project, phase I is concerned with the primary research question while phase II will be based on the secondary research question.
+
+
+## Overview of Food Insecurity
+
+Food insecurity is defined by the United States Department of Agriculture (USDA) as the lack of consistent access to enough food for active healthy life. It can also be defined as a physical discomfort, thus the definition can relate to an individual or a family's lack of resources to obtain enough food for a healthy living. With the increasing spread of COVID-19, and many Americans losing their jobs, one of America's challenge worsened: hunger.During this period, communities and colleges in America in particular faced the longest queue's for food compared to past years.
+
+According to the USDA, 13.7 million or 10.5% of all households in the U.s. experienced food insecurity at some point during the COVID-19 pandemic. In addition, it was observed that, nearly 40% of college students were food insecure. That means,24 of every 60 students are food insecure. After several years of research on food insecurity, researchers discovered food insecurity as a likelihood to deter college students from completing their degree.
+
+Further research from USDAS stated over the past 20 years and a study completed in 2017  showed that, racial minorities, first-generation students, low income students, student with children and LGBTQ+ students are highly affected by COVID-19. These variables were included in analyzing the factors affecting food insecurities at UTEP.
+
+## Overview of Housing Insecurity
+
+Housing insecurities includes  difficulty in paying for living expense, overcrowding, substandard living and frequently moving out. Though housing insecurities can affect anyone, lower income families are known to be highly impacted since they pay high proportion of their lower income on high cost rent.
+
+According to a 2019 report by The Hope Center for college, Communities and Justice, nearly 3 out of 5 students experience having insecurities in 2018. Also, 14% of 4 year student reported experiencing homelessness. Despite the many challenges of housing insecurities, the impact of COVID-19 have increased the likelihood of homelessness among college students. For example, many students lost their jobs and financial due to COVID-19 pandemic.
+
+
+\subsection{Data Description}
+
+\subsubsection{Data cleaning and naming of variables}
+
+In this section, we provide a brief description of the data for prediction and a method for renaming and collapsing the variables. The initial data from the survey comprises 12,536 observations with 104 columns. From the data, we observed enrollment and employment as the variables with the minimum number of missing values. In preparation of our data for modeling, we excluded the following questions from the our analysis: respondent ID, the age of the respondent, what pronouns do you use to describe yourself, where do you live, and variables associated with changes due to COVID-19. Table 1 shows the recoded names of the variables we considered in our analysis and their corresponding descriptions based on the survey questions. 
+
+
+```{r variables-description, echo=F}
+
+var_names <- c("enrollment", "employment", "employment_type", "weekly_work_hrs", "ethnicity", "gender", "total_income", "academic_level", "college/school", "mode_transport", "transport_reliability", "living_alone", "dependents", "household_head", "residence", "permanent_address", "spent_night_elsewhere", "know_homeless_student", "federal_student_aid", "FI_q26", "FI_q27", "FI_q28", "FI_q30", "FI_q31", "expenditures_changed", "income_changed", "fed_aid_changed", "debt_changed")
+
+# description = rep('brief description of the variable', length(var_names))
+
+description = c(
+  "Your enrollment at UTEP (Q1)",
+  "Are you employed (Q2)",
+  " You are consistenly working at which employment type (Q2)",
+  "How many hours a week are you consistently working (Q3)",
+  "What is your ethnicity (Q4)",
+  "Which gender do you identify with",
+  "The The estimated income for your household in 2019 (Q9)",
+  "What is your academic level (Q10)",
+  "Which College/School are you a student of (Q11)",
+  "The common mode of commute (Q12)",
+  "How reliable is it getting you to/from college (Q13)",
+  "Do you live alone (Q14)",
+  "Number of dependents (Q15 and Q16 combined)",
+  "Are you the head of the household (Q17)",
+  "Where do you live (Q19)",
+  "In the past 12 months, have you had a prmament adress (Q20)",
+  " How frequently did you spent the night somewhere due to lack of housing (Q22)",
+  "Do you know UTE students who have experienced homelessness (Q23)",
+  "Have you received financial aid in the past 10 months (Q25)",
+  " The food that I bought just didn't last. and I didn't have enough money to get more (Q26)",
+  "I couldn't afford to eat balanced meal, how often (Q27)",
+  " Did you ever cut the size of your meal (Q28)",
+  " In the pst 12 months, have you eat less than you felt you should because there was not enough money (Q30)",
+   " In the past 12 months, were you hungry but didn't eat because there wasn't enough money for food (Q31)",
+"Since COVID-19, has there been any personal or household change in expenditures (Q32)",
+"Since COVID-19, has there been any personal or household change in financial Income (Q33)",
+"Since COVID-19, has there been any personal or household change in financial Aid (Q34)",
+"Since COVID-19, has there been any personal or household change in debt (Q35)")
+
+table1 <- data.frame(cbind(var_names, description))
+names(table1) <- c("Variable Name", "Description")
+
+kable(table1, caption = " Table of recoded variable names from survey data",
+      format = "latex", booktabs=T, linesep="") %>%
+       kable_paper("hover", full_width = F) %>% 
+       kable_styling(font_size = 12, latex_options = c("HOLD_position", "scale_down"))
+```
+
+\subsubsection{Collapsing the variables}
+
+In other to obtain a feasible result, the following variables were collapsed due to insignificant proportion of respondent answering those questions. With regards to **Ethinicity**, we maintained Hispanic , Black/African American, White/Caucassian, Asian and collapsed American Indian, Native Hawaiian, mixed race and other into **other** . We decided not to keep a mixed race level because the total reduced to 88 after we  assigned (Hispanic, white) to Hispanic, and (Hispanic, Black) to Black. **Gender** was reduced to  3 levels: female, male, and non-binary/non-conforming. With respect to **Income** we kept first 5 levels and the last level, while collapsing the 6th and the 7th levels into a new level, as well as the 8th, 9th and 10th as another level. For **Academic level**, we mainted the first 5 levels, and collapsed the last 2 into a new level called Doctoral/professional. For **College**, we maintained the first 6 levels and collapsed the remaining ones into other (level 7). For **Commute**, we kept car, Bus/public and other, and joined car & carpool together, put bike, trolley, walk into one group. Also, we maintained the Not applicable (0) level. For, **Federal Aid**, Emergency loan was reduced from 316 to 50 after correcting double counting resulting from the multiple response questions, so we added those to loans(3).
+
+
+# Recommendations
+
+From the results and discussions, we make the following recommendations:
+
+* There should be proper advertisement of food pantries and shelters if there exist some for low income students to survive on in the absence of adequate financial aid.
+
+* With regards to multiple responses, we are of the opinion that this should not be allowed for the gender variable in subsequent surveys.
+
+* We also recommend in later part on this work constructing a measure of food insecurity as a dichotomous response variable that combines what we consider to be four main dimensions of food insecurity embodied in five of the survey questions, namely, a stable source of food , lack of healthy/balanced meals, inadequate size of food – eating less and going hungry . Using this definition as proposed by the USDA, we selected $Q26, Q27, Q28$ and $Q30$ respectively as our response variable for food insecurity. Therefore, an individual who participated in the survey is classified as being at risk of food insecurity if they answered yes to all of questions $Q26, Q27, Q31$, and answered yes to either $Q28$ or  $Q30$ since these two questions are similar in terms of measuring a single dimension of food insecurity. Thus, an individual who reports four conditions that indicate food insecurity are classified as "food insecure".
+
+
+<!-- # Future Work (Phase II) -->
+
+<!-- ## Rule for defining response variable for Food and Housing Insecurities ## -->
+
+<!-- In the phase of the analysis, we will provide a rule for classifying a student as food insecure or housing insecure. These rules were used in selecting the appropriate response variables for both food and housing insecurities. -->
+
+ 
+# Data Science Best Practices Adopted
+
+
+We sought to improve upon our initial work from the first phase of the project by incorporating three key practices in terms of data science ethics and  processes that we have learned from the Data Science Collaboration course and beyond. The three practices we focused on include programming most aspects of the project, ensuring reproducibility of our entire work, and improvements to the communication of our results. It is interesting to note that due to the shared conviction of all members of the group to always uphold best practices right from the beginning of any data science project they set forth to emback on, you would find out that most of the  practices we talk about here, especially the programming and reproducibility, carry over directly from phase I of the project. The next subsections discuss each one of these practices in details.
+
+
+## Programming or Process Automation
+
+Taking  our inspiration from the talk by @peng on Reproducible Research Checklist, we programmed and automated various aspects of our project in order to aid reproducibility, allow for convenient extension of the project to future survey data , and to help avoid common errors associated with manual data processing. Here, we highlight what we did and how we went about with their implementations.
+
+### Data Cleaning
+
+* From the very beginning of our data processing, instead of manually specifying the file or directory paths, we used R codes to dynamically determine the paths to prevent our files reading codes from breaking down on other people's computer platforms. This helped with our collaboration on github by giving each member the convenience to clone the github repository of the project and start running the codes without having to change any file paths. To achieve this, we used the `rstudioapi::getSourceEditorContext` function to get the file path and extracted the directory name with the help of the `dirname` function.
+
+* **A program to remove unwanted parts of variable names**
+One will notice that the original variable names from the excel data file included the actual survey questions which does not make it easy for reading and processing. Instead of manually editing the names in the excel file, we used regular expressions with the help of the R pattern matching and replacement function `gsub` to automatically strip off the redundant character strings in the original variable names to facilitate the initial stages of our data cleaning. At this stage we needed just the question number part of the variable names so we took  advantage of the fact that each question number ended with two dots followed by the unwanted characters after importing the data into R. The regular expression pattern used is `"\\..*"`, which helped us match all characters after the two dots and replacing them with an empty string to get rid of the unwanted parts of the variable names.
+
+* We also created a program to track variables that were part multiple response survey questions. For example, because multiple responses were enabled for ethnicity on the survey, the dataset provided to us had separate columns for the each level of ethnicity. The goal then was to consolidate the individual parts belonging to the same survey question into one variable. We first created a count variable to record the total number of **non-na** responses for each question.  We  then used two helper functions we created called `na_to_zero` and `zero_to_na` to convert all the **NA's** to zeros, and to restore the **NA's** in the end, respectively. 
+
+### EDA
+
+The exploratory data analysis section also received a lot of programming. Functions were written to create graphs and summary statistics tables. One area we want to talk about is where we wrote R codes to dynamically alternate the background colors of table rows to make it easy to read all the records pertaining to a particular variable in **Table 2** of the report. Instead of manually specifying the row indexes in the *stripe_index* argument of `kable` function to show where the records for a variable begins and ends, we did this programmatically by creating a `get_stripe_index` function.
+
+### Modeling
+
+Codes for training models and generating reports for the responses were manually duplicated for each response in our phase I report. We decided to improve upon this area because of the potential dangers of having to make changes at many different places when there comes the need to modify aspects of the modeling processes. With some programming, we were able to abstract the modeling and results reporting codes into functions. These functions are available in `modeling_functions.R` file in the github repository. First, there is a function called `modeling` for training the models for different responses. This function takes in the name of the response variable (a character string), model list, and a k-fold (an integer value for the number of cross-validations) as argument. Other functions created include evaluation metrics and results table functions, as well as a variable importance function.
+
+
+
+
+
+
+
+
+## Reproducibility
+
+Results or project reproducibility has become a major concern for data scientists, and the scientific and research community. To this end, several authors have taken it upon themselves to solve this issue of reproducibility. For instance, @yu2020veridical proposed a framework known as PCS which discusses reproducibility through the stability component.
+
+### Version control
+
+In this work, we used Github as the version control to ensure reproducibility and collaboration by team members. Version or source control is the practice of tracking and managing changes to projects. These version controls help teams to keep track and modify their code in a special kind of database. This ensures effective collaboration of team members since teams can track back and compare earlier versions of code. By using version control, we were able to document a complete history of every file and code. These changes include the creation and deleting of files and editing of codes. In addition, team members can branch and merge. For example, to ensure faster completion of the project, we worked independently on “branches” and merged our files together after completion. 
+
+### R Rackage Management
+
+Being able to reproduce a work in the R Statistical Software requires one to have the required packages and attach them to the R environment. However, it can become a problem keeping track of the many packages used in a project, so we organized all packages that our project depended on and employed a package manager called `pacman` [@pacman] for managing add-on packages to load them. The benefit is that this package manager will automatically install packages required but not available on the user's version of R, and then load the packages. 
+
+
+## Communication
+
+Our findings and procedure were communicated through a written document in Rmarkdown. Also, our analysis results and report was presented through the concept of flipping the paradigm of communication by @elizabeth_flip as follows;
+
+* Discussion
+
+* Results comprising EDA and Model results
+
+* Methodology and Data Preprocessing
+
+* Background
+
+\newpage
+
+# Reflection 
+
+We employed several data science rules and guidelines that ensure a veridical data science project. One way for data scientists to maximize the impact of their research or project is to improve their collaborations with domain experts. Throughout the data cleaning, data manipulation, modeling, and communication phase, we ensured collaboration among team members and domain experts and enforced good data science practices and guidelines in our work. In this section, we provide ways in which these concepts we learned in class helped us work on this project. Thus, we emphasize the impact of ASCCR by @vance2019asccr to our work. Those guidelines include but are not limited to ensuring reproducibility, communication, good modeling practices, and this project's adequate documentation.
+
+For the duration of this project, we had the opportunity to grow as young data science professionals by developing a solid relationship with the domain expert. During the variable screening, the domain expert provided advice on extracting some of the variables from the survey questions and guided the team in ways to achieve efficient results. This advice and guidance inspired us to produce an impactful research result by our team. We achieved this feat by employing the ASCCR framework, which ensures a good relationship between the domain expert and data scientist. This was since we had good relationship with the domain expert.
+
+In addition, content in ASCCR ensures that the data scientist includes Qualitative, Quantitative, and Qualitative components in data science projects. For example, while working on this project, we selected the appropriate quantitative or modeling approaches to use since the domain experts provide a refined formulated domain problem. Having a clear understanding of the domain problem is imperative to select the proper data cleaning, imputation, and modeling approaches.
+
+Furthermore, communication under ASCCR ensured that data scientist apply practical skills in their collaboration with domain experts to understand the results of the project. In general, we ensured effective communication of our model results to expected audience. For example, the paradigm for presenting academic work and project is literature review, proof and formulas, new work, results, and the decision. But we observed that, the appropriate way to present our project report is to flip the paradigm [@elizabeth_flip]: results, new work, proof and formulas, background, and history. We observed that the audience (decision makers, policy makers, among others) plays important role on how to present results.
+
+
+Moreover, we used version control and GitHub to improve on collaboration and reproducibility of our codes. We observed that GitHub enabled us to work independently on the project and keep track of any code changes. Also, it provided a secure way to store the codes for the project.
+
+Finally, we see other changes that we made including the development of functions for flexibly training models and generating reports of the results as a great addition to the project. This is because there could be the need for people who gain access to our project through the GitHub repository to want to try other models or choose to model other responses. With the help of these functions, it should be easy or possible for anyone to effortlessly accomplish this. All that need to be done will be to specify a single model name or a list of models supported by the caret package in R, and with a little tweak to the modeling functions one can also model any other variable from the survey data as a response variable. 
+
+
+
+
+ <!-- At risk for food insecurity= $$$$ -->
+
+\newpage
+
+# References{-}
+
+<div id="refs"></div>
+
+\newpage
+
+# Apendix{-}
+
+## Visualizing Missing Data 
+```{r message=FALSE, warning=FALSE, echo= F}
+# explore the patterns
+gg_miss_upset(FIHI_sub3)
+
+# explore missingness in variables with gg_miss_var
+miss_var_summary(FIHI_sub3) %>% kable()
+
+gg_miss_var(FIHI_sub3) + ylab("Number of missing values")
+
+gg_miss_var(FIHI_sub3, show_pct = T) 
+```
+
+## Codes
+
+Codes for the analysis is available via a github repository upon request.
+
+
+<!-- -------------------- End of report ------------------------------------ -->
+
+<!-- ============ Clean up ============ -->
+<!-- Clear loaded packages -->
+```{r message=F, warning=F, echo=F}
+pacman::p_unload(all) # clears all loaded added-on packages
+# detach("package:<package_name>", unload = T) # For base packages
+
+# Clear environment objects
+rm(list = ls())
+
+# Clear console
+cat("\014") # ctrl+L
+
+
+```
+
+
+
+
+
+
+
+
+
+
